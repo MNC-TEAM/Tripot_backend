@@ -1,4 +1,4 @@
-package com.junior.event;
+package com.junior.event.comment;
 
 import com.google.firebase.messaging.*;
 import com.junior.domain.firebase.FcmNotificationToken;
@@ -22,8 +22,8 @@ public class CommentEventListener {
     private final FcmNotificationTokenRepository fcmNotificationTokenRepository;
     private final MessageSource ms;
 
-    private MulticastMessage getCommentMessage(Story story, List<String> tokens) {
-        String message = ms.getMessage("push.comment.content", null, null);
+    private MulticastMessage getCommentMessage(Story story, Comment comment, List<String> tokens) {
+        String message = ms.getMessage("push.comment.content",new Object[]{comment.getMember().getUsername()}, null, null);
 
         Notification notification = Notification.builder()
                 .setTitle(story.getTitle())
@@ -66,7 +66,7 @@ public class CommentEventListener {
             return;
         }
 
-        MulticastMessage commentMessage = getCommentMessage(story, tokens);
+        MulticastMessage commentMessage = getCommentMessage(story, comment, tokens);
         BatchResponse response = FirebaseMessaging.getInstance().sendEachForMulticast(commentMessage);
 
         // 실팰한 토큰 디비에서 삭제
