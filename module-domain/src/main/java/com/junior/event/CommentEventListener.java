@@ -30,8 +30,20 @@ public class CommentEventListener {
                 .setBody(message)
                 .build();
 
+        ApnsConfig apnsConfig = ApnsConfig.builder()
+                .setAps(Aps.builder()
+                        .setSound("default")
+                        .setCategory("NEW_COMMENT")
+                        .setThreadId("story-thread-" + story.getId())
+                        .build()
+
+                )
+                .putCustomData("storyId", String.valueOf(story.getId()))
+                .build();
+
         return MulticastMessage.builder()
                 .setNotification(notification)
+                .setApnsConfig(apnsConfig)
                 .addAllTokens(tokens)
                 .putData("storyId", String.valueOf(story.getId()))
                 .build();
