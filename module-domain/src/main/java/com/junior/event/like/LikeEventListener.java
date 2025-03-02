@@ -22,7 +22,7 @@ public class LikeEventListener {
     private final MessageSource ms;
 
     private MulticastMessage getLikeMessage(Story story, Member likeMember, List<String> tokens) {
-        String message = ms.getMessage("push.like.content",new Object[]{likeMember.getUsername()}, null, null);
+        String message = ms.getMessage("push.like.content",new Object[]{likeMember.getNickname()}, null, null);
 
         Notification notification = Notification.builder()
                 .setTitle(story.getTitle())

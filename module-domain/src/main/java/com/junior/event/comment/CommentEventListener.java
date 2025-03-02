@@ -23,7 +23,7 @@ public class CommentEventListener {
     private final MessageSource ms;
 
     private MulticastMessage getCommentMessage(Story story, Comment comment, List<String> tokens) {
-        String message = ms.getMessage("push.comment.content",new Object[]{comment.getMember().getUsername()}, null, null);
+        String message = ms.getMessage("push.comment.content",new Object[]{comment.getMember().getNickname()}, null, null);
 
         Notification notification = Notification.builder()
                 .setTitle(story.getTitle())
