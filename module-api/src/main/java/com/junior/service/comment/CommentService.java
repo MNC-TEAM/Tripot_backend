@@ -67,6 +67,8 @@ public class CommentService {
         // 스토리 작성자 != 댓글 작성자 -> 알림 생성
         if (!findStory.getMember().getId().equals(findMember.getId()))
             notificationService.saveNotification(findStory.getMember(), findMember.getProfileImage(), comment.getContent(), findStory.getId(), NotificationType.COMMENT);
+
+        eventPublisher.publishEvent(new CommentFcmEvent(comment, findMember));
     }
 
     public Slice<ResponseParentCommentDto> findParentCommentByStoryId(UserPrincipal userPrincipal, Long storyId, Long cursorId, int size) {
