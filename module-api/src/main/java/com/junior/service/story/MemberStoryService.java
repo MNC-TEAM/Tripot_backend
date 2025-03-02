@@ -5,6 +5,8 @@ import com.junior.domain.member.Member;
 import com.junior.domain.notification.NotificationType;
 import com.junior.domain.story.Story;
 import com.junior.dto.story.*;
+import com.junior.event.comment.CommentFcmEvent;
+import com.junior.event.like.LikeFcmEvent;
 import com.junior.exception.DeletedStoryException;
 import com.junior.exception.PermissionException;
 import com.junior.exception.StatusCode;
@@ -15,6 +17,7 @@ import com.junior.repository.story.StoryRepository;
 import com.junior.security.UserPrincipal;
 import com.junior.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -29,10 +32,9 @@ import java.util.List;
 public class MemberStoryService {
     private final StoryRepository storyRepository;
     private final LikeRepository likeRepository;
-
     private final CommentRepository commentRepository;
-
     private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void createStory(UserPrincipal userPrincipal, CreateStoryDto createStoryDto) {
@@ -145,8 +147,10 @@ public class MemberStoryService {
             findStory.increaseLikeCnt();
 
             //좋아요 누른 사람 != 스토리 주인 -> 알림 저장
-            if (!findStory.getMember().getId().equals(findMember.getId()))
+            if (!findStory.getMember().getId().equals(findMember.getId())) {
                 notificationService.saveNotification(findStory.getMember(), findMember.getProfileImage(), findStory.getTitle(), findStory.getId(), NotificationType.LIKED);
+                eventPublisher.publishEvent(new LikeFcmEvent(findMember, findStory));
+            }
 
         } else {
             Like findLike = likeRepository.findLikeByMemberAndStory(findMember, findStory);
