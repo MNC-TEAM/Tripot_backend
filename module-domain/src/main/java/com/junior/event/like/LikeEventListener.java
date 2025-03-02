@@ -1,4 +1,4 @@
-package com.junior.event;
+package com.junior.event.like;
 
 import com.google.firebase.messaging.*;
 import com.junior.domain.firebase.FcmNotificationToken;
@@ -17,13 +17,12 @@ import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
-public class CommentEventListener {
-
+public class LikeEventListener {
     private final FcmNotificationTokenRepository fcmNotificationTokenRepository;
     private final MessageSource ms;
 
-    private MulticastMessage getCommentMessage(Story story, List<String> tokens) {
-        String message = ms.getMessage("push.comment.content", null, null);
+    private MulticastMessage getLikeMessage(Story story, Member likeMember, List<String> tokens) {
+        String message = ms.getMessage("push.like.content",new Object[]{likeMember.getUsername()}, null, null);
 
         Notification notification = Notification.builder()
                 .setTitle(story.getTitle())
@@ -51,11 +50,11 @@ public class CommentEventListener {
 
     @Async
     @TransactionalEventListener
-    public void sendToStoryAuthor(CommentFcmEvent event) throws FirebaseMessagingException {
+    public void sendToStoryAuthor(LikeFcmEvent event) throws FirebaseMessagingException {
 
-        Comment comment = event.getComment();
-        Story story = comment.getStory();
-        Member storyAuthor = story.getMember();
+        Story likedStory = event.getLikedStory();
+        Member storyAuthor = likedStory.getMember();
+        Member likeMember = event.getLikeMember();
 
         List<String> tokens = fcmNotificationTokenRepository.findByMember(storyAuthor)
                 .stream()
@@ -66,7 +65,7 @@ public class CommentEventListener {
             return;
         }
 
-        MulticastMessage commentMessage = getCommentMessage(story, tokens);
+        MulticastMessage commentMessage = getLikeMessage(likedStory, likeMember, tokens);
         BatchResponse response = FirebaseMessaging.getInstance().sendEachForMulticast(commentMessage);
 
         // 실팰한 토큰 디비에서 삭제
