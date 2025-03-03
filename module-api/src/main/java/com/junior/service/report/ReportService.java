@@ -16,6 +16,7 @@ import com.junior.repository.report.ReportRepository;
 import com.junior.repository.story.StoryRepository;
 import com.junior.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class ReportService {
 
     private final StoryRepository storyRepository;
@@ -104,6 +106,7 @@ public class ReportService {
         }
 
 
+        log.info("[{}] 신고 내역 저장", Thread.currentThread().getStackTrace()[1].getMethodName());
         reportRepository.save(report);
     }
 
@@ -126,6 +129,7 @@ public class ReportService {
         Page<ReportQueryDto> report = reportRepository.findReport(eReportStatus, pageRequest);
         List<ReportQueryDto> content = report.getContent();
 
+        log.info("[{}] 신고 조회 결과 분류(스토리/댓글)", Thread.currentThread().getStackTrace()[1].getMethodName());
         List<T> result = content.stream()
                 .map(r -> convertReport(r))
                 .map(r -> (T) r)
@@ -139,6 +143,7 @@ public class ReportService {
         Report report = reportRepository.findById(id)
                 .orElseThrow(() -> new ReportException(StatusCode.REPORT_NOT_FOUND));
 
+        log.info("[{}] 신고내역 확인 id: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), report.getId());
         report.confirmReport();
     }
 
@@ -147,6 +152,7 @@ public class ReportService {
         Report report = reportRepository.findById(id)
                 .orElseThrow(() -> new ReportException(StatusCode.REPORT_NOT_FOUND));
 
+        log.info("[{}] 신고대상 글 삭제 id: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), report.getId());
         report.deleteReportTarget();
 
     }

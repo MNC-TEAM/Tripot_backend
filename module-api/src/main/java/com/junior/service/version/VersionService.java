@@ -29,6 +29,7 @@ public class VersionService {
                 .forceUpdate(versionDto.forceUpdate())
                 .build();
 
+        log.info("[{}] 버전 저장 version: {}, 플랫폼: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), version.getVersion(), version.getPlatform());
         versionRepository.save(version);
     }
 
@@ -40,6 +41,7 @@ public class VersionService {
         boolean forceUpdate = false;
         boolean requireUpdate = false;
 
+        log.debug("[{}] 버전 저장 최신 버전: {}, 사용자 버전: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), latestVersion.getVersion(), version);
         if (version.compareTo(latestVersion.getVersion()) < 0) {
             requireUpdate = true;
             if (latestVersion.getForceUpdate()) {

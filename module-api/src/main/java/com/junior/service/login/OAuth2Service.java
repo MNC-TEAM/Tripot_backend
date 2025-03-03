@@ -96,6 +96,7 @@ public class OAuth2Service {
 
     private OAuth2UserInfo generateOAuth2UserInfo(OAuth2LoginDto oAuth2LoginDto, OAuth2Provider provider) {
         //소셜 로그인 전략 설정
+        log.info("[{}] 소셜 로그인 전략 설정 및 정보 추출", Thread.currentThread().getStackTrace()[1].getMethodName());
         return oAuth2MemberStrategies.stream()
                 .filter(oAuth2MemberStrategy -> oAuth2MemberStrategy.isTarget(provider))
                 .findAny()
