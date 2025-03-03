@@ -32,11 +32,7 @@ public class ApiLogAspect {
     private void service() {
     }
 
-    @Pointcut("execution(* com.junior.repository..*.*(..))")
-    private void repository() {
-    }
-
-    @Around("controller() || service() || repository()")
+    @Around("controller() || service()")
     public Object inAndOutLog(ProceedingJoinPoint joinPoint) throws Throwable {
         String className = joinPoint.getSignature().getDeclaringTypeName();
         String methodName = joinPoint.getSignature().getName();
