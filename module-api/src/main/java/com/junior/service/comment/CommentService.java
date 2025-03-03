@@ -8,7 +8,7 @@ import com.junior.dto.comment.CreateCommentDto;
 import com.junior.dto.comment.ResponseChildCommentDto;
 import com.junior.dto.comment.ResponseMyCommentDto;
 import com.junior.dto.comment.ResponseParentCommentDto;
-import com.junior.event.CommentFcmEvent;
+import com.junior.event.comment.CommentFcmEvent;
 import com.junior.exception.CommentNotFoundException;
 import com.junior.exception.StatusCode;
 import com.junior.exception.StoryNotFoundException;
@@ -65,8 +65,11 @@ public class CommentService {
         commentRepository.save(comment);
 
         // 스토리 작성자 != 댓글 작성자 -> 알림 생성
-        if (!findStory.getMember().getId().equals(findMember.getId()))
+        if (!findStory.getMember().getId().equals(findMember.getId())) {
             notificationService.saveNotification(findStory.getMember(), findMember.getProfileImage(), comment.getContent(), findStory.getId(), NotificationType.COMMENT);
+
+            eventPublisher.publishEvent(new CommentFcmEvent(comment, findMember));
+        }
     }
 
     public Slice<ResponseParentCommentDto> findParentCommentByStoryId(UserPrincipal userPrincipal, Long storyId, Long cursorId, int size) {

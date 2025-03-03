@@ -1,4 +1,4 @@
-package com.junior.event;
+package com.junior.event.comment;
 
 import com.junior.domain.member.Member;
 import com.junior.domain.story.Comment;
@@ -12,8 +12,4 @@ public class CommentFcmEvent {
 
     private Comment comment;
     private Member author;
-
-    public boolean isCommentAuthorAndStoryAuthorSame(Long storyAuthorId) {
-        return !storyAuthorId.equals(author.getId());
-    }
 }

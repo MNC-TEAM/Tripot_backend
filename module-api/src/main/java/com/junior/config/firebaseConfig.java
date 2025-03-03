@@ -14,8 +14,7 @@ import java.nio.file.Paths;
 public class firebaseConfig {
     @PostConstruct
     public void init() throws IOException {
-
-        String path = Paths.get("/tripot-534cb-firebase-adminsdk-au4ch-b8effba143.json").toAbsolutePath().toString();
+        String path = Paths.get("/tripot-dev-firebase-adminsdk-key.json").toAbsolutePath().toString();
         FileInputStream serviceAccount = new FileInputStream(path);
 
         FirebaseOptions options = FirebaseOptions.builder()

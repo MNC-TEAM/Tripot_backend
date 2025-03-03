@@ -1,13 +1,14 @@
 package com.junior.service.member;
 
 import com.junior.domain.member.Member;
+import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
-import com.junior.dto.member.ActivateMemberDto;
-import com.junior.dto.member.CheckActiveMemberDto;
-import com.junior.dto.member.MemberInfoDto;
-import com.junior.dto.member.UpdateNicknameDto;
+import com.junior.domain.member.SignUpType;
+import com.junior.dto.member.*;
+import com.junior.dto.qna.QnaAdminDto;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.StatusCode;
+import com.junior.page.PageCustom;
 import com.junior.repository.member.MemberRepository;
 import com.junior.security.UserPrincipal;
 import com.junior.service.BaseServiceTest;
@@ -18,13 +19,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -407,6 +413,41 @@ class MemberServiceTest extends BaseServiceTest {
                 .hasMessageContaining(StatusCode.INVALID_MEMBER_STATUS.getCustomMessage());
 
 
+    }
+    
+    @Test
+    @DisplayName("회원 리스트 조회 - 회원 리스트를 정상적으로 조회할 수 있어야 함")        
+    public void findMembers() throws Exception {
+        //given
+        PageRequest pageRequest = PageRequest.of(1, 20);
+        PageRequest pageableAfterFind = PageRequest.of(0, 20);
+        String q = "";
+
+        List<MemberListResponseDto> dtoList = new ArrayList<>();
+
+        for (int i = 1; i <= 10; i++) {
+            dtoList.add(
+                    MemberListResponseDto.builder()
+                            .id((long) i)
+                            .signUpType(SignUpType.KAKAO)
+                            .status(MemberStatus.ACTIVE)
+                            .nickname("사용자 " + i)
+                            .build()
+
+            );
+        }
+
+        PageImpl<MemberListResponseDto> pageList = new PageImpl<>(dtoList, pageableAfterFind, 10);
+
+        given(memberRepository.findMember(any(Pageable.class), anyString())).willReturn(pageList);
+
+        //when
+        PageCustom<MemberListResponseDto> result = memberService.findMembers(pageRequest, q);
+
+        //then
+        assertThat(result.getContent().size()).isEqualTo(10);
+        assertThat(result.getPageable().getNumber()).isEqualTo(1);
+        
     }
 
 

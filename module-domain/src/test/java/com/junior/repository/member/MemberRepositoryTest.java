@@ -5,14 +5,18 @@ import com.junior.domain.member.Member;
 import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
 import com.junior.domain.member.SignUpType;
+import com.junior.dto.member.MemberListResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -80,6 +84,75 @@ class MemberRepositoryTest {
                 .isInstanceOf(NoSuchElementException.class);
 
         assertThat(existMember.get().getUsername()).isEqualTo("KAKAO 3748293466");
+
+
+    }
+
+    @Test
+    @DisplayName("회원 리스트 조회 - 회원 정보를 정상적으로 가져올 수 있어야 함")
+    public void findMembers() throws Exception {
+        //given
+        for (int i = 1; i <= 30; i++) {
+            Member member = Member.builder()
+                    .status(MemberStatus.ACTIVE)
+                    .nickname("사용자 " + i)
+                    .username("사용자 " + i)
+                    .role(MemberRole.USER)
+                    .signUpType(SignUpType.KAKAO)
+                    .build();
+
+            memberRepository.save(member);
+
+        }
+
+        PageRequest pageRequest = PageRequest.of(0, 20);
+        String q = "";
+
+        //when
+        Page<MemberListResponseDto> result = memberRepository.findMember(pageRequest, q);
+
+        //then
+        List<MemberListResponseDto> content = result.getContent();
+
+        assertThat(result.getTotalElements()).isEqualTo(31);
+        assertThat(content.size()).isEqualTo(20);
+        assertThat(content.get(0).id()).isEqualTo(31);
+        assertThat(content.get(content.size()-1).id()).isEqualTo(12);
+
+
+
+    }
+
+    @Test
+    @DisplayName("회원 리스트 조회 - 닉네임 검색이 정상적으로 동작해야 함")
+    public void findMembersByNickname() throws Exception {
+        //given
+        for (int i = 1; i <= 10; i++) {
+            Member member = Member.builder()
+                    .status(MemberStatus.ACTIVE)
+                    .nickname("사용자 " + i)
+                    .username("사용자 " + i)
+                    .role(MemberRole.USER)
+                    .signUpType(SignUpType.KAKAO)
+                    .build();
+
+            memberRepository.save(member);
+
+        }
+
+        PageRequest pageRequest = PageRequest.of(0, 20);
+        String q = "닉";
+
+        //when
+        Page<MemberListResponseDto> result = memberRepository.findMember(pageRequest, q);
+
+        //then
+        List<MemberListResponseDto> content = result.getContent();
+
+        assertThat(content.size()).isEqualTo(1);
+        assertThat(content.get(0).id()).isEqualTo(1);
+        assertThat(content.get(0).nickname()).isEqualTo("테스트닉");
+
 
 
     }

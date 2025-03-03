@@ -1,25 +1,34 @@
 package com.junior.controller.member;
 
 import com.junior.controller.BaseControllerTest;
-import com.junior.dto.member.ActivateMemberDto;
-import com.junior.dto.member.CheckActiveMemberDto;
-import com.junior.dto.member.MemberInfoDto;
-import com.junior.dto.member.UpdateNicknameDto;
+import com.junior.domain.member.MemberStatus;
+import com.junior.domain.member.SignUpType;
+import com.junior.dto.member.*;
 import com.junior.exception.StatusCode;
+import com.junior.page.PageCustom;
 import com.junior.security.UserPrincipal;
+import com.junior.security.WithMockCustomAdmin;
 import com.junior.security.WithMockCustomUser;
 import com.junior.service.member.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -234,6 +243,46 @@ class MemberControllerTest extends BaseControllerTest {
         );
 
         return profileImg;
+
+    }
+
+    @Test
+    @DisplayName("회원 정보 조회 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomAdmin
+    public void findMembers() throws Exception {
+        //given
+        PageRequest pageable = PageRequest.of(0, 20);
+        String q = "";
+
+        List<MemberListResponseDto> content = new ArrayList<>();
+
+        content.add(
+                MemberListResponseDto
+                        .builder()
+                        .id(1L)
+                        .signUpType(SignUpType.KAKAO)
+                        .status(MemberStatus.ACTIVE)
+                        .nickname("닉네임")
+                        .createdDate(LocalDateTime.MIN)
+                        .build()
+        );
+
+        given(memberService.findMembers(any(Pageable.class), anyString())).willReturn(new PageCustom<>(content, pageable, 0));
+        //when
+
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/members")
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.GET_MEMBERS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.GET_MEMBERS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.pageable.number").value(1));
+
 
     }
 

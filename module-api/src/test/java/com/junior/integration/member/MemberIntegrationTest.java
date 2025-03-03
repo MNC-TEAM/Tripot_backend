@@ -9,6 +9,7 @@ import com.junior.dto.member.UpdateNicknameDto;
 import com.junior.exception.StatusCode;
 import com.junior.integration.BaseIntegrationTest;
 import com.junior.repository.member.MemberRepository;
+import com.junior.security.WithMockCustomAdmin;
 import com.junior.security.WithMockCustomPreactiveUser;
 import com.junior.security.WithMockCustomUser;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,9 +53,12 @@ public class MemberIntegrationTest extends BaseIntegrationTest {
     void init() throws MalformedURLException {
         Member preactiveTestMember = createPreactiveTestMember();
         Member activeTestMember = createActiveTestMember();
+        Member testAdmin = createAdmin();
 
         memberRepository.save(preactiveTestMember);
         memberRepository.save(activeTestMember);
+        memberRepository.save(testAdmin);
+
 
         given(amazonS3Client.getUrl(any(), any())).willReturn(new URL("https://aws.com/new-url"));
     }
@@ -270,6 +274,29 @@ public class MemberIntegrationTest extends BaseIntegrationTest {
         //회원 정보에 변경된 url이 저장되어야 함
         Member member = memberRepository.findById(2L).get();
         assertThat(member.getProfileImage()).isEqualTo("https://aws.com/new-url");
+
+    }
+
+    @Test
+    @DisplayName("회원 리스트 조회 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomAdmin
+    public void findMembers() throws Exception {
+        //given
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/members")
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.GET_MEMBERS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.GET_MEMBERS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.pageable.number").value(1))
+                .andExpect(jsonPath("$.data.content[0].nickname").value("테스트사용자닉네임"));
 
     }
 

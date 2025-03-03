@@ -1,14 +1,14 @@
 package com.junior.controller.member;
 
 import com.junior.controller.api.MemberApi;
-import com.junior.dto.member.ActivateMemberDto;
-import com.junior.dto.member.CheckActiveMemberDto;
-import com.junior.dto.member.MemberInfoDto;
-import com.junior.dto.member.UpdateNicknameDto;
+import com.junior.dto.member.*;
+import com.junior.page.PageCustom;
 import com.junior.response.CommonResponse;
 import com.junior.security.UserPrincipal;
 import com.junior.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -113,6 +113,17 @@ public class MemberController implements MemberApi {
 
 
         return CommonResponse.success(UPDATE_PROFILE_IMAGE_MEMBER, null);
+    }
+
+    /**
+     * 관리자용 회원 정보 조회 기능
+     * @param pageable
+     * @param q
+     * @return 회원 리스트
+     */
+    @GetMapping("/api/v1/admin/members")
+    public CommonResponse<PageCustom<MemberListResponseDto>> findMembers(@PageableDefault(size = 20, page = 1) Pageable pageable, @RequestParam(value = "q", defaultValue = "") String q) {
+        return CommonResponse.success(GET_MEMBERS, memberService.findMembers(pageable, q));
     }
 
 }

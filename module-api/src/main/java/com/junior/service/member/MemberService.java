@@ -2,17 +2,18 @@ package com.junior.service.member;
 
 import com.junior.domain.member.Member;
 import com.junior.domain.member.MemberStatus;
-import com.junior.dto.member.ActivateMemberDto;
-import com.junior.dto.member.CheckActiveMemberDto;
-import com.junior.dto.member.MemberInfoDto;
-import com.junior.dto.member.UpdateNicknameDto;
+import com.junior.dto.member.*;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.StatusCode;
+import com.junior.page.PageCustom;
 import com.junior.repository.member.MemberRepository;
 import com.junior.security.UserPrincipal;
 import com.junior.service.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -112,6 +113,15 @@ public class MemberService {
                 .profileImageUrl(member.getProfileImage())
                 .build();
 
+    }
+
+    public PageCustom<MemberListResponseDto> findMembers(Pageable pageable, String q) {
+
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
+
+        Page<MemberListResponseDto> result = memberRepository.findMember(pageRequest, q);
+
+        return new PageCustom<>(result.getContent(), result.getPageable(), result.getTotalElements());
     }
 
     @Transactional
