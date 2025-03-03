@@ -36,24 +36,21 @@ public class MemberService {
 
 
         if (member.getStatus() != MemberStatus.PREACTIVE) {
-            log.warn("[{}] Invalid member = {} member.status = {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername(), member.getStatus());
             throw new NotValidMemberException(StatusCode.INVALID_MEMBER_STATUS);
         }
 
-        log.info("[{}}] target: {} nickname: {}, location: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername(), activateMemberDto.nickname(), activateMemberDto.recommendLocation());
+        log.info("[{}] 회원 활성화 target: {} nickname: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername(), activateMemberDto.nickname());
         member.activateMember(activateMemberDto);
 
     }
 
     public CheckActiveMemberDto checkActiveMember(UserPrincipal principal) {
 
-        log.debug("[{}] MemberService 회원 조회", Thread.currentThread().getStackTrace()[1].getMethodName());
+        log.debug("[{}] 회원 조회", Thread.currentThread().getStackTrace()[1].getMethodName());
 
         Member member = memberRepository.findById(principal.getMember().getId()).orElseThrow(
                 () -> new NotValidMemberException(StatusCode.INVALID_MEMBER)
         );
-
-        log.debug("[{}] MemberService 회원 조회 성공 username: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername());
 
         CheckActiveMemberDto checkActiveMemberDto = CheckActiveMemberDto.builder()
                 .isActivate(member.getStatus() == MemberStatus.ACTIVE)
@@ -65,7 +62,7 @@ public class MemberService {
     }
 
     public Boolean checkDuplicateNickname(String nickname) {
-        log.info("[checkDuplicateNickname] target nickname: {}", nickname);
+        log.info("[{}] target nickname: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), nickname);
         return memberRepository.existsByNickname(nickname);
     }
 
@@ -76,7 +73,6 @@ public class MemberService {
         );
 
         if (member.getStatus() != MemberStatus.ACTIVE) {
-            log.warn("[{}] Invalid member = {} member.status = {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername(), member.getStatus());
             throw new NotValidMemberException(StatusCode.INVALID_MEMBER_STATUS);
         }
 
@@ -85,7 +81,7 @@ public class MemberService {
 
         //프로필 사진을 업데이트 하기 위해 기존 이미지를 삭제
         if (member.getProfileImage() != null) {
-            log.info("[{}] delete profile image target: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername());
+            log.info("[{}] 프로필 사진 제거 target: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername());
             s3Service.deleteProfileImage(member.getProfileImage());
             member.deleteProfile();
         }
@@ -104,7 +100,6 @@ public class MemberService {
         );
 
         if (member.getStatus() != MemberStatus.ACTIVE) {
-            log.warn("[{}] Invalid member = {} member.status = {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername(), member.getStatus());
             throw new NotValidMemberException(StatusCode.INVALID_MEMBER_STATUS);
         }
 
@@ -132,7 +127,6 @@ public class MemberService {
         );
 
         if (member.getStatus() != MemberStatus.ACTIVE) {
-            log.warn("[{}] Invalid member = {} member.status = {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername(), member.getStatus());
             throw new NotValidMemberException(StatusCode.INVALID_MEMBER_STATUS);
         }
 
@@ -147,11 +141,10 @@ public class MemberService {
         );
 
         if (member.getStatus() != MemberStatus.ACTIVE) {
-            log.warn("[{}] Invalid member = {} member.status = {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername(), member.getStatus());
             throw new NotValidMemberException(StatusCode.INVALID_MEMBER_STATUS);
         }
 
-        log.info("[{}] target: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername());
+        log.info("[{}] 회원 탈퇴 target: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername());
         member.deleteMember();
 
     }

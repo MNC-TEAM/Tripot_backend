@@ -58,6 +58,7 @@ public class AppleOAuth2LoginStrategy implements OAuth2MemberStrategy {
         // jwt 헤더를 파싱한다.
         Map<String, String> headers = null;
         try {
+            log.debug("[{}] 헤더 파싱", Thread.currentThread().getStackTrace()[1].getMethodName());
             headers = jwtUtil.parseHeaders(identityToken);
         } catch (JsonProcessingException e) {
             log.error("[{}] error: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), e.getMessage());
@@ -66,12 +67,14 @@ public class AppleOAuth2LoginStrategy implements OAuth2MemberStrategy {
         // 공개키를 생성한다
         PublicKey publicKey = null;
         try {
+            log.debug("[{}] 공개 키 생성", Thread.currentThread().getStackTrace()[1].getMethodName());
             publicKey = applePublicKeyGenerator.generatePublicKey(headers, getAppleAuthPublicKey());
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             log.error("[{}] error: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), e.getMessage());
             throw new CustomException(StatusCode.OAUTH2_LOGIN_FAILURE);
         }
         // 토큰의 signature를 검사하고 Claim 을 반환받는다.
+        log.debug("[{}] 애플 토큰 검증 및 claim 생성", Thread.currentThread().getStackTrace()[1].getMethodName());
         Claims tokenClaims = jwtUtil.getTokenClaims(identityToken, publicKey);
         // Verify that the iss field contains https://appleid.apple.com
         if (!pkHost.equals(tokenClaims.getIssuer())) {

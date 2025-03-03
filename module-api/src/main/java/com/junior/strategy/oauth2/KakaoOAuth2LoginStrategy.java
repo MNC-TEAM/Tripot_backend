@@ -14,6 +14,7 @@ public class KakaoOAuth2LoginStrategy implements OAuth2MemberStrategy {
 
     @Override
     public OAuth2UserInfo getOAuth2UserInfo(OAuth2LoginDto oAuth2LoginDto) {
+        log.debug("[{}] 카카오 유저 정보 생성", Thread.currentThread().getStackTrace()[1].getMethodName());
         return OAuth2UserInfo.builder()
                 .id(oAuth2LoginDto.id())
                 .nickname(oAuth2LoginDto.nickname())
