@@ -82,7 +82,7 @@ public class NoticeRepositoryImpl implements NoticeRepositoryCustom {
 
         List<NoticeUserDto> resultList = queryFactory.select(
                         new QNoticeUserDto(
-                                notice.id, notice.title, notice.content, notice.createdDate
+                                notice.id, notice.title, notice.content, notice.createdDate, notice.isHtml
                         )
                 )
                 .from(notice)

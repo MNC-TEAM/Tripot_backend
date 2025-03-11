@@ -65,7 +65,7 @@ public class NoticeAdminIntegrationTest extends BaseIntegrationTest {
     void saveNotice() throws Exception {
 
         //given
-        CreateNoticeDto createNoticeDto = new CreateNoticeDto("title 101", "content 101");
+        CreateNoticeDto createNoticeDto = new CreateNoticeDto("title 101", "content 101", true);
         String content = objectMapper.writeValueAsString(createNoticeDto);
 
         //when
@@ -91,6 +91,7 @@ public class NoticeAdminIntegrationTest extends BaseIntegrationTest {
 
         assertThat(newNotice.getTitle()).isEqualTo("title 101");
         assertThat(newNotice.getContent()).isEqualTo("content 101");
+        assertThat(newNotice.getIsHtml()).isTrue();
 
 
     }
@@ -183,7 +184,7 @@ public class NoticeAdminIntegrationTest extends BaseIntegrationTest {
 
         //given
         Long noticeId = 20L;
-        UpdateNoticeDto updateNoticeDto = new UpdateNoticeDto("new title", "new content");
+        UpdateNoticeDto updateNoticeDto = new UpdateNoticeDto("new title", "new content", true);
         String content = objectMapper.writeValueAsString(updateNoticeDto);
 
         //when
@@ -208,6 +209,7 @@ public class NoticeAdminIntegrationTest extends BaseIntegrationTest {
 
         assertThat(updatedNotice.getTitle()).isEqualTo("new title");
         assertThat(updatedNotice.getContent()).isEqualTo("new content");
+        assertThat(updatedNotice.getIsHtml()).isTrue();
 
     }
 

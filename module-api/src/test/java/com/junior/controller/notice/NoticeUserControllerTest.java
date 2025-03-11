@@ -44,7 +44,7 @@ class NoticeUserControllerTest extends BaseControllerTest {
 
         List<NoticeUserDto> result = new ArrayList<>();
 
-        result.add(new NoticeUserDto(1L, "title", "content", LocalDateTime.MIN));
+        result.add(new NoticeUserDto(1L, "title", "content", LocalDateTime.MIN, true));
 
         given(noticeUserService.findNotice(cursorId, size)).willReturn(new SliceImpl<>(result, pageable, false));
 

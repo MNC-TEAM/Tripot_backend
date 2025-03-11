@@ -2,6 +2,7 @@ package com.junior.dto.notice;
 
 public record CreateNoticeDto(
         String title,
-        String content
+        String content,
+        Boolean isHtml
 ) {
 }

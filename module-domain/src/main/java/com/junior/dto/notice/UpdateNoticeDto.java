@@ -3,6 +3,7 @@ package com.junior.dto.notice;
 
 public record UpdateNoticeDto(
         String title,
-        String content
+        String content,
+        Boolean isHtml
 ) {
 }

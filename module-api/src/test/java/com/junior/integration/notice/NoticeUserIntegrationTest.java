@@ -43,6 +43,7 @@ public class NoticeUserIntegrationTest extends BaseIntegrationTest {
                     .title("공지사항 " + i)
                     .content("내용 " + i)
                     .member(testAdmin)
+                    .isHtml(i % 2 != 0)         //홀수 공지면 true, 짝수 공지면 false
                     .build();
 
             noticeRepository.save(notice);
@@ -79,7 +80,8 @@ public class NoticeUserIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.pageable.pageSize").value(5))
                 .andExpect(jsonPath("$.data.content[0].title").value("공지사항 100"))
-                .andExpect(jsonPath("$.data.content[0].content").value("내용 100"));
+                .andExpect(jsonPath("$.data.content[0].content").value("내용 100"))
+                .andExpect(jsonPath("$.data.content[0].isHtml").value(false));
 
 
     }
@@ -112,7 +114,8 @@ public class NoticeUserIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.pageable.pageSize").value(5))
                 .andExpect(jsonPath("$.data.content[0].title").value("공지사항 89"))
-                .andExpect(jsonPath("$.data.content[0].content").value("내용 89"));
+                .andExpect(jsonPath("$.data.content[0].content").value("내용 89"))
+                .andExpect(jsonPath("$.data.content[0].isHtml").value(true));
 
 
     }
@@ -146,7 +149,8 @@ public class NoticeUserIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.data.pageable.pageSize").value(5))
                 .andExpect(jsonPath("$.data.last").value(true))
                 .andExpect(jsonPath("$.data.content[0].title").value("공지사항 2"))
-                .andExpect(jsonPath("$.data.content[0].content").value("내용 2"));
+                .andExpect(jsonPath("$.data.content[0].content").value("내용 2"))
+                .andExpect(jsonPath("$.data.content[0].isHtml").value(false));
 
 
     }

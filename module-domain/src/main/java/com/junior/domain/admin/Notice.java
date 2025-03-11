@@ -26,6 +26,9 @@ public class Notice extends BaseEntity {
     @Builder.Default
     private Boolean isDeleted = false;
 
+    @Builder.Default
+    private Boolean isHtml = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -37,5 +40,6 @@ public class Notice extends BaseEntity {
     public void update(UpdateNoticeDto updateNoticeDto) {
         this.title = updateNoticeDto.title();
         this.content = updateNoticeDto.content();
+        this.isHtml = updateNoticeDto.isHtml();
     }
 }

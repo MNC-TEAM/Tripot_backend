@@ -42,7 +42,7 @@ class NoticeAdminControllerTest extends BaseControllerTest {
     void saveNotice() throws Exception {
 
         //given
-        CreateNoticeDto createNoticeDto = new CreateNoticeDto("title", "content");
+        CreateNoticeDto createNoticeDto = new CreateNoticeDto("title", "content", true);
         String content = objectMapper.writeValueAsString(createNoticeDto);
 
         //when
@@ -143,7 +143,7 @@ class NoticeAdminControllerTest extends BaseControllerTest {
 
         //given
         Long noticeId = 1L;
-        UpdateNoticeDto updateNoticeDto = new UpdateNoticeDto("new title", "new content");
+        UpdateNoticeDto updateNoticeDto = new UpdateNoticeDto("new title", "new content", true);
         String content = objectMapper.writeValueAsString(updateNoticeDto);
 
         //when

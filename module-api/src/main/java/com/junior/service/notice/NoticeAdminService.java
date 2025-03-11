@@ -40,6 +40,7 @@ public class NoticeAdminService {
         Notice notice = Notice.builder()
                 .title(createNoticeDto.title())
                 .content(createNoticeDto.content())
+                .isHtml(createNoticeDto.isHtml())
                 .member(author)
                 .build();
 

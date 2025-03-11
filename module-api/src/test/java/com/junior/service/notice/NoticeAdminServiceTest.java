@@ -51,7 +51,7 @@ class NoticeAdminServiceTest extends BaseServiceTest {
     void saveNotice() {
 
         //given
-        CreateNoticeDto createNoticeDto = new CreateNoticeDto("title", "content");
+        CreateNoticeDto createNoticeDto = new CreateNoticeDto("title", "content", true);
         Member testMember = createActiveTestMember();
         UserPrincipal principal = new UserPrincipal(testMember);
 
@@ -71,7 +71,7 @@ class NoticeAdminServiceTest extends BaseServiceTest {
     void failToSaveNoticeIfMemberNotFound() {
 
         //given
-        CreateNoticeDto createNoticeDto = new CreateNoticeDto("title", "content");
+        CreateNoticeDto createNoticeDto = new CreateNoticeDto("title", "content", true);
         Member testMember = createActiveTestMember();
         UserPrincipal principal = new UserPrincipal(testMember);
 
@@ -216,7 +216,7 @@ class NoticeAdminServiceTest extends BaseServiceTest {
 
         //given
         Long updateNoticeId = 1L;
-        UpdateNoticeDto updateNoticeDto = new UpdateNoticeDto("new title", "new content");
+        UpdateNoticeDto updateNoticeDto = new UpdateNoticeDto("new title", "new content", true);
 
         Notice notice = createNotice();
 
@@ -240,7 +240,7 @@ class NoticeAdminServiceTest extends BaseServiceTest {
 
         //given
         Long updateNoticeId = 1L;
-        UpdateNoticeDto updateNoticeDto = new UpdateNoticeDto("new title", "new content");
+        UpdateNoticeDto updateNoticeDto = new UpdateNoticeDto("new title", "new content", true);
 
 
         //when, then

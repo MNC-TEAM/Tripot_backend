@@ -10,14 +10,16 @@ public record NoticeUserDto(
         Long id,
         String title,
         String content,
-        LocalDateTime createdDate
+        LocalDateTime createdDate,
+        Boolean isHtml
 ) {
 
     @QueryProjection
-    public NoticeUserDto(Long id, String title, String content, LocalDateTime createdDate) {
+    public NoticeUserDto(Long id, String title, String content, LocalDateTime createdDate, Boolean isHtml) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.createdDate = createdDate;
+        this.isHtml = isHtml;
     }
 }
