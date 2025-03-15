@@ -13,10 +13,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class AdminStoryService {
 
     private final StoryRepository storyRepository;
@@ -44,6 +46,7 @@ public class AdminStoryService {
         return AdminStoryDetailDto.from(findStory);
     }
 
+    @Transactional
     public void deleteStory(Long storyId) {
         Story findStory = storyRepository.findById(storyId)
                 .orElseThrow(() -> new StoryNotFoundException(StatusCode.STORY_NOT_FOUND));
