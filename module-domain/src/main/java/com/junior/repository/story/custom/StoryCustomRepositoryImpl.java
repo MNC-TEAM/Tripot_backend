@@ -241,7 +241,8 @@ public class StoryCustomRepositoryImpl implements StoryCustomRepository {
         String randomCity = query.select(story.city)
                 .from(story)
                 .where(
-                        getDeleteCondition()
+                        getDeleteCondition(),
+                        story.isHidden.eq(false)
                 )
                 .orderBy(Expressions.numberTemplate(Double.class, "RAND()").asc())
                 .limit(1L)
