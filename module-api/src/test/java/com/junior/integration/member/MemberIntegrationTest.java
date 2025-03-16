@@ -297,7 +297,9 @@ public class MemberIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.GET_MEMBERS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.pageable.number").value(1))
-                .andExpect(jsonPath("$.data.content[0].nickname").value("테스트사용자닉네임"));
+                .andExpect(jsonPath("$.data.content[1].nickname").value("테스트사용자닉네임"))
+                .andExpect(jsonPath("$.data.content[1].role").value("USER"));
+
 
     }
 
