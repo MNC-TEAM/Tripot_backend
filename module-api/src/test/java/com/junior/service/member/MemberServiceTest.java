@@ -251,6 +251,8 @@ class MemberServiceTest extends BaseServiceTest {
         //then
         assertThat(memberInfo.nickname()).isEqualTo("테스트사용자닉네임");
         assertThat(memberInfo.profileImageUrl()).isEqualTo("s3.com/testProfile");
+        assertThat(memberInfo.role()).isEqualTo(MemberRole.USER);
+
 
 
     }

@@ -31,11 +31,12 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
                                 member.nickname,
                                 member.signUpType,
                                 member.status,
-                                member.createdDate
+                                member.createdDate,
+                                member.role
                         )
                 )
                 .from(member)
-                .where(queryContains(q), member.role.eq(MemberRole.USER))
+                .where(queryContains(q))
                 .orderBy(member.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

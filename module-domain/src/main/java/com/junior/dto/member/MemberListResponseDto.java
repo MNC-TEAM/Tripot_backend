@@ -1,5 +1,6 @@
 package com.junior.dto.member;
 
+import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
 import com.junior.domain.member.SignUpType;
 import com.querydsl.core.annotations.QueryProjection;
@@ -13,15 +14,17 @@ public record MemberListResponseDto(
         String nickname,
         SignUpType signUpType,
         MemberStatus status,
-        LocalDateTime createdDate
+        LocalDateTime createdDate,
+        MemberRole role
 ) {
 
     @QueryProjection
-    public MemberListResponseDto(Long id, String nickname, SignUpType signUpType, MemberStatus status, LocalDateTime createdDate) {
+    public MemberListResponseDto(Long id, String nickname, SignUpType signUpType, MemberStatus status, LocalDateTime createdDate, MemberRole role) {
         this.id = id;
         this.nickname = nickname;
         this.signUpType = signUpType;
         this.status = status;
         this.createdDate = createdDate;
+        this.role = role;
     }
 }

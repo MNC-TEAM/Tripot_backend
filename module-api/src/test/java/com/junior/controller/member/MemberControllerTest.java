@@ -1,6 +1,7 @@
 package com.junior.controller.member;
 
 import com.junior.controller.BaseControllerTest;
+import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
 import com.junior.domain.member.SignUpType;
 import com.junior.dto.member.*;
@@ -134,7 +135,7 @@ class MemberControllerTest extends BaseControllerTest {
         //given
         UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        MemberInfoDto memberInfoDto = new MemberInfoDto("nickname", "s3.com/profileImage");
+        MemberInfoDto memberInfoDto = new MemberInfoDto("nickname", "s3.com/profileImage", MemberRole.USER);
         given(memberService.getMemberInfo(principal)).willReturn(memberInfoDto);
 
         //when
@@ -151,7 +152,8 @@ class MemberControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.GET_MEMBER_INFO.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.nickname").value("nickname"))
-                .andExpect(jsonPath("$.data.profileImageUrl").value("s3.com/profileImage"));
+                .andExpect(jsonPath("$.data.profileImageUrl").value("s3.com/profileImage"))
+                .andExpect(jsonPath("$.data.role").value("USER"));
 
 
     }
