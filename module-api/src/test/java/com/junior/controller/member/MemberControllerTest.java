@@ -286,5 +286,35 @@ class MemberControllerTest extends BaseControllerTest {
 
     }
 
+    @Test
+    @DisplayName("Role 변경 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomAdmin
+    public void changeRole() throws Exception {
+        //given
+        Long memberId = 2L;
+        UpdateMemberRoleDto updateMemberRoleDto = UpdateMemberRoleDto.builder()
+                .role("admin")
+                .build();
+
+        String content = objectMapper.writeValueAsString(updateMemberRoleDto);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                patch("/api/v1/admin/members/{member_id}/roles", memberId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.UPDATE_MEMBER_ROLE.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.UPDATE_MEMBER_ROLE.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+
+    }
+
 
 }

@@ -126,4 +126,15 @@ public class MemberController implements MemberApi {
         return CommonResponse.success(GET_MEMBERS, memberService.findMembers(pageable, q));
     }
 
+    /**
+     * 관리자용 회원 ROLE 변경 기능
+     * @param id
+     * @param updateMemberRoleDto
+     */
+    @PatchMapping("/api/v1/admin/members/{member_id}/roles")
+    public CommonResponse<Object> changeRole(@PathVariable(value = "member_id") Long id, @RequestBody UpdateMemberRoleDto updateMemberRoleDto) {
+        memberService.changeRole(id, updateMemberRoleDto);
+        return CommonResponse.success(UPDATE_MEMBER_ROLE, null);
+    }
+
 }

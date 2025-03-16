@@ -3,8 +3,10 @@ package com.junior.integration.member;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.junior.controller.member.MemberController;
 import com.junior.domain.member.Member;
+import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
 import com.junior.dto.member.ActivateMemberDto;
+import com.junior.dto.member.UpdateMemberRoleDto;
 import com.junior.dto.member.UpdateNicknameDto;
 import com.junior.exception.StatusCode;
 import com.junior.integration.BaseIntegrationTest;
@@ -297,6 +299,41 @@ public class MemberIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.pageable.number").value(1))
                 .andExpect(jsonPath("$.data.content[0].nickname").value("테스트사용자닉네임"));
+
+    }
+
+    @Test
+    @DisplayName("Role 변경 - Role이 정상적으로 변경되어야 함")
+    @WithMockCustomAdmin
+    public void changeRole() throws Exception {
+        //given
+        Long memberId = 2L;
+        UpdateMemberRoleDto updateMemberRoleDto = UpdateMemberRoleDto.builder()
+                .role("admin")
+                .build();
+
+        String content = objectMapper.writeValueAsString(updateMemberRoleDto);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                patch("/api/v1/admin/members/{member_id}/roles", memberId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.UPDATE_MEMBER_ROLE.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.UPDATE_MEMBER_ROLE.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+
+        Member newAdmin = memberRepository.findById(2L).orElseThrow(RuntimeException::new);
+
+        assertThat(newAdmin.getRole()).isEqualTo(MemberRole.ADMIN);
+
 
     }
 

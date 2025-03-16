@@ -5,7 +5,6 @@ import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
 import com.junior.domain.member.SignUpType;
 import com.junior.dto.member.*;
-import com.junior.dto.qna.QnaAdminDto;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.StatusCode;
 import com.junior.page.PageCustom;
@@ -414,9 +413,9 @@ class MemberServiceTest extends BaseServiceTest {
 
 
     }
-    
+
     @Test
-    @DisplayName("회원 리스트 조회 - 회원 리스트를 정상적으로 조회할 수 있어야 함")        
+    @DisplayName("회원 리스트 조회 - 회원 리스트를 정상적으로 조회할 수 있어야 함")
     public void findMembers() throws Exception {
         //given
         PageRequest pageRequest = PageRequest.of(1, 20);
@@ -447,7 +446,48 @@ class MemberServiceTest extends BaseServiceTest {
         //then
         assertThat(result.getContent().size()).isEqualTo(10);
         assertThat(result.getPageable().getNumber()).isEqualTo(1);
-        
+
+    }
+
+    @Test
+    @DisplayName("Role 변경 - 기능이 정상적으로 동작해야 함")
+    public void changeRole() throws Exception {
+        //given
+        Member testMember = createActiveTestMember();
+        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(testMember));
+
+        Long memberId = 2L;
+        UpdateMemberRoleDto updateMemberRoleDto = UpdateMemberRoleDto.builder()
+                .role("admin")
+                .build();
+
+        //when
+        memberService.changeRole(memberId, updateMemberRoleDto);
+
+        //then
+        Member updatedMember = memberRepository.findById(2L).orElseThrow(RuntimeException::new);
+
+        assertThat(updatedMember.getRole()).isEqualTo(MemberRole.ADMIN);
+
+
+    }
+
+    @Test
+    @DisplayName("Role 변경 - 회원을 찾을 수 없을 경우 예외를 발생시켜야 함")
+    public void failToChangeRoleIfMemberNotFound() throws Exception {
+        //given
+        Member testMember = createActiveTestMember();
+
+        Long memberId = 2L;
+        UpdateMemberRoleDto updateMemberRoleDto = UpdateMemberRoleDto.builder()
+                .role("admin")
+                .build();
+
+        //when, then
+        assertThatThrownBy(() -> memberService.changeRole(memberId, updateMemberRoleDto))
+                .isInstanceOf(NotValidMemberException.class)
+                .hasMessageContaining(StatusCode.INVALID_MEMBER.getCustomMessage());
+
     }
 
 

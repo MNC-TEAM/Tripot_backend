@@ -1,6 +1,7 @@
 package com.junior.service.member;
 
 import com.junior.domain.member.Member;
+import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
 import com.junior.dto.member.*;
 import com.junior.exception.NotValidMemberException;
@@ -146,6 +147,21 @@ public class MemberService {
 
         log.info("[{}] 회원 탈퇴 target: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername());
         member.deleteMember();
+
+    }
+
+    @Transactional
+    public void changeRole(Long id, UpdateMemberRoleDto updateMemberRoleDto) {
+
+        Member member = memberRepository.findById(id).orElseThrow(
+                () -> new NotValidMemberException(StatusCode.INVALID_MEMBER)
+        );
+
+        MemberRole newRole = MemberRole.valueOf(updateMemberRoleDto.role().toUpperCase());
+
+        log.info("[{}] 회원 Role 변경 target: {} {} -> {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername(), member.getRole(), newRole);
+
+        member.setRole(newRole);
 
     }
 }
