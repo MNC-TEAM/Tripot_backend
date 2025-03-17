@@ -107,6 +107,7 @@ public class MemberService {
         return MemberInfoDto.builder()
                 .nickname(member.getNickname())
                 .profileImageUrl(member.getProfileImage())
+                .role(member.getRole())
                 .build();
 
     }
