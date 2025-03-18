@@ -4,10 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -32,11 +29,11 @@ public class ApiLogAspect {
     private void service() {
     }
 
-    @Pointcut("execution(* com.junior.repository..*.*(..))")
-    private void repository() {
+    @Pointcut("execution(* com.junior.strategy..*.*(..))")
+    private void strategy(){
     }
 
-    @Around("controller() || service() || repository()")
+    @Around("controller() || service()")
     public Object inAndOutLog(ProceedingJoinPoint joinPoint) throws Throwable {
         String className = joinPoint.getSignature().getDeclaringTypeName();
         String methodName = joinPoint.getSignature().getName();
@@ -77,5 +74,11 @@ public class ApiLogAspect {
                 params.get("method"));
     }
 
+    @AfterThrowing(pointcut = "service() || strategy()", throwing = "ex")
+    public void errorLog(JoinPoint joinPoint, Throwable ex) {
+        String className = joinPoint.getSignature().getDeclaringTypeName();
+        String methodName = joinPoint.getSignature().getName();
+        log.error("[{}.{}] error: {}", className, methodName, ex.getMessage());
+    }
 
 }

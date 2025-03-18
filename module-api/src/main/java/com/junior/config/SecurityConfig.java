@@ -92,6 +92,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/admin/**").hasRole(MemberRole.ADMIN.name())
                         .requestMatchers("/createTestMember").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/actuator/prometheus").permitAll()
                         .anyRequest().authenticated());
 
 

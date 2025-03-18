@@ -64,7 +64,7 @@ public class MemberIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @DisplayName("회원 활성화가 - 기능이 정상적으로 동작해야 함")
+    @DisplayName("회원 활성화 - 기능이 정상적으로 동작해야 함")
     @WithMockCustomPreactiveUser
     public void activeMember() throws Exception {
         //given
@@ -209,7 +209,8 @@ public class MemberIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.GET_MEMBER_INFO.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.nickname").value("테스트사용자닉네임"))
-                .andExpect(jsonPath("$.data.profileImageUrl").value("s3.com/testProfile"));
+                .andExpect(jsonPath("$.data.profileImageUrl").value("s3.com/testProfile"))
+                .andExpect(jsonPath("$.data.role").value("USER"));
 
 
     }
@@ -296,7 +297,9 @@ public class MemberIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.GET_MEMBERS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.pageable.number").value(1))
-                .andExpect(jsonPath("$.data.content[0].nickname").value("테스트사용자닉네임"));
+                .andExpect(jsonPath("$.data.content[1].nickname").value("테스트사용자닉네임"))
+                .andExpect(jsonPath("$.data.content[1].role").value("USER"));
+
 
     }
 
