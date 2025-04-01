@@ -6,10 +6,16 @@ import com.junior.page.PageCustom;
 import com.junior.response.CommonResponse;
 import com.junior.security.UserPrincipal;
 import com.junior.service.member.MemberService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +23,7 @@ import static com.junior.exception.StatusCode.*;
 
 @RestController
 @RequiredArgsConstructor
+//@Validated
 public class MemberController implements MemberApi {
 
     private final MemberService memberService;
@@ -28,10 +35,9 @@ public class MemberController implements MemberApi {
      * @return 회원 활성화 완료
      */
     @PatchMapping("/api/v1/members/activate")
-    public CommonResponse<String> activeMember(@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody ActivateMemberDto activateMemberDto) {
+    public CommonResponse<String> activeMember(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @RequestBody ActivateMemberDto activateMemberDto) {
         memberService.activateMember(userPrincipal, activateMemberDto);
 
-//        return CommonResponse.of(ACTIVATE_MEMBER.getCustomCode(), ACTIVATE_MEMBER.getCustomMessage(), null);
         return CommonResponse.success(ACTIVATE_MEMBER, null);
     }
 
@@ -42,9 +48,8 @@ public class MemberController implements MemberApi {
      * @return false: valid하지 않은 닉네임(중복 닉네임이 존재함)
      */
     @GetMapping("/api/v1/members/nicknames/check-valid")
-    public CommonResponse<Boolean> checkNicknameValid(@RequestParam("nickname") String nickname) {
+    public CommonResponse<Boolean> checkNicknameValid(@RequestParam("nickname")  String nickname) {
 
-//        return CommonResponse.of(CHECK_NICKNAME_MEMBER.getCustomCode(), CHECK_NICKNAME_MEMBER.getCustomMessage(), !memberService.checkDuplicateNickname(nickname));
         return CommonResponse.success(CHECK_NICKNAME_MEMBER, !memberService.checkDuplicateNickname(nickname));
     }
 
@@ -68,7 +73,6 @@ public class MemberController implements MemberApi {
      */
     @GetMapping("/api/v1/members")
     public CommonResponse<MemberInfoDto> getMemberInfo(@AuthenticationPrincipal UserPrincipal principal) {
-
         return CommonResponse.success(GET_MEMBER_INFO, memberService.getMemberInfo(principal));
     }
 
@@ -79,10 +83,8 @@ public class MemberController implements MemberApi {
      * @return 회원 닉네임 변경 성공
      */
     @PatchMapping("/api/v1/members/nicknames")
-    public CommonResponse<String> changeNickname(@AuthenticationPrincipal UserPrincipal principal, @RequestBody UpdateNicknameDto updateNicknameDto) {
-
+    public CommonResponse<String> changeNickname(@AuthenticationPrincipal UserPrincipal principal, @Valid @RequestBody UpdateNicknameDto updateNicknameDto) {
         memberService.updateNickname(principal, updateNicknameDto);
-
 
         return CommonResponse.success(UPDATE_NICKNAME_MEMBER, null);
     }
@@ -96,7 +98,6 @@ public class MemberController implements MemberApi {
     public CommonResponse<String> deleteMember(@AuthenticationPrincipal UserPrincipal principal) {
         memberService.deleteMember(principal);
 
-//        return CommonResponse.of(DELETE_MEMBER.getCustomCode(), DELETE_MEMBER.getCustomMessage(), null);
         return CommonResponse.success(DELETE_MEMBER, null);
     }
 
@@ -108,9 +109,7 @@ public class MemberController implements MemberApi {
      */
     @PatchMapping("/api/v1/members/profile-images")
     public CommonResponse<String> changeProfileImage(@AuthenticationPrincipal UserPrincipal principal, @RequestPart(value = "profileimg") MultipartFile profileImage) {
-
         memberService.updateProfileImage(principal, profileImage);
-
 
         return CommonResponse.success(UPDATE_PROFILE_IMAGE_MEMBER, null);
     }

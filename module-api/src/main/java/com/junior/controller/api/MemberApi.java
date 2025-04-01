@@ -11,6 +11,10 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -59,7 +63,7 @@ public interface MemberApi {
                                             )
                                     }))
             })
-    public CommonResponse<String> activeMember(@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody ActivateMemberDto activateMemberDto);
+    public CommonResponse<String> activeMember(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @RequestBody ActivateMemberDto activateMemberDto);
 
     @Operation(summary = "유효 닉네임 확인", description = "닉네임의 사용가능여부를 받습니다.",
             responses = {
@@ -76,7 +80,9 @@ public interface MemberApi {
                                                     """
                                     )))
             })
-    public CommonResponse<Boolean> checkNicknameValid(@RequestParam("nickname") String nickname);
+    public CommonResponse<Boolean> checkNicknameValid(@Size(max = 25, message = "닉네임은 25자까지 가능합니다.")
+                                                          @NotNull(message = "닉네임은 필수 값입니다.")
+                                                          @Pattern(regexp = "^[가-힣a-zA-Z0-9\\s]+$", message = "잘못된 닉네임 형식입니다.") String nickname);
 
     @Operation(summary = "회원 조회", description = "회원의 정보를 조회합니다.",
             responses = {
@@ -161,7 +167,7 @@ public interface MemberApi {
                                             )
                                     }))
             })
-    public CommonResponse<String> changeNickname(@AuthenticationPrincipal UserPrincipal principal, @RequestBody UpdateNicknameDto updateNicknameDto);
+    public CommonResponse<String> changeNickname(@AuthenticationPrincipal UserPrincipal principal, @Valid @RequestBody UpdateNicknameDto updateNicknameDto);
 
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴합니다.",
             responses = {
