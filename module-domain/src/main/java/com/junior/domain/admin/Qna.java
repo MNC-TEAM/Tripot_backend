@@ -20,7 +20,7 @@ public class Qna extends BaseEntity {
 
     private String question;
 
-    @Column(length = 1000)
+    @Column(length = 65535)
     private String answer;
 
     @Builder.Default
