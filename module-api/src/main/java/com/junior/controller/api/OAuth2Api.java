@@ -3,7 +3,9 @@ package com.junior.controller.api;
 import com.junior.dto.jwt.RefreshTokenDto;
 import com.junior.dto.member.CheckActiveMemberDto;
 import com.junior.dto.oauth2.OAuth2LoginDto;
+import com.junior.dto.oauth2.OAuth2Provider;
 import com.junior.response.CommonResponse;
+import com.junior.validator.EnumValue;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -11,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -32,7 +35,7 @@ public interface OAuth2Api {
                                                     """
                                     )))
             })
-    public CommonResponse<CheckActiveMemberDto> oauth2Login(HttpServletResponse response, @RequestBody OAuth2LoginDto oAuth2LoginDto, @PathVariable("provider") String provider);
+    public CommonResponse<CheckActiveMemberDto> oauth2Login(HttpServletResponse response, @Valid @RequestBody OAuth2LoginDto oAuth2LoginDto, @EnumValue(enumClass = OAuth2Provider.class, ignoreCase = true) @PathVariable("provider") String provider);
 
 
     @Operation(summary = "로그 아웃", description = "로그 아웃을 진행합니다.",
@@ -50,5 +53,5 @@ public interface OAuth2Api {
                                                     """
                                     )))
             })
-    public CommonResponse<Boolean> logout(@RequestBody RefreshTokenDto refreshTokenDto);
+    public CommonResponse<Boolean> logout(@Valid @RequestBody RefreshTokenDto refreshTokenDto);
 }

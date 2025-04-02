@@ -23,7 +23,7 @@ import static com.junior.exception.StatusCode.*;
 
 @RestController
 @RequiredArgsConstructor
-//@Validated
+@Validated
 public class MemberController implements MemberApi {
 
     private final MemberService memberService;
@@ -48,7 +48,7 @@ public class MemberController implements MemberApi {
      * @return false: valid하지 않은 닉네임(중복 닉네임이 존재함)
      */
     @GetMapping("/api/v1/members/nicknames/check-valid")
-    public CommonResponse<Boolean> checkNicknameValid(@RequestParam("nickname")  String nickname) {
+    public CommonResponse<Boolean> checkNicknameValid(@RequestParam("nickname") String nickname) {
 
         return CommonResponse.success(CHECK_NICKNAME_MEMBER, !memberService.checkDuplicateNickname(nickname));
     }
