@@ -20,7 +20,7 @@ public class Notice extends BaseEntity {
 
     private String title;
 
-    @Column(length = 1000)
+    @Column(length = 65535)
     private String content;
 
     @Builder.Default

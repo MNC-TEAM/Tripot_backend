@@ -2,12 +2,13 @@ package com.junior.response;
 
 
 import com.junior.exception.StatusCode;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 
 @Getter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class CommonResponse<T> {
     private String customCode;
     private String customMessage;

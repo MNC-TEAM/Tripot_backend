@@ -9,7 +9,9 @@ import com.junior.exception.StatusCode;
 import com.junior.response.CommonResponse;
 import com.junior.service.login.OAuth2Service;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 public class OAuth2Controller implements OAuth2Api {
 
     private final OAuth2Service oAuth2Service;
@@ -31,7 +34,7 @@ public class OAuth2Controller implements OAuth2Api {
     }
 
     @PostMapping("/api/v1/logout")
-    public CommonResponse<Boolean> logout(@RequestBody RefreshTokenDto refreshTokenDto) {
+    public CommonResponse<Boolean> logout(@Valid @RequestBody RefreshTokenDto refreshTokenDto) {
 
         oAuth2Service.logout(refreshTokenDto);
 
