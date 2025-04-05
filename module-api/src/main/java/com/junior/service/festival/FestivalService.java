@@ -73,11 +73,20 @@ public class FestivalService {
 
         for (FestivalApiItem festivalInfo : item) {
 
+
             if (!festivalRepository.existsByContentId(Long.valueOf(festivalInfo.getContentid()))) {
+                String fullLocation = festivalInfo.getAddr1() + " " + festivalInfo.getAddr2();
+
+                String[] split = fullLocation.split(" ");
+                String city = split[0];
+                String location = fullLocation.substring(city.length()).trim();
+
+
                 Festival festival = Festival.builder()
                         .contentId(Long.valueOf(festivalInfo.getContentid()))
                         .title(festivalInfo.getTitle())
-                        .location(festivalInfo.getAddr1() + " " + festivalInfo.getAddr2())
+                        .city(city)
+                        .location(location)
                         .imgUrl(festivalInfo.getFirstimage())
                         .startDate(stringToDate(festivalInfo.getEventstartdate()))
                         .endDate(stringToDate(festivalInfo.getEventenddate()))

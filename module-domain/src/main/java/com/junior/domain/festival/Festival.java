@@ -22,6 +22,9 @@ public class Festival {
     //축제명
     private String title;
 
+    //개최 지역
+    private String city;
+
     //개최 장소
     private String location;
 
