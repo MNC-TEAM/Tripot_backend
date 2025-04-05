@@ -1,6 +1,7 @@
 package com.junior.service.festival;
 
 import com.junior.domain.festival.Festival;
+import com.junior.dto.festival.FestivalCityCountDto;
 import com.junior.dto.festival.api.FestivalApiItem;
 import com.junior.dto.festival.api.FestivalApiResponse;
 import com.junior.exception.CustomException;
@@ -98,8 +99,19 @@ public class FestivalService {
 
             }
         }
+    }
 
+    public List<FestivalCityCountDto> findFestivalCityCount(){
+        List<FestivalCityCountDto> festivalCityCount = festivalRepository.findFestivalCityCount();
 
+        long sum = festivalCityCount.stream()
+                .mapToLong(FestivalCityCountDto::count)
+                .sum();
+
+        festivalCityCount.add(FestivalCityCountDto.builder()
+                .city("all").count(sum).build());
+
+        return festivalCityCount;
     }
 
     /**

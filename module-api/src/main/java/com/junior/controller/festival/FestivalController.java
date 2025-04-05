@@ -33,4 +33,9 @@ public class FestivalController {
 
     }
 
+    @GetMapping("/api/v1/festivals/cities/count")
+    public ResponseEntity<CommonResponse<Object>> findFestivalCityCount(){
+        return ResponseEntity.status(StatusCode.FESTIVAL_FIND_CITY_COUNT_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_FIND_CITY_COUNT_SUCCESS, festivalService.findFestivalCityCount()));
+    }
+
 }

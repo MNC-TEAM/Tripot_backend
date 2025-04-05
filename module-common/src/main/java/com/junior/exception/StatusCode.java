@@ -144,6 +144,7 @@ public enum StatusCode {
 
     //축제 저장 관련 성공 코드
     FESTIVAL_CREATE_SUCCESS(201, "FESTIVAL-SUCCESS-001", ""),
+    FESTIVAL_FIND_CITY_COUNT_SUCCESS(200, "FESTIVAL-SUCCESS-002", ""),
 
     //축제 저장 관련 실패 코드
     FESTIVAL_CREATE_FAIL(500, "FESTIVAL-FAIL-001", "축제 정보 불러오기에 실패했습니다."),
