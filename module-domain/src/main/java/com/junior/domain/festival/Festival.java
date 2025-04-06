@@ -37,10 +37,6 @@ public class Festival {
     //축제종료일자
     private LocalDate endDate;
 
-    //축제 내용
-    @Builder.Default
-    private String detail = "";
-
 
     //개최 장소 좌표(위도, 경도)
     private Double lat;
