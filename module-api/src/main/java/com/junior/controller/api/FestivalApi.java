@@ -28,7 +28,7 @@ public interface FestivalApi {
 
     @Operation(summary = "축제 도시 개수", description = "시/도 별 축제의 개수를 응답합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "축제 데이터 저장 성공"),
+            @ApiResponse(responseCode = "200", description = "축제 개수 응답 성공"),
     })
     public ResponseEntity<CommonResponse<List<FestivalCityCountDto>>> findFestivalCityCount();
 
