@@ -1,5 +1,7 @@
 package com.junior.controller.festival;
 
+import com.junior.controller.api.FestivalApi;
+import com.junior.dto.festival.FestivalCityCountDto;
 import com.junior.exception.StatusCode;
 import com.junior.response.CommonResponse;
 import com.junior.service.festival.FestivalService;
@@ -8,15 +10,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class FestivalController {
+public class FestivalController implements FestivalApi {
 
     private final FestivalService festivalService;
 
@@ -36,7 +41,7 @@ public class FestivalController {
     }
 
     @GetMapping("/api/v1/festivals/cities/count")
-    public ResponseEntity<CommonResponse<Object>> findFestivalCityCount(){
+    public ResponseEntity<CommonResponse<List<FestivalCityCountDto>>> findFestivalCityCount(){
         return ResponseEntity.status(StatusCode.FESTIVAL_FIND_CITY_COUNT_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_FIND_CITY_COUNT_SUCCESS, festivalService.findFestivalCityCount()));
     }
 
