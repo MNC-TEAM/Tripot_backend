@@ -37,7 +37,7 @@ public class FestivalService {
      * 관리자 권한으로만 수행 가능
      */
     @Transactional
-    public void saveFestival(){
+    public void saveFestival(String eventStartDate, String eventEndDate){
 
         DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(festivalUrl);
         uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.VALUES_ONLY);
@@ -55,11 +55,12 @@ public class FestivalService {
                         .path("/searchFestival1")
                         .queryParam("numOfRows", 2000)
                         .queryParam("pageNo", 1)
-                        .queryParam("MobileOS", "IOS")
+                        .queryParam("MobileOS", "IOS")              //TODO: 서로 다른 환경에 대한 처리 -> 운영 계정 승인 시 고려
                         .queryParam("MobileApp", "Tripot")
                         .queryParam("_type", "json")
                         .queryParam("listYN", "Y")
-                        .queryParam("eventStartDate", "20250101")           //TODO: 이거 고려
+                        .queryParam("eventStartDate", eventStartDate)
+                        .queryParam("eventEndDate", eventEndDate)
                         .queryParam("serviceKey", festivalApiKey)
                         .build(true))
                 .retrieve()
@@ -78,9 +79,10 @@ public class FestivalService {
             if (!festivalRepository.existsByContentId(Long.valueOf(festivalInfo.getContentid()))) {
                 String fullLocation = festivalInfo.getAddr1() + " " + festivalInfo.getAddr2();
 
+
                 String[] split = fullLocation.split(" ");
-                String city = split[0];
-                String location = fullLocation.substring(city.length()).trim();
+                String city = split.length != 0 ? split[0] : "";
+                String location = split.length != 0 ? fullLocation.substring(city.length()).trim() : "";
 
 
                 Festival festival = Festival.builder()

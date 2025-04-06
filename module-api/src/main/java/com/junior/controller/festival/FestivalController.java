@@ -10,6 +10,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,8 +27,9 @@ public class FestivalController {
      */
     @Secured("ADMIN")
     @PostMapping("/api/v1/festivals")
-    public ResponseEntity<CommonResponse<Object>> saveFestival() {
-        festivalService.saveFestival();
+    public ResponseEntity<CommonResponse<Object>> saveFestival(@RequestParam(value = "eventStartDate") String eventStartDate,
+                                                               @RequestParam(value = "eventEndDate", required = false, defaultValue = "") String eventEndDate) {
+        festivalService.saveFestival(eventStartDate, eventEndDate);
 
         return ResponseEntity.status(StatusCode.FESTIVAL_CREATE_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_CREATE_SUCCESS, null));
 
