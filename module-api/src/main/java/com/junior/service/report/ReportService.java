@@ -138,6 +138,7 @@ public class ReportService {
         return new PageCustom<>(result, report.getPageable(), report.getTotalElements());
     }
 
+    @Transactional
     public void confirmReport(Long id) {
 
         Report report = reportRepository.findById(id)
@@ -147,6 +148,7 @@ public class ReportService {
         report.confirmReport();
     }
 
+    @Transactional
     public void deleteReportTarget(Long id) {
 
         Report report = reportRepository.findById(id)
