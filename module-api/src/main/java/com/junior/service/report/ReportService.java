@@ -144,6 +144,14 @@ public class ReportService {
         Report report = reportRepository.findById(id)
                 .orElseThrow(() -> new ReportException(StatusCode.REPORT_NOT_FOUND));
 
+        if (report.getReportStatus() == ReportStatus.CONFIRMED) {
+            throw new ReportException(StatusCode.REPORT_ALREADY_CONFIRMED);
+        } else if (report.getReportStatus() == ReportStatus.DELETED ||
+                (report.getReportType()==ReportType.STORY && report.getStory().getIsDeleted()) ||
+                (report.getReportType()==ReportType.COMMENT && report.getComment().getIsDeleted())) {
+            throw new ReportException(StatusCode.REPORT_TARGET_ALREADY_DELETED);
+        }
+
         log.info("[{}] 신고내역 확인 id: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), report.getId());
         report.confirmReport();
     }
@@ -153,6 +161,14 @@ public class ReportService {
 
         Report report = reportRepository.findById(id)
                 .orElseThrow(() -> new ReportException(StatusCode.REPORT_NOT_FOUND));
+
+        if (report.getReportStatus() == ReportStatus.CONFIRMED) {
+            throw new ReportException(StatusCode.REPORT_ALREADY_CONFIRMED);
+        } else if (report.getReportStatus() == ReportStatus.DELETED ||
+                (report.getReportType()==ReportType.STORY && report.getStory().getIsDeleted()) ||
+                (report.getReportType()==ReportType.COMMENT && report.getComment().getIsDeleted())) {
+            throw new ReportException(StatusCode.REPORT_TARGET_ALREADY_DELETED);
+        }
 
         log.info("[{}] 신고대상 글 삭제 id: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), report.getId());
         report.deleteReportTarget();
