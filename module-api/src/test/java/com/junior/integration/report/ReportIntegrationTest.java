@@ -9,6 +9,7 @@ import com.junior.domain.report.ReportType;
 import com.junior.domain.story.Comment;
 import com.junior.domain.story.Story;
 import com.junior.dto.report.CreateReportDto;
+import com.junior.dto.story.AdminStoryDetailDto;
 import com.junior.exception.StatusCode;
 import com.junior.integration.BaseIntegrationTest;
 import com.junior.repository.comment.CommentRepository;
@@ -25,8 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -234,6 +240,63 @@ public class ReportIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.data.content[0].reportStatus").value("UNCONFIRMED"))
                 .andExpect(jsonPath("$.data.content[0].storyId").value(1));
 
+
+    }
+
+    @Test
+    @DisplayName("신고 대상 스토리 세부정보 조회 - 정상적으로 적동되어야 함")
+    @WithMockCustomAdmin
+    void findReportTargetStoryDetail() throws Exception {
+
+        //given
+        Long reportId = 1L;
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/reports/{report_id}/stories", reportId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.REPORT_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.REPORT_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.title").value("testStoryTitle"))
+                .andExpect(jsonPath("$.data.city").value("city"))
+                .andExpect(jsonPath("$.data.isDeleted").value(false));
+
+        Report resultReport = reportRepository.findById(reportId).orElseThrow(RuntimeException::new);
+
+        assertThat(resultReport.getReportStatus()).isEqualTo(ReportStatus.CONFIRMED);
+    }
+
+    @Test
+    @DisplayName("신고 대상 스토리 세부정보 조회 - 댓글 신고내역으로 요청이 들어올 경우 예외를 발생시켜야 함")
+    @WithMockCustomAdmin
+    void failToFindReportTargetStoryDetailIfReportTypeIsComment() throws Exception {
+
+        //given
+        Long reportId = 2L;
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/reports/{report_id}/stories", reportId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.REPORT_NOT_VALID.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.REPORT_NOT_VALID.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(false))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+
+        Report resultReport = reportRepository.findById(reportId).orElseThrow(RuntimeException::new);
 
     }
 

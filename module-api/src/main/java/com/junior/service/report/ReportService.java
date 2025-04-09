@@ -8,6 +8,7 @@ import com.junior.domain.report.ReportType;
 import com.junior.domain.story.Comment;
 import com.junior.domain.story.Story;
 import com.junior.dto.report.*;
+import com.junior.dto.story.AdminStoryDetailDto;
 import com.junior.exception.*;
 import com.junior.page.PageCustom;
 import com.junior.repository.comment.CommentRepository;
@@ -136,6 +137,22 @@ public class ReportService {
                 .collect(Collectors.toList());
 
         return new PageCustom<>(result, report.getPageable(), report.getTotalElements());
+    }
+
+    @Transactional
+    public AdminStoryDetailDto findReportDetail(Long reportId){
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow((() -> new ReportException(StatusCode.REPORT_NOT_FOUND)));
+
+        if (report.getReportType() != ReportType.STORY) {
+            throw new ReportException(StatusCode.REPORT_NOT_VALID);
+        }
+
+        report.confirmReport();
+
+        log.info("[{}] 신고 대상 스토리 상세 조회", Thread.currentThread().getStackTrace()[1].getMethodName());
+
+        return AdminStoryDetailDto.from(report.getStory());
     }
 
     @Transactional

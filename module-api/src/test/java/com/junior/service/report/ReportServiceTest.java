@@ -11,6 +11,7 @@ import com.junior.dto.report.CreateReportDto;
 import com.junior.dto.report.ReportDto;
 import com.junior.dto.report.ReportQueryDto;
 import com.junior.dto.report.StoryReportDto;
+import com.junior.dto.story.AdminStoryDetailDto;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.ReportException;
 import com.junior.exception.StatusCode;
@@ -413,6 +414,44 @@ class ReportServiceTest extends BaseServiceTest {
                 .isInstanceOf(ReportException.class)
                 .hasMessageContaining(StatusCode.REPORT_TYPE_NOT_VALID.getCustomMessage());
 
+    }
+
+    @Test
+    @DisplayName("신고 대상 스토리 상세 조회 - 스토리 상세 조회 기능이 정상 동작해야 함")
+    void findReportTargetStoryDetail() {
+
+        //given
+        Member testActiveMember = createActiveTestMember();
+        Story testStory = createStory(testActiveMember, "title", "city");
+
+        Report testReport = createReport(testActiveMember, ReportType.STORY, testStory);
+
+        given(reportRepository.findById(anyLong())).willReturn(Optional.ofNullable(testReport));
+
+        //when
+        AdminStoryDetailDto result = reportService.findReportDetail(1L);
+
+        //then
+        assertThat(result.city()).isEqualTo("city");
+        assertThat(result.isDeleted()).isFalse();
+    }
+
+    @Test
+    @DisplayName("신고 대상 스토리 상세 조회 - 댓글 신고 내역에 대해 예외를 발생시켜야 함")
+    void failToFindReportTargetStoryDetailIfReportTypeIsComment() {
+
+        //given
+        Member testActiveMember = createActiveTestMember();
+        Story testStory = createStory(testActiveMember, "title", "city");
+        Comment testComment = createComment(testActiveMember, testStory);
+        Report testReport = createReport(testActiveMember, ReportType.COMMENT, testComment);
+
+        given(reportRepository.findById(anyLong())).willReturn(Optional.ofNullable(testReport));
+
+        //when
+        assertThatThrownBy(() -> reportService.findReportDetail(1L))
+                .isInstanceOf(ReportException.class)
+                .hasMessageContaining(StatusCode.REPORT_NOT_VALID.getCustomMessage());
     }
 
     @Test
