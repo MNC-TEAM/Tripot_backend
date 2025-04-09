@@ -59,7 +59,7 @@
       <img src="https://img.shields.io/badge/Amazon EC2-FF9900.svg?style=for-the-badge&logo=Amazon EC2&logoColor=white">
       <img src="https://img.shields.io/badge/docker-2496ED.svg?style=for-the-badge&logo=Amazon S3&logoColor=white">
       <img src="https://img.shields.io/badge/GitHub Actions-2088FF.svg?style=for-the-badge&logo=github actions&logoColor=white">
-        <img src="https://img.shields.io/badge/nginx-009639.svg?style=for-the-badge&logo=github actions&logoColor=white">
+      <img src="https://img.shields.io/badge/nginx-009639.svg?style=for-the-badge&logo=nginx&logoColor=white">
 </div>
 <br />
 
