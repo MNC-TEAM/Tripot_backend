@@ -2,8 +2,12 @@ package com.junior.service.festival;
 
 import com.junior.domain.festival.Festival;
 import com.junior.dto.festival.FestivalCityCountDto;
+import com.junior.dto.festival.FestivalDto;
+import com.junior.dto.festival.FestivalMapDto;
 import com.junior.dto.festival.api.FestivalApiItem;
 import com.junior.dto.festival.api.FestivalApiResponse;
+import com.junior.dto.story.GeoPointDto;
+import com.junior.dto.story.GeoRect;
 import com.junior.exception.CustomException;
 import com.junior.exception.StatusCode;
 import com.junior.repository.festival.FestivalRepository;
@@ -17,6 +21,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +41,8 @@ public class FestivalService {
      * 축제 데이터를 가져와 저장하는 기능
      * 관리자 권한으로만 수행 가능
      */
+
+    //TODO: 이거 매월 초 자동실행시켜도 무방한지 고민해보기
     @Transactional
     public void saveFestival(String eventStartDate, String eventEndDate){
 
@@ -103,6 +110,13 @@ public class FestivalService {
         }
     }
 
+    public List<FestivalMapDto> findFestivalByMap(GeoRect geoRect){
+
+        log.info("[{}] 지도 내 확인 가능한 축제 내역 조회", Thread.currentThread().getStackTrace()[1].getMethodName());
+
+        return festivalRepository.findFestivalByMap(geoRect.geoPointLt(), geoRect.geoPointRb());
+    }
+
     public List<FestivalCityCountDto> findFestivalCityCount(){
         List<FestivalCityCountDto> festivalCityCount = festivalRepository.findFestivalCityCount();
 
@@ -116,12 +130,31 @@ public class FestivalService {
         return festivalCityCount;
     }
 
+
     /**
      * @param date yyyyMMdd 형태의 문자열
      * @return 해당 일자에 맞는 LocalDate 객체
      */
     private static LocalDate stringToDate(String date) {
         return LocalDate.of(Integer.parseInt(date.substring(0, 4)), Integer.parseInt(date.substring(4, 6)), Integer.parseInt(date.substring(6, 8)));
+    }
+
+
+    /**
+     * @param startDate
+     * @param endDate
+     * @return 시작일과 종료일을 ****년 **월 **일 - ****년 **월 **일 형태로 리턴
+     */
+    private static String durationToString(String startDate, String endDate) {
+
+        //시작일 및 종료일이 8자리 숫자가 아닐 경우 빈 문자열 리턴
+        if (!Pattern.matches("^[0-9]{8}", startDate) || !Pattern.matches("^[0-9]{8}", startDate)) {
+            return "";
+        }
+
+        return String.format("%d년 %d월 %d일 - %d년 %d월 %d일", Integer.parseInt(startDate.substring(0, 4)), Integer.parseInt(startDate.substring(4, 6)), Integer.parseInt(startDate.substring(6, 8)),
+                Integer.parseInt(endDate.substring(0, 4)), Integer.parseInt(endDate.substring(4, 6)), Integer.parseInt(endDate.substring(6, 8)));
+
     }
 
 }

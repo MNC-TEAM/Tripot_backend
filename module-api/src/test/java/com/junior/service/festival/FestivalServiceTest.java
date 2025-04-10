@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.junior.domain.festival.Festival;
 import com.junior.dto.festival.FestivalCityCountDto;
+import com.junior.dto.festival.FestivalMapDto;
 import com.junior.dto.festival.api.*;
+import com.junior.dto.story.GeoPointDto;
+import com.junior.dto.story.GeoRect;
 import com.junior.repository.festival.FestivalRepository;
 import com.junior.service.BaseServiceTest;
 import okhttp3.mockwebserver.MockResponse;
@@ -57,6 +60,39 @@ class FestivalServiceTest extends BaseServiceTest {
 
         //then
         assertThat(result.get(2).count()).isEqualTo(9);
+
+    }
+
+    @Test
+    @DisplayName("지도 좌표 기반 축제 리스트 출력 - 해당 조건에 맞는 축제의 ID와 좌표를 정상적으로 리턴해야 함")
+    void findFestivalByMap() throws Exception {
+        //given
+        GeoRect geoRect = GeoRect.builder()
+                .geoPointLt(GeoPointDto.builder()
+                        .latitude(35.0)
+                        .longitude(125.0).build())
+                .geoPointRb(GeoPointDto.builder()
+                        .latitude(39.0)
+                        .longitude(129.0).build())
+                .build();
+
+        List<FestivalMapDto> festivalMapDtoList = new ArrayList<>();
+        for (int i = 1; i <= 4; i++) {
+            festivalMapDtoList.add(FestivalMapDto.builder()
+                    .id((long) i)
+                    .lat(37.0)
+                    .logt(127.0)
+                    .build());
+        }
+
+        given(festivalRepository.findFestivalByMap(geoRect.geoPointLt(), geoRect.geoPointRb()))
+                .willReturn(festivalMapDtoList);
+
+        //when
+        List<FestivalMapDto> result = festivalService.findFestivalByMap(geoRect);
+
+        //then
+        assertThat(result.size()).isEqualTo(4);
 
     }
 }

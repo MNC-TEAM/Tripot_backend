@@ -10,4 +10,5 @@ import java.util.List;
 public interface FestivalRepositoryCustom {
 
     List<FestivalCityCountDto> findFestivalCityCount();
+    List<FestivalMapDto> findFestivalByMap(GeoPointDto geoPointLt, GeoPointDto geoPointRb);
 }

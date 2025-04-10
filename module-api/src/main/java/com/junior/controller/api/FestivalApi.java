@@ -1,6 +1,8 @@
 package com.junior.controller.api;
 
 import com.junior.dto.festival.FestivalCityCountDto;
+import com.junior.dto.festival.FestivalMapDto;
+import com.junior.dto.story.GeoRect;
 import com.junior.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -9,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -31,5 +34,10 @@ public interface FestivalApi {
             @ApiResponse(responseCode = "200", description = "축제 개수 응답 성공"),
     })
     public ResponseEntity<CommonResponse<List<FestivalCityCountDto>>> findFestivalCityCount();
+
+
+    @Operation(summary = "지도 기반 축제 리스트 조회", description = "지도의 좌측 최상단, 우측 최하단 좌표를 받아 이 사이에 해당하는 축제의 위치를 리턴합니다.")
+    @ApiResponse(responseCode = "200", description = "지도 기반 축제 리스트 조회 성공")
+    ResponseEntity<CommonResponse<List<FestivalMapDto>>> findFestivalByMap(@RequestBody GeoRect geoRect);
 
 }

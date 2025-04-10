@@ -3,6 +3,9 @@ package com.junior.integration.festival;
 import com.junior.domain.festival.Festival;
 import com.junior.domain.member.Member;
 import com.junior.dto.festival.FestivalCityCountDto;
+import com.junior.dto.festival.FestivalMapDto;
+import com.junior.dto.story.GeoPointDto;
+import com.junior.dto.story.GeoRect;
 import com.junior.exception.StatusCode;
 import com.junior.integration.BaseIntegrationTest;
 import com.junior.repository.festival.FestivalRepository;
@@ -50,7 +53,7 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
         memberRepository.save(activeTestMember2);
 
         for (int i = 1; i <= 9; i++) {
-            Festival festival = createFestival("축제 " + i, i % 2 == 1 ? "서울특별시" : "강원특별자치도");
+            Festival festival = createFestival("축제 " + i, i % 2 == 1 ? "서울특별시" : "강원특별자치도", i % 2 == 1 ? 37.0 : 40.0, i % 2 == 1 ? 125.0 : 130.0);
 
             festivalRepository.save(festival);
         }
@@ -84,6 +87,40 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.data[1].count").value(5))
                 .andExpect(jsonPath("$.data[2].city").value("all"))
                 .andExpect(jsonPath("$.data[2].count").value(9));
+
+    }
+
+    @Test
+    @DisplayName("지도 좌표 기반 축제 리스트 조회 - 응답이 정상적으로 반환되어야 함")
+    public void findFestivalByMap() throws Exception {
+        //given
+        GeoRect geoRect = GeoRect.builder()
+                .geoPointLt(GeoPointDto.builder()
+                        .latitude(35.0)
+                        .longitude(125.0).build())
+                .geoPointRb(GeoPointDto.builder()
+                        .latitude(39.0)
+                        .longitude(129.0).build())
+                .build();
+
+        String content = objectMapper.writeValueAsString(geoRect);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/festivals/map")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_FIND_MAP_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_FIND_MAP_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.length()").value(5));
 
     }
 }

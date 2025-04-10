@@ -1,8 +1,7 @@
 package com.junior.repository.festival;
 
-import com.junior.dto.festival.FestivalCityCountDto;
-import com.junior.dto.festival.FestivalDto;
-import com.junior.dto.festival.QFestivalCityCountDto;
+import com.junior.dto.festival.*;
+import com.junior.dto.story.GeoPointDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,7 @@ import static com.junior.domain.festival.QFestival.festival;
 
 @RequiredArgsConstructor
 @Slf4j
-public class FestivalRepositoryImpl implements FestivalRepositoryCustom{
+public class FestivalRepositoryImpl implements FestivalRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
@@ -34,4 +33,29 @@ public class FestivalRepositoryImpl implements FestivalRepositoryCustom{
                 .fetch();
     }
 
+    @Override
+    public List<FestivalMapDto> findFestivalByMap(GeoPointDto geoPointLt, GeoPointDto geoPointRb) {
+        return queryFactory
+                .select(
+                        new QFestivalMapDto(
+                                festival.id, festival.lat, festival.logt
+                        )
+                )
+                .from(festival)
+                .where(festival.lat.between(
+                                Math.min(geoPointLt.latitude(), geoPointRb.latitude()),
+                                Math.max(geoPointLt.latitude(), geoPointRb.latitude())
+                        ),
+                        festival.logt.between(
+                                Math.min(geoPointLt.longitude(), geoPointRb.longitude()),
+                                Math.max(geoPointLt.longitude(), geoPointRb.longitude())
+                        )
+                )
+                .fetch();
+    }
+
+    @Override
+    public Slice<FestivalDto> searchFestival(Long cursorId, int size, String city, String q) {
+        return null;
+    }
 }
