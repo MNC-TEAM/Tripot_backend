@@ -11,6 +11,7 @@ import com.junior.dto.report.CreateReportDto;
 import com.junior.dto.report.ReportDto;
 import com.junior.dto.report.ReportQueryDto;
 import com.junior.dto.report.StoryReportDto;
+import com.junior.dto.story.AdminStoryDetailDto;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.ReportException;
 import com.junior.exception.StatusCode;
@@ -416,6 +417,44 @@ class ReportServiceTest extends BaseServiceTest {
     }
 
     @Test
+    @DisplayName("신고 대상 스토리 상세 조회 - 스토리 상세 조회 기능이 정상 동작해야 함")
+    void findReportTargetStoryDetail() {
+
+        //given
+        Member testActiveMember = createActiveTestMember();
+        Story testStory = createStory(testActiveMember, "title", "city");
+
+        Report testReport = createReport(testActiveMember, ReportType.STORY, testStory);
+
+        given(reportRepository.findById(anyLong())).willReturn(Optional.ofNullable(testReport));
+
+        //when
+        AdminStoryDetailDto result = reportService.findReportTargetStoryDetail(1L);
+
+        //then
+        assertThat(result.city()).isEqualTo("city");
+        assertThat(result.isDeleted()).isFalse();
+    }
+
+    @Test
+    @DisplayName("신고 대상 스토리 상세 조회 - 댓글 신고 내역에 대해 예외를 발생시켜야 함")
+    void failToFindReportTargetStoryDetailIfReportTypeIsComment() {
+
+        //given
+        Member testActiveMember = createActiveTestMember();
+        Story testStory = createStory(testActiveMember, "title", "city");
+        Comment testComment = createComment(testActiveMember, testStory);
+        Report testReport = createReport(testActiveMember, ReportType.COMMENT, testComment);
+
+        given(reportRepository.findById(anyLong())).willReturn(Optional.ofNullable(testReport));
+
+        //when
+        assertThatThrownBy(() -> reportService.findReportTargetStoryDetail(1L))
+                .isInstanceOf(ReportException.class)
+                .hasMessageContaining(StatusCode.REPORT_NOT_VALID.getCustomMessage());
+    }
+
+    @Test
     @DisplayName("신고 확인 - 신고 상태가 확인 상태로 변경되어야 함")
     void confirmReport() {
 
@@ -453,6 +492,98 @@ class ReportServiceTest extends BaseServiceTest {
         assertThatThrownBy(() -> reportService.confirmReport(1L))
                 .isInstanceOf(ReportException.class)
                 .hasMessageContaining(StatusCode.REPORT_NOT_FOUND.getCustomMessage());
+
+
+    }
+
+    @Test
+    @DisplayName("신고 처리 - 이미 처리된 신고일 경우 예외 처리를 해야 함")
+    void failToConfirmTargetIfReportAlreadyConfirmed() {
+
+        //given
+        Member testActiveMember = createActiveTestMember();
+        Story testStory = createStory(testActiveMember, "title", "city");
+
+        Report testReport = createReport(testActiveMember, ReportType.STORY, testStory, ReportStatus.CONFIRMED);
+
+
+        given(reportRepository.findById(anyLong())).willReturn(Optional.ofNullable(testReport));
+
+
+        //when, then
+        assertThatThrownBy(() -> reportService.confirmReport(1L))
+                .isInstanceOf(ReportException.class)
+                .hasMessageContaining(StatusCode.REPORT_ALREADY_CONFIRMED.getCustomMessage());
+
+
+    }
+
+    @Test
+    @DisplayName("신고 확인 - 이미 삭제 처리된 신고일 경우 예외 처리를 해야 함")
+    void failToConfirmReportIfReportAlreadyTargetDeleted() {
+
+        //given
+        Member testActiveMember = createActiveTestMember();
+        Story testStory = createStory(testActiveMember, "title", "city");
+
+        Report testReport = createReport(testActiveMember, ReportType.STORY, testStory, ReportStatus.DELETED);
+
+
+        given(reportRepository.findById(anyLong())).willReturn(Optional.ofNullable(testReport));
+
+
+        //when, then
+        assertThatThrownBy(() -> reportService.confirmReport(1L))
+                .isInstanceOf(ReportException.class)
+                .hasMessageContaining(StatusCode.REPORT_TARGET_ALREADY_DELETED.getCustomMessage());
+
+
+    }
+
+    @Test
+    @DisplayName("신고 확인 - 이미 삭제된 스토리를 처리하려 할 경우 예외 처리를 해야 함")
+    void failToConfirmReportIfReportTargetStoryAlreadyDeleted() {
+
+        //given
+        Member testActiveMember = createActiveTestMember();
+        Story testStory = createStory(testActiveMember, "title", "city");
+        testStory.deleteStory();
+
+        Report testReport = createReport(testActiveMember, ReportType.STORY, testStory);
+
+
+        given(reportRepository.findById(anyLong())).willReturn(Optional.ofNullable(testReport));
+
+
+        //when, then
+        assertThatThrownBy(() -> reportService.confirmReport(1L))
+                .isInstanceOf(ReportException.class)
+                .hasMessageContaining(StatusCode.REPORT_TARGET_ALREADY_DELETED.getCustomMessage());
+
+
+    }
+
+    @Test
+    @DisplayName("신고 확인 - 이미 삭제된 댓글을 처리하려 할 경우 예외 처리를 해야 함")
+    void failToConfirmReportIfReportTargetCommentAlreadyDeleted() {
+
+        //given
+        Member testActiveMember = createActiveTestMember();
+        Story testStory = createStory(testActiveMember, "title", "city");
+        Comment testComment = createComment(testActiveMember, testStory);
+
+        testComment.deleteComment();
+
+        Report testReport = createReport(testActiveMember, ReportType.COMMENT, testComment);
+
+
+        given(reportRepository.findById(anyLong())).willReturn(Optional.ofNullable(testReport));
+
+
+        //when, then
+        assertThatThrownBy(() -> reportService.confirmReport(1L))
+                .isInstanceOf(ReportException.class)
+                .hasMessageContaining(StatusCode.REPORT_TARGET_ALREADY_DELETED.getCustomMessage());
 
 
     }
@@ -501,6 +632,98 @@ class ReportServiceTest extends BaseServiceTest {
 
         assertThat(resultReport.getReportStatus()).isEqualTo(ReportStatus.DELETED);
         assertThat(resultReport.getComment().getIsDeleted()).isTrue();
+
+    }
+
+    @Test
+    @DisplayName("신고 대상 삭제 - 이미 처리된 신고일 경우 예외 처리를 해야 함")
+    void failToDeleteReportTargetIfReportAlreadyConfirmed() {
+
+        //given
+        Member testActiveMember = createActiveTestMember();
+        Story testStory = createStory(testActiveMember, "title", "city");
+
+        Report testReport = createReport(testActiveMember, ReportType.STORY, testStory, ReportStatus.CONFIRMED);
+
+
+        given(reportRepository.findById(anyLong())).willReturn(Optional.ofNullable(testReport));
+
+
+        //when, then
+        assertThatThrownBy(() -> reportService.deleteReportTarget(1L))
+                .isInstanceOf(ReportException.class)
+                .hasMessageContaining(StatusCode.REPORT_ALREADY_CONFIRMED.getCustomMessage());
+
+
+    }
+
+    @Test
+    @DisplayName("신고 대상 삭제 - 이미 삭제 처리된 신고일 경우 예외 처리를 해야 함")
+    void failToDeleteReportTargetIfReportAlreadyTargetDeleted() {
+
+        //given
+        Member testActiveMember = createActiveTestMember();
+        Story testStory = createStory(testActiveMember, "title", "city");
+
+        Report testReport = createReport(testActiveMember, ReportType.STORY, testStory, ReportStatus.DELETED);
+
+
+        given(reportRepository.findById(anyLong())).willReturn(Optional.ofNullable(testReport));
+
+
+        //when, then
+        assertThatThrownBy(() -> reportService.deleteReportTarget(1L))
+                .isInstanceOf(ReportException.class)
+                .hasMessageContaining(StatusCode.REPORT_TARGET_ALREADY_DELETED.getCustomMessage());
+
+
+    }
+
+    @Test
+    @DisplayName("신고 대상 삭제 - 이미 삭제된 스토리를 처리하려 할 경우 예외 처리를 해야 함")
+    void failToDeleteReportTargetIfReportTargetStoryAlreadyDeleted() {
+
+        //given
+        Member testActiveMember = createActiveTestMember();
+        Story testStory = createStory(testActiveMember, "title", "city");
+        testStory.deleteStory();
+
+        Report testReport = createReport(testActiveMember, ReportType.STORY, testStory);
+
+
+        given(reportRepository.findById(anyLong())).willReturn(Optional.ofNullable(testReport));
+
+
+        //when, then
+        assertThatThrownBy(() -> reportService.deleteReportTarget(1L))
+                .isInstanceOf(ReportException.class)
+                .hasMessageContaining(StatusCode.REPORT_TARGET_ALREADY_DELETED.getCustomMessage());
+
+
+    }
+
+    @Test
+    @DisplayName("신고 확인 - 이미 삭제된 댓글을 처리하려 할 경우 예외 처리를 해야 함")
+    void failToDeleteReportTargetIfReportTargetCommentAlreadyDeleted() {
+
+        //given
+        Member testActiveMember = createActiveTestMember();
+        Story testStory = createStory(testActiveMember, "title", "city");
+        Comment testComment = createComment(testActiveMember, testStory);
+
+        testComment.deleteComment();
+
+        Report testReport = createReport(testActiveMember, ReportType.COMMENT, testComment);
+
+
+        given(reportRepository.findById(anyLong())).willReturn(Optional.ofNullable(testReport));
+
+
+        //when, then
+        assertThatThrownBy(() -> reportService.deleteReportTarget(1L))
+                .isInstanceOf(ReportException.class)
+                .hasMessageContaining(StatusCode.REPORT_TARGET_ALREADY_DELETED.getCustomMessage());
+
 
     }
 

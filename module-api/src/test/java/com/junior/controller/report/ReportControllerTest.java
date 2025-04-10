@@ -7,6 +7,7 @@ import com.junior.domain.report.ReportType;
 import com.junior.dto.report.CreateReportDto;
 import com.junior.dto.report.ReportDto;
 import com.junior.dto.report.StoryReportDto;
+import com.junior.dto.story.AdminStoryDetailDto;
 import com.junior.exception.StatusCode;
 import com.junior.page.PageCustom;
 import com.junior.security.WithMockCustomAdmin;
@@ -21,12 +22,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -107,6 +108,48 @@ public class ReportControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.data.pageable.number").value(1))
                 .andExpect(jsonPath("$.data.content[0].reportReason").value("스팸홍보"));
 
+
+    }
+
+    @Test
+    @DisplayName("신고 대상 스토리 상세 조회 - 응답이 반환되어야 함")
+    @WithMockCustomAdmin
+    public void findReportTargetStoryDetail() throws Exception {
+        //given
+        Long reportId = 1L;
+
+        AdminStoryDetailDto storyDetailDto = AdminStoryDetailDto.builder()
+                .id(1L)
+                .title("title")
+                .content("content")
+                .thumbnailImg("thumbnail")
+                .latitude(-10.0)
+                .longitude(10.0)
+                .city("서울")
+                .likeCnt(3L)
+                .createDate(LocalDateTime.of(2025, 1, 1, 0, 0, 0))
+                .imgUrls(new ArrayList<>())
+                .isDeleted(true)
+                .build();
+
+        given(reportService.findReportTargetStoryDetail(anyLong())).willReturn(storyDetailDto);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/reports/{report_id}/stories", reportId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.REPORT_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.REPORT_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.likeCnt").value(3L))
+                .andExpect(jsonPath("$.data.city").value("서울"))
+                .andExpect(jsonPath("$.data.isDeleted").value(true));
 
     }
 

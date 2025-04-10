@@ -9,6 +9,7 @@ import com.junior.domain.report.ReportType;
 import com.junior.domain.story.Comment;
 import com.junior.domain.story.Story;
 import com.junior.dto.report.CreateReportDto;
+import com.junior.dto.story.AdminStoryDetailDto;
 import com.junior.exception.StatusCode;
 import com.junior.integration.BaseIntegrationTest;
 import com.junior.repository.comment.CommentRepository;
@@ -25,8 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -238,12 +244,69 @@ public class ReportIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @DisplayName("신고 대상 스토리 세부정보 조회 - 정상적으로 적동되어야 함")
+    @WithMockCustomAdmin
+    void findReportTargetStoryDetail() throws Exception {
+
+        //given
+        Long reportId = 1L;
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/reports/{report_id}/stories", reportId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.REPORT_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.REPORT_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.title").value("testStoryTitle"))
+                .andExpect(jsonPath("$.data.city").value("city"))
+                .andExpect(jsonPath("$.data.isDeleted").value(false));
+
+        Report resultReport = reportRepository.findById(reportId).orElseThrow(RuntimeException::new);
+
+        assertThat(resultReport.getReportStatus()).isEqualTo(ReportStatus.CONFIRMED);
+    }
+
+    @Test
+    @DisplayName("신고 대상 스토리 세부정보 조회 - 댓글 신고내역으로 요청이 들어올 경우 예외를 발생시켜야 함")
+    @WithMockCustomAdmin
+    void failToFindReportTargetStoryDetailIfReportTypeIsComment() throws Exception {
+
+        //given
+        Long reportId = 2L;
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/reports/{report_id}/stories", reportId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.REPORT_NOT_VALID.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.REPORT_NOT_VALID.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(false))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+
+        Report resultReport = reportRepository.findById(reportId).orElseThrow(RuntimeException::new);
+
+    }
+
+    @Test
     @DisplayName("신고 확인 - 정상적으로 적동되어야 함")
     @WithMockCustomAdmin
     void confirmReport() throws Exception {
 
         //given
-        Long reportId = 1L;
+        Long reportId = 101L;
 
         Member testMember = memberRepository.findById(2L).get();
         Story testStory = storyRepository.findById(1L).get();
@@ -272,9 +335,93 @@ public class ReportIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data").value(nullValue()));
 
-        Report resultReport = reportRepository.findById(1L).orElseThrow(RuntimeException::new);
+        Report resultReport = reportRepository.findById(reportId).orElseThrow(RuntimeException::new);
 
         assertThat(resultReport.getReportStatus()).isEqualTo(ReportStatus.CONFIRMED);
+    }
+
+    @Test
+    @DisplayName("신고 확인 - 이미 처리된 스토리일 경우 예외를 발생시켜야 함")
+    @WithMockCustomAdmin
+    void failToConfirmReportIfReportAlreadyConfirmed() throws Exception {
+
+        //given
+        Long reportId = 101L;
+
+        Member testMember = memberRepository.findById(2L).get();
+        Story testStory = storyRepository.findById(1L).get();
+
+        Report report = Report.builder()
+                .member(testMember)
+                .reportType(ReportType.STORY)
+                .reportReason(ReportReason.SPAMMARKET)
+                .story(testStory)
+                .build();
+
+        report.confirmReport();
+
+        reportRepository.save(report);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                patch("/api/v1/admin/reports/{report_id}/confirm", reportId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.REPORT_ALREADY_CONFIRMED.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.REPORT_ALREADY_CONFIRMED.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(false))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+
+        Report resultReport = reportRepository.findById(reportId).orElseThrow(RuntimeException::new);
+
+        assertThat(resultReport.getReportStatus()).isEqualTo(ReportStatus.CONFIRMED);
+    }
+
+    @Test
+    @DisplayName("신고 확인 - 이미 삭제된 스토리를 처리할 경우 예외를 발생시켜야 함")
+    @WithMockCustomAdmin
+    void failToConfirmReportIfReportTargetStoryAlreadyDeleted() throws Exception {
+
+        //given
+        Long reportId = 101L;
+
+        Member testMember = memberRepository.findById(2L).get();
+        Story testStory = storyRepository.findById(1L).get();
+
+        testStory.deleteStory();
+
+        Report report = Report.builder()
+                .member(testMember)
+                .reportType(ReportType.STORY)
+                .reportReason(ReportReason.SPAMMARKET)
+                .story(testStory)
+                .build();
+
+        reportRepository.save(report);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                patch("/api/v1/admin/reports/{report_id}/confirm", reportId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.REPORT_TARGET_ALREADY_DELETED.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.REPORT_TARGET_ALREADY_DELETED.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(false))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+
+        Report resultReport = reportRepository.findById(1L).orElseThrow(RuntimeException::new);
+
+        assertThat(resultReport.getReportStatus()).isEqualTo(ReportStatus.UNCONFIRMED);
     }
 
     @Test
@@ -363,6 +510,91 @@ public class ReportIntegrationTest extends BaseIntegrationTest {
         assertThat(resultComment.getIsDeleted()).isTrue();
 
     }
+
+    @Test
+    @DisplayName("신고 대상 삭제 - 이미 처리된 스토리일 경우 예외를 발생시켜야 함")
+    @WithMockCustomAdmin
+    void failToDeleteReportTargetIfReportAlreadyConfirmed() throws Exception {
+
+        //given
+        Long reportId = 101L;
+
+        Member testMember = memberRepository.findById(2L).get();
+        Story testStory = storyRepository.findById(1L).get();
+
+        Report report = Report.builder()
+                .member(testMember)
+                .reportType(ReportType.STORY)
+                .reportReason(ReportReason.SPAMMARKET)
+                .story(testStory)
+                .build();
+
+        report.confirmReport();
+
+        reportRepository.save(report);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                patch("/api/v1/admin/reports/{report_id}/delete-target", reportId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.REPORT_ALREADY_CONFIRMED.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.REPORT_ALREADY_CONFIRMED.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(false))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+
+        Report resultReport = reportRepository.findById(reportId).orElseThrow(RuntimeException::new);
+
+        assertThat(resultReport.getReportStatus()).isEqualTo(ReportStatus.CONFIRMED);
+    }
+
+    @Test
+    @DisplayName("신고 확인 - 이미 삭제된 스토리를 처리할 경우 예외를 발생시켜야 함")
+    @WithMockCustomAdmin
+    void failToDeleteReportTargetIfReportTargetStoryAlreadyDeleted() throws Exception {
+
+        //given
+        Long reportId = 101L;
+
+        Member testMember = memberRepository.findById(2L).get();
+        Story testStory = storyRepository.findById(1L).get();
+
+        testStory.deleteStory();
+
+        Report report = Report.builder()
+                .member(testMember)
+                .reportType(ReportType.STORY)
+                .reportReason(ReportReason.SPAMMARKET)
+                .story(testStory)
+                .build();
+
+        reportRepository.save(report);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                patch("/api/v1/admin/reports/{report_id}/delete-target", reportId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.REPORT_TARGET_ALREADY_DELETED.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.REPORT_TARGET_ALREADY_DELETED.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(false))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+
+        Report resultReport = reportRepository.findById(1L).orElseThrow(RuntimeException::new);
+
+        assertThat(resultReport.getReportStatus()).isEqualTo(ReportStatus.UNCONFIRMED);
+    }
+
 
 
 }

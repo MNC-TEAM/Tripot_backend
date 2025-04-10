@@ -7,6 +7,7 @@ import com.junior.domain.member.MemberStatus;
 import com.junior.domain.member.SignUpType;
 import com.junior.domain.report.Report;
 import com.junior.domain.report.ReportReason;
+import com.junior.domain.report.ReportStatus;
 import com.junior.domain.report.ReportType;
 import com.junior.domain.story.Comment;
 import com.junior.domain.story.Story;
@@ -72,6 +73,16 @@ public class BaseServiceTest {
                 .member(member)
                 .reportType(reportType)
                 .reportReason(ReportReason.SPAMMARKET)
+                .story(story)
+                .build();
+    }
+
+    protected Report createReport(Member member, ReportType reportType, Story story, ReportStatus reportStatus) {
+        return Report.builder()
+                .member(member)
+                .reportType(reportType)
+                .reportReason(ReportReason.SPAMMARKET)
+                .reportStatus(reportStatus)
                 .story(story)
                 .build();
     }

@@ -3,6 +3,7 @@ package com.junior.controller.report;
 import com.junior.controller.api.ReportApi;
 import com.junior.dto.report.CreateReportDto;
 import com.junior.dto.report.ReportDto;
+import com.junior.dto.story.AdminStoryDetailDto;
 import com.junior.exception.StatusCode;
 import com.junior.page.PageCustom;
 import com.junior.response.CommonResponse;
@@ -40,6 +41,18 @@ public class ReportController implements ReportApi {
         return ResponseEntity.status(StatusCode.REPORT_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.REPORT_FIND_SUCCESS, reportService.findReport(reportStatus, pageable)));
     }
 
+    /**
+     * 신고 내역 대상 스토리 상세 조회
+     * @param reportId 스토리 이름
+     * @return 스토리 세부내역 조회
+     * 해당 신고내역 확인 처리도 수행
+     */
+    @GetMapping("/api/v1/admin/reports/{report_id}/stories")
+    public <T extends ReportDto> ResponseEntity<CommonResponse<AdminStoryDetailDto>> findReportTargetStoryDetail(@PathVariable(value = "report_id") Long reportId) {
+        return ResponseEntity.status(StatusCode.REPORT_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.REPORT_FIND_SUCCESS, reportService.findReportTargetStoryDetail(reportId)));
+    }
+
+    @Deprecated
     @PatchMapping("/api/v1/admin/reports/{report_id}/confirm")
     public ResponseEntity<CommonResponse<Object>> confirmReport(@PathVariable("report_id") Long reportId) {
         reportService.confirmReport(reportId);

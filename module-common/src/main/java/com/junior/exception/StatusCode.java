@@ -134,6 +134,8 @@ public enum StatusCode {
     REPORT_TYPE_NOT_VALID(400, "REPORT-ERR-003", "서버 에러가 발생했습니다."),
     REPORT_EQUALS_AUTHOR(202, "REPORT-ERR-004", "본인 글은 신고가 불가능합니다."),
     REPORT_DUPLICATE(400, "REPORT-ERR-005", "이미 신고된 글 입니다."),
+    REPORT_ALREADY_CONFIRMED(400, "REPORT-ERR-006", "이미 확인 처리된 신고 내역입니다."),
+    REPORT_TARGET_ALREADY_DELETED(400, "REPORT-ERR-007", "이미 삭제 처리된 신고 내역입니다."),
 
     //버전 관리 관련 성공 코드
     VERSION_CREATE_SUCCESS(201, "VERSION-SUCCESS-001", ""),
