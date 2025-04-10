@@ -52,6 +52,7 @@ public class ReportController implements ReportApi {
         return ResponseEntity.status(StatusCode.REPORT_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.REPORT_FIND_SUCCESS, reportService.findReportTargetStoryDetail(reportId)));
     }
 
+    @Deprecated
     @PatchMapping("/api/v1/admin/reports/{report_id}/confirm")
     public ResponseEntity<CommonResponse<Object>> confirmReport(@PathVariable("report_id") Long reportId) {
         reportService.confirmReport(reportId);

@@ -155,6 +155,7 @@ public class ReportService {
         return AdminStoryDetailDto.from(report.getStory());
     }
 
+    @Deprecated
     @Transactional
     public void confirmReport(Long id) {
 
