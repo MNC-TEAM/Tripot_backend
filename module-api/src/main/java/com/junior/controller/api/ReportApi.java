@@ -2,6 +2,7 @@ package com.junior.controller.api;
 
 import com.junior.dto.report.CreateReportDto;
 import com.junior.dto.report.ReportDto;
+import com.junior.dto.story.AdminStoryDetailDto;
 import com.junior.page.PageCustom;
 import com.junior.response.CommonResponse;
 import com.junior.security.UserPrincipal;
@@ -10,11 +11,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -172,6 +175,26 @@ public interface ReportApi {
             })
     public <T extends ReportDto> ResponseEntity<CommonResponse<PageCustom<T>>> findReport(@PageableDefault(size = 15, page = 1) Pageable pageable,
                                                                                           @RequestParam(name = "report_type", defaultValue = "ALL") String reportStatus);
+
+    @Operation(summary = "신고 스토리 상세 정보 조회", description = "신고 스토리 상세 정보를 조회합니다. 해당 신고 내역을 처리(미삭제) 상태로 변경합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "신고 스토리 상세 정보 조회"),
+            @ApiResponse(responseCode = "400", description = "Bad Request",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommonResponse.class),
+                            examples = {
+                                    @ExampleObject(name = "유효한 신고 타입이 아님",
+                                            value = """
+                                                            {
+                                                                "customCode": "REPORT-ERR-003",
+                                                                "customMessage": "유효한 신고 타입이 아님",
+                                                                "status": false,
+                                                                "data": null
+                                                            }
+                                                            """
+                                    )
+                            }))
+    })
+    public <T extends ReportDto> ResponseEntity<CommonResponse<AdminStoryDetailDto>> findReportTargetStoryDetail(@PathVariable(value = "report_id") Long reportId);
 
     @Operation(summary = "신고내역 처리", description = "신고 내역을 삭제하지 않고 처리합니다.",
             responses = {
