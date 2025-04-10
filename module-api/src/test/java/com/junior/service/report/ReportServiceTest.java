@@ -429,7 +429,7 @@ class ReportServiceTest extends BaseServiceTest {
         given(reportRepository.findById(anyLong())).willReturn(Optional.ofNullable(testReport));
 
         //when
-        AdminStoryDetailDto result = reportService.findReportDetail(1L);
+        AdminStoryDetailDto result = reportService.findReportTargetStoryDetail(1L);
 
         //then
         assertThat(result.city()).isEqualTo("city");
@@ -449,7 +449,7 @@ class ReportServiceTest extends BaseServiceTest {
         given(reportRepository.findById(anyLong())).willReturn(Optional.ofNullable(testReport));
 
         //when
-        assertThatThrownBy(() -> reportService.findReportDetail(1L))
+        assertThatThrownBy(() -> reportService.findReportTargetStoryDetail(1L))
                 .isInstanceOf(ReportException.class)
                 .hasMessageContaining(StatusCode.REPORT_NOT_VALID.getCustomMessage());
     }

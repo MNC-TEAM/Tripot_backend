@@ -140,7 +140,7 @@ public class ReportService {
     }
 
     @Transactional
-    public AdminStoryDetailDto findReportDetail(Long reportId){
+    public AdminStoryDetailDto findReportTargetStoryDetail(Long reportId){
         Report report = reportRepository.findById(reportId)
                 .orElseThrow((() -> new ReportException(StatusCode.REPORT_NOT_FOUND)));
 

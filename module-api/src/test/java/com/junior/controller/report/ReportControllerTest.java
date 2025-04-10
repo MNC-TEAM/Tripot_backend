@@ -132,7 +132,7 @@ public class ReportControllerTest extends BaseControllerTest {
                 .isDeleted(true)
                 .build();
 
-        given(reportService.findReportDetail(anyLong())).willReturn(storyDetailDto);
+        given(reportService.findReportTargetStoryDetail(anyLong())).willReturn(storyDetailDto);
 
         //when
         ResultActions actions = mockMvc.perform(

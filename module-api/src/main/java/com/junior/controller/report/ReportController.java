@@ -49,7 +49,7 @@ public class ReportController implements ReportApi {
      */
     @GetMapping("/api/v1/admin/reports/{report_id}/stories")
     public <T extends ReportDto> ResponseEntity<CommonResponse<AdminStoryDetailDto>> findReportTargetStoryDetail(@PathVariable(value = "report_id") Long reportId) {
-        return ResponseEntity.status(StatusCode.REPORT_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.REPORT_FIND_SUCCESS, reportService.findReportDetail(reportId)));
+        return ResponseEntity.status(StatusCode.REPORT_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.REPORT_FIND_SUCCESS, reportService.findReportTargetStoryDetail(reportId)));
     }
 
     @PatchMapping("/api/v1/admin/reports/{report_id}/confirm")
