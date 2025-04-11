@@ -9,8 +9,6 @@ import com.junior.exception.StatusCode;
 import com.junior.response.CommonResponse;
 import com.junior.security.UserPrincipal;
 import com.junior.service.popUpEvent.PopUpEventService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,7 +26,7 @@ public class PopUpEventController implements PopUpEventApi {
 //    @Operation(summary = "팝업 이벤트 생성 (ADMIN만 가능)")
     @PostMapping
     public CommonResponse<Object> createEvent(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                            @RequestBody CreateNewPopUpEventDto createNewPopUpEventDto) {
+                                              @RequestBody CreateNewPopUpEventDto createNewPopUpEventDto) {
         popUpEventService.createEvent(userPrincipal, createNewPopUpEventDto);
 
         return CommonResponse.success(StatusCode.POPUPEVENT_CREATE_SUCCESS, null);
@@ -58,7 +56,7 @@ public class PopUpEventController implements PopUpEventApi {
 
 //    @Operation(summary = "지도 영역 내 팝업 이벤트 조회")
     @PostMapping("/map")
-    public CommonResponse<Object> getEventsByPos(
+    public CommonResponse<List<ResponsePopUpEventDto>> getEventsByPos(
             @RequestBody GeoRect geoRect) {
 
         List<ResponsePopUpEventDto> popUpEventsByPos = popUpEventService.getPopUpEventsByPos(geoRect.geoPointLt(), geoRect.geoPointRb());
@@ -68,7 +66,7 @@ public class PopUpEventController implements PopUpEventApi {
 
 //    @Operation(summary = "스크롤 기반 팝업 이벤트 조회")
     @GetMapping("/scroll")
-    public CommonResponse<Object> scrollEvents(
+    public CommonResponse<Slice<ResponsePopUpEventDto>> scrollEvents(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(required = false, name = "cursorId") Long cursorId,
             @RequestParam(defaultValue = "10", name = "size") int size) {
