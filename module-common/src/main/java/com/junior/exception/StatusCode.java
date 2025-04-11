@@ -13,6 +13,13 @@ public enum StatusCode {
     NOT_FOUND(404, "COMMON-ERR-404", "존재하지 않는 페이지입니다."),
 */
 
+    // PopupEvent 관련 코드
+    POPUPEVENT_CREATE_SUCCESS(200, "POPUPEVENT-SUCCESS-001", "팝업이벤트 생성 성공"),
+    POPUPEVENT_READ_SUCCESS(200, "POPUPEVENT-SUCCESS-002", "팝업이벤트 조회 성공"),
+    POPUPEVENT_DELETE_SUCCESS(200, "POPUPEVENT-SUCCESS-003", "팝업이벤트 삭제 성공"),
+    POPUPEVENT_UPDATE_SUCCESS(200, "POPUPEVENT-SUCCESS-004", "팝업이벤트 수정 성공"),
+    POPUPEVENT_READ_FAIL(200, "POPUPEVENT-ERR-001", "팝업이벤트 조회 실패"),
+
     // notification 관련 성공 코드
     NOTIFICATION_READ_SUCCESS(200, "NOTIFICATION-SUCCESS-001", ""),
     NOTIFICATION_DELETE_SUCCESS(200, "NOTIFICATION-SUCCESS-002", ""),
@@ -146,7 +153,8 @@ public enum StatusCode {
 
 
     // 공통 예외
-    UNKNOWN_ERROR(500, "UNKNOWN-ERROR-001", "서버 에러가 발생했습니다.");
+    UNKNOWN_ERROR(500, "UNKNOWN-ERROR-001", "서버 에러가 발생했습니다."),
+    PERMISSION_ERROR(400, "PERMISSION-ERROR-001", "권한이 없는 계정입니다.");
 
     private final int httpCode;
     private final String customCode;
