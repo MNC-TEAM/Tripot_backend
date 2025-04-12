@@ -3,6 +3,7 @@ package com.junior.integration.festival;
 import com.junior.domain.festival.Festival;
 import com.junior.domain.member.Member;
 import com.junior.dto.festival.FestivalCityCountDto;
+import com.junior.dto.festival.FestivalDto;
 import com.junior.dto.festival.FestivalMapDto;
 import com.junior.dto.story.GeoPointDto;
 import com.junior.dto.story.GeoRect;
@@ -17,6 +18,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -25,6 +29,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -121,6 +127,137 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_FIND_MAP_SUCCESS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.length()").value(5));
+
+    }
+
+    @Test
+    @DisplayName("축제 조회 - 응답이 정상적으로 반환되어야 함")
+    public void findFestival() throws Exception {
+        //given
+        Integer size = 10;
+        String city = "";
+        String q = "";
+
+        //when
+
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/festivals")
+                        .queryParam("size", size.toString())
+                        .queryParam("city", city)
+                        .queryParam("q", q)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.content[0].id").value(9))
+                .andExpect(jsonPath("$.data.content[1].id").value(8))
+                .andExpect(jsonPath("$.data.content[2].title").value("축제 7"));
+
+
+
+    }
+
+    @Test
+    @DisplayName("축제 조회 - 스크롤이 정상적으로 동작해야 함")
+    public void findFestivalWithSlice() throws Exception {
+        //given
+        Long cursorId = 5L;
+        Integer size = 10;
+        String city = "";
+        String q = "";
+
+        //when
+
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/festivals")
+                        .queryParam("cursorId", cursorId.toString())
+                        .queryParam("size", size.toString())
+                        .queryParam("city", city)
+                        .queryParam("q", q)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.content[0].id").value(4))
+                .andExpect(jsonPath("$.data.content[1].id").value(3))
+                .andExpect(jsonPath("$.data.content[2].title").value("축제 2"));
+
+
+
+    }
+
+    @Test
+    @DisplayName("축제 조회 - 검색이 정상적으로 동작해야 함")
+    public void findFestivalByKeyword() throws Exception {
+        //given
+        Integer size = 10;
+        String city = "";
+        String q = "3";
+
+        //when
+
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/festivals")
+                        .queryParam("size", size.toString())
+                        .queryParam("city", city)
+                        .queryParam("q", q)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.content.length()").value(1))
+                .andExpect(jsonPath("$.data.content[0].id").value(3));
+
+
+
+    }
+
+    @Test
+    @DisplayName("축제 조회 - 지역 기반 조회가 정상적으로 동작해야 함")
+    public void findFestivalByCity() throws Exception {
+        //given
+        Integer size = 10;
+        String city = "서울특별시";
+        String q = "";
+
+        //when
+
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/festivals")
+                        .queryParam("size", size.toString())
+                        .queryParam("city", city)
+                        .queryParam("q", q)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.content.length()").value(5));
+
+
 
     }
 }

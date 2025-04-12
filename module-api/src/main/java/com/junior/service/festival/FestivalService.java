@@ -6,22 +6,23 @@ import com.junior.dto.festival.FestivalDto;
 import com.junior.dto.festival.FestivalMapDto;
 import com.junior.dto.festival.api.FestivalApiItem;
 import com.junior.dto.festival.api.FestivalApiResponse;
-import com.junior.dto.story.GeoPointDto;
 import com.junior.dto.story.GeoRect;
 import com.junior.exception.CustomException;
 import com.junior.exception.StatusCode;
 import com.junior.repository.festival.FestivalRepository;
+import com.junior.util.CustomStringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -98,8 +99,8 @@ public class FestivalService {
                         .city(city)
                         .location(location)
                         .imgUrl(festivalInfo.getFirstimage())
-                        .startDate(stringToDate(festivalInfo.getEventstartdate()))
-                        .endDate(stringToDate(festivalInfo.getEventenddate()))
+                        .startDate(CustomStringUtil.stringToDate(festivalInfo.getEventstartdate()))
+                        .endDate(CustomStringUtil.stringToDate(festivalInfo.getEventenddate()))
                         .lat(Double.valueOf(festivalInfo.getMapy()))
                         .logt(Double.valueOf(festivalInfo.getMapx()))
                         .build();
@@ -130,31 +131,17 @@ public class FestivalService {
         return festivalCityCount;
     }
 
+    public Slice<FestivalDto> findFestival(Long cursorId, int size, String city, String q){
 
-    /**
-     * @param date yyyyMMdd 형태의 문자열
-     * @return 해당 일자에 맞는 LocalDate 객체
-     */
-    private static LocalDate stringToDate(String date) {
-        return LocalDate.of(Integer.parseInt(date.substring(0, 4)), Integer.parseInt(date.substring(4, 6)), Integer.parseInt(date.substring(6, 8)));
+        PageRequest pageRequest = PageRequest.of(0, size);
+
+        log.info("[{}] 축제 리스트 조회", Thread.currentThread().getStackTrace()[1].getMethodName());
+
+        return festivalRepository.findFestival(cursorId, pageRequest, city, q);
     }
 
 
-    /**
-     * @param startDate
-     * @param endDate
-     * @return 시작일과 종료일을 ****년 **월 **일 - ****년 **월 **일 형태로 리턴
-     */
-    private static String durationToString(String startDate, String endDate) {
 
-        //시작일 및 종료일이 8자리 숫자가 아닐 경우 빈 문자열 리턴
-        if (!Pattern.matches("^[0-9]{8}", startDate) || !Pattern.matches("^[0-9]{8}", startDate)) {
-            return "";
-        }
 
-        return String.format("%d년 %d월 %d일 - %d년 %d월 %d일", Integer.parseInt(startDate.substring(0, 4)), Integer.parseInt(startDate.substring(4, 6)), Integer.parseInt(startDate.substring(6, 8)),
-                Integer.parseInt(endDate.substring(0, 4)), Integer.parseInt(endDate.substring(4, 6)), Integer.parseInt(endDate.substring(6, 8)));
-
-    }
 
 }

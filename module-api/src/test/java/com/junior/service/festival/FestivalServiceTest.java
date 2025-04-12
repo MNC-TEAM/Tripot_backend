@@ -2,8 +2,8 @@ package com.junior.service.festival;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.junior.domain.festival.Festival;
 import com.junior.dto.festival.FestivalCityCountDto;
+import com.junior.dto.festival.FestivalDto;
 import com.junior.dto.festival.FestivalMapDto;
 import com.junior.dto.festival.api.*;
 import com.junior.dto.story.GeoPointDto;
@@ -12,11 +12,17 @@ import com.junior.repository.festival.FestivalRepository;
 import com.junior.service.BaseServiceTest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.IOException;
@@ -24,10 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 @ContextConfiguration(initializers = {ConfigDataApplicationContextInitializer.class}, classes = {FestivalService.class})           //@Value를 사용하는 로직에서 환경변수를 가져오는 코드
 class FestivalServiceTest extends BaseServiceTest {
@@ -93,6 +97,41 @@ class FestivalServiceTest extends BaseServiceTest {
 
         //then
         assertThat(result.size()).isEqualTo(4);
+
+    }
+
+    @Test
+    @DisplayName("축제 리스트 출력 - 축제 리스트를 출력해야 함")
+    public void findFestival() throws Exception {
+        //given
+        Long cursorId = 5L;
+        int size = 10;
+        String city = "";
+        String q = "";
+
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
+        List<FestivalDto> resultList = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            resultList.add(FestivalDto.builder()
+                    .contentId((long) i)
+                    .duration("duration")
+                    .imgUrl("imgurl")
+                    .location("location")
+                    .title("title")
+                    .id((long) i)
+                    .build());
+        }
+
+        Slice<FestivalDto> result = new SliceImpl<>(resultList, pageRequest, false);
+
+        given(festivalRepository.findFestival(anyLong(), any(Pageable.class), anyString(), anyString())).willReturn(result);
+
+        //when
+        Slice<FestivalDto> res = festivalService.findFestival(cursorId, size, city, q);
+
+        //then
+        assertThat(res.getContent().size()).isEqualTo(4);
 
     }
 }

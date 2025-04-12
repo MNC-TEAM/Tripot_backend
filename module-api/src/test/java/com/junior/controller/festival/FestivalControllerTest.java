@@ -2,6 +2,7 @@ package com.junior.controller.festival;
 
 import com.junior.controller.BaseControllerTest;
 import com.junior.dto.festival.FestivalCityCountDto;
+import com.junior.dto.festival.FestivalDto;
 import com.junior.dto.festival.FestivalMapDto;
 import com.junior.dto.story.GeoPointDto;
 import com.junior.dto.story.GeoRect;
@@ -13,6 +14,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -21,6 +26,8 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -132,6 +139,58 @@ class FestivalControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.data[0].id").value(1))
                 .andExpect(jsonPath("$.data[1].id").value(2))
                 .andExpect(jsonPath("$.data[2].lat").value(37.0));
+
+    }
+
+    @Test
+    @DisplayName("축제 조회 - 응답이 정상적으로 반환되어야 함")
+    public void findFestival() throws Exception {
+        //given
+        Long cursorId = 5L;
+        Integer size = 10;
+        String city = "";
+        String q = "";
+
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
+        List<FestivalDto> resultList = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            resultList.add(FestivalDto.builder()
+                    .contentId((long) i)
+                    .duration("duration")
+                    .imgUrl("imgurl")
+                    .location("location")
+                    .title("title")
+                    .id((long) i)
+                    .build());
+        }
+
+        Slice<FestivalDto> result = new SliceImpl<>(resultList, pageRequest, false);
+
+        given(festivalService.findFestival(anyLong(), anyInt(), anyString(), anyString())).willReturn(result);
+        //when
+
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/festivals")
+                        .queryParam("cursorId", cursorId.toString())
+                        .queryParam("size", size.toString())
+                        .queryParam("city", city)
+                        .queryParam("q", q)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.content[0].id").value(0))
+                .andExpect(jsonPath("$.data.content[1].id").value(1))
+                .andExpect(jsonPath("$.data.content[2].title").value("title"));
+
+
 
     }
 }
