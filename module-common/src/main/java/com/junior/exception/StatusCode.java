@@ -147,9 +147,12 @@ public enum StatusCode {
     FESTIVAL_FIND_CITY_COUNT_SUCCESS(200, "FESTIVAL-SUCCESS-002", ""),
     FESTIVAL_CREATE_SUCCESS(201, "FESTIVAL-SUCCESS-003", ""),
     FESTIVAL_FIND_MAP_SUCCESS(200, "FESTIVAL-SUCCESS-004", ""),
+    FESTIVAL_DETAIL_FIND_SUCCESS(200, "FESTIVAL-SUCCESS-005", ""),
 
-    //축제 저장 관련 실패 코드
+    //축제 관련 실패 코드
     FESTIVAL_CREATE_FAIL(500, "FESTIVAL-FAIL-001", "축제 정보 불러오기에 실패했습니다."),
+    FESTIVAL_NOT_FOUND(404, "FESTIVAL-FAIL-002", "해당 축제가 존재하지 않습니다."),
+    FESTIVAL_DETAIL_FOUND_FAIL(500, "FESTIVAL-FAIL-003", "축제 상세정보 불러오기에 실패했습니다."),
 
     // 공통 예외
     UNKNOWN_ERROR(500, "UNKNOWN-ERROR-001", "서버 에러가 발생했습니다.");

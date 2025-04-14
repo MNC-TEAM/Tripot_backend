@@ -35,4 +35,14 @@ public class CustomStringUtil {
                 Integer.parseInt(endDate.substring(0, 4)), Integer.parseInt(endDate.substring(4, 6)), Integer.parseInt(endDate.substring(6, 8)));
 
     }
+
+    public static String durationToString(LocalDate startDate, LocalDate endDate) {
+
+        String stStartDate = startDate.toString().replaceAll("-", "");
+        String stEndDate = endDate.toString().replaceAll("-", "");
+
+        return String.format("%d년 %d월 %d일 - %d년 %d월 %d일", Integer.parseInt(stStartDate.substring(0, 4)), Integer.parseInt(stStartDate.substring(4, 6)), Integer.parseInt(stStartDate.substring(6, 8)),
+                Integer.parseInt(stEndDate.substring(0, 4)), Integer.parseInt(stEndDate.substring(4, 6)), Integer.parseInt(stEndDate.substring(6, 8)));
+
+    }
 }

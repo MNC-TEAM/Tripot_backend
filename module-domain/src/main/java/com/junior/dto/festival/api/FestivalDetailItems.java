@@ -6,14 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@AllArgsConstructor
 @Builder
-public class FestivalApiResponse<T> {
-
-    public FestivalApiInnerResponse<T> response;
-
-
+@AllArgsConstructor
+public class FestivalDetailItems {
+    private List<FestivalDetailItem> item;
 }

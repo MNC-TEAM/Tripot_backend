@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
-public class FestivalBody {
+public class FestivalBody<T> {
 
-    private FestivalApiItems items;
+    private T items;
 
     private long numOfRows;
     private int pageNo;

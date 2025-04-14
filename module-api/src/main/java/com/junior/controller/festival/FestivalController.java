@@ -63,5 +63,10 @@ public class FestivalController implements FestivalApi {
         return ResponseEntity.status(StatusCode.FESTIVAL_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_FIND_SUCCESS, festivalService.findFestival(cursorId, size, city, q)));
     }
 
+    @GetMapping("/api/v1/festivals/{festival_id}")
+    public ResponseEntity<CommonResponse<FestivalDetailDto>> findFestivalDetail(@PathVariable("festival_id") Long festivalId){
+        return ResponseEntity.status(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS, festivalService.findFestivalDetail(festivalId)));
+    }
+
 
 }

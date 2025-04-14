@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @Builder
-public class FestivalApiInnerResponse {
+public class FestivalApiInnerResponse<T> {
 
     private FestivalHeader header;
-    private FestivalBody body;
+    private FestivalBody<T> body;
 
 }

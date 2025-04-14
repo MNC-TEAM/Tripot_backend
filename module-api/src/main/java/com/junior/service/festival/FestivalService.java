@@ -2,10 +2,10 @@ package com.junior.service.festival;
 
 import com.junior.domain.festival.Festival;
 import com.junior.dto.festival.FestivalCityCountDto;
+import com.junior.dto.festival.FestivalDetailDto;
 import com.junior.dto.festival.FestivalDto;
 import com.junior.dto.festival.FestivalMapDto;
-import com.junior.dto.festival.api.FestivalApiItem;
-import com.junior.dto.festival.api.FestivalApiResponse;
+import com.junior.dto.festival.api.*;
 import com.junior.dto.story.GeoRect;
 import com.junior.exception.CustomException;
 import com.junior.exception.StatusCode;
@@ -14,6 +14,7 @@ import com.junior.util.CustomStringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -52,7 +53,7 @@ public class FestivalService {
 
         WebClient.builder().uriBuilderFactory(uriBuilderFactory).build();
 
-        FestivalApiResponse result = WebClient.builder()
+        FestivalApiResponse<FestivalApiItems> result = WebClient.builder()
                 .uriBuilderFactory(uriBuilderFactory)
                 .baseUrl(festivalUrl)
                 .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(30 * 1024 * 1024))     //DataBufferLimitException 해결
@@ -72,7 +73,8 @@ public class FestivalService {
                         .queryParam("serviceKey", festivalApiKey)
                         .build(true))
                 .retrieve()
-                .bodyToMono(FestivalApiResponse.class)
+                .bodyToMono(new ParameterizedTypeReference<FestivalApiResponse<FestivalApiItems>>() {
+                })
                 .block();
 
         if (result.getResponse()==null || !result.getResponse().getHeader().getResultCode().equals("0000")) {
@@ -140,6 +142,60 @@ public class FestivalService {
         return festivalRepository.findFestival(cursorId, pageRequest, city, q);
     }
 
+    public FestivalDetailDto findFestivalDetail(Long id){
+
+        Festival targetFestival = festivalRepository.findById(id)
+                .orElseThrow(() -> new CustomException(StatusCode.FESTIVAL_NOT_FOUND));
+
+        DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(festivalUrl);
+        uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.VALUES_ONLY);
+
+        WebClient.builder().uriBuilderFactory(uriBuilderFactory).build();
+
+        FestivalApiResponse<FestivalDetailItems> result = WebClient.builder()
+                .uriBuilderFactory(uriBuilderFactory)
+                .baseUrl(festivalUrl)
+                .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(30 * 1024 * 1024))     //DataBufferLimitException 해결
+                .build()
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .scheme("https")
+                        .path("/detailCommon1")
+                        .queryParam("MobileOS", "IOS")              //TODO: 서로 다른 환경에 대한 처리 -> 운영 계정 승인 시 고려
+                        .queryParam("MobileApp", "Tripot")
+                        .queryParam("_type", "json")
+                        .queryParam("contentId", targetFestival.getContentId())
+                        .queryParam("defaultYN", "Y")
+                        .queryParam("firstImageYN", "Y")
+                        .queryParam("addrinfoYN", "Y")
+                        .queryParam("mapinfoYN", "Y")
+                        .queryParam("overviewYN", "Y")
+                        .queryParam("serviceKey", festivalApiKey)
+                        .build(true))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<FestivalApiResponse<FestivalDetailItems>>() {
+                })
+                .block();
+
+        if (result.getResponse()==null || !result.getResponse().getHeader().getResultCode().equals("0000") ||
+                result.getResponse().getBody().getItems().getItem().isEmpty()) {
+            throw new CustomException(StatusCode.FESTIVAL_DETAIL_FOUND_FAIL);
+        }
+
+        FestivalDetailItem item = result.getResponse().getBody().getItems().getItem().get(0);
+
+
+        return FestivalDetailDto.builder()
+                .id(id)
+                .contentId(Long.valueOf(item.getContentid()))
+                .city(targetFestival.getCity())
+                .title(targetFestival.getTitle())
+                .location(targetFestival.getCity() + " " + targetFestival.getLocation())
+                .duration(CustomStringUtil.durationToString(targetFestival.getStartDate(), targetFestival.getEndDate()))
+                .imgUrl(targetFestival.getImgUrl())
+                .detail(item.getOverview())
+                .build();
+    }
 
 
 
