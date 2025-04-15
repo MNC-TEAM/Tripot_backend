@@ -11,12 +11,10 @@ import com.junior.exception.CustomException;
 import com.junior.exception.StatusCode;
 import com.junior.repository.festival.FestivalRepository;
 import com.junior.util.CustomStringUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,18 +24,24 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
 public class FestivalService {
 
+    private final WebClient webClient;
+
     private final FestivalRepository festivalRepository;
 
-    @Value("${data-api.festival.url}")
-    private String festivalUrl;
+    private final String festivalUrl;
 
-    @Value("${data-api.festival.key}")
-    private String festivalApiKey;
+    private final String festivalApiKey;
+
+    public FestivalService(WebClient webClient, FestivalRepository festivalRepository, @Value("${data-api.festival.url}") String festivalUrl, @Value("${data-api.festival.key}") String festivalApiKey) {
+        this.webClient = webClient;
+        this.festivalRepository = festivalRepository;
+        this.festivalUrl = festivalUrl;
+        this.festivalApiKey = festivalApiKey;
+    }
 
     /**
      * 축제 데이터를 가져와 저장하는 기능
@@ -46,21 +50,15 @@ public class FestivalService {
 
     //TODO: 이거 매월 초 자동실행시켜도 무방한지 고민해보기
     @Transactional
-    public void saveFestival(String eventStartDate, String eventEndDate){
+    public void saveFestival(String eventStartDate, String eventEndDate) {
 
-        DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(festivalUrl);
-        uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.VALUES_ONLY);
 
-        WebClient.builder().uriBuilderFactory(uriBuilderFactory).build();
 
-        FestivalApiResponse<FestivalApiItems> result = WebClient.builder()
-                .uriBuilderFactory(uriBuilderFactory)
-                .baseUrl(festivalUrl)
-                .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(30 * 1024 * 1024))     //DataBufferLimitException 해결
-                .build()
+        FestivalApiResponse<FestivalApiItems> result = webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .scheme("https")
+                        .host(festivalUrl)
                         .path("/searchFestival1")
                         .queryParam("numOfRows", 2000)
                         .queryParam("pageNo", 1)
@@ -77,7 +75,7 @@ public class FestivalService {
                 })
                 .block();
 
-        if (result.getResponse()==null || !result.getResponse().getHeader().getResultCode().equals("0000")) {
+        if (result.getResponse() == null || !result.getResponse().getHeader().getResultCode().equals("0000")) {
             throw new CustomException(StatusCode.FESTIVAL_CREATE_FAIL);
         }
 
@@ -113,14 +111,14 @@ public class FestivalService {
         }
     }
 
-    public List<FestivalMapDto> findFestivalByMap(GeoRect geoRect){
+    public List<FestivalMapDto> findFestivalByMap(GeoRect geoRect) {
 
         log.info("[{}] 지도 내 확인 가능한 축제 내역 조회", Thread.currentThread().getStackTrace()[1].getMethodName());
 
         return festivalRepository.findFestivalByMap(geoRect.geoPointLt(), geoRect.geoPointRb());
     }
 
-    public List<FestivalCityCountDto> findFestivalCityCount(){
+    public List<FestivalCityCountDto> findFestivalCityCount() {
         List<FestivalCityCountDto> festivalCityCount = festivalRepository.findFestivalCityCount();
 
         long sum = festivalCityCount.stream()
@@ -133,7 +131,7 @@ public class FestivalService {
         return festivalCityCount;
     }
 
-    public Slice<FestivalDto> findFestival(Long cursorId, int size, String city, String q){
+    public Slice<FestivalDto> findFestival(Long cursorId, int size, String city, String q) {
 
         PageRequest pageRequest = PageRequest.of(0, size);
 
@@ -142,24 +140,16 @@ public class FestivalService {
         return festivalRepository.findFestival(cursorId, pageRequest, city, q);
     }
 
-    public FestivalDetailDto findFestivalDetail(Long id){
+    public FestivalDetailDto findFestivalDetail(Long id) {
 
         Festival targetFestival = festivalRepository.findById(id)
                 .orElseThrow(() -> new CustomException(StatusCode.FESTIVAL_NOT_FOUND));
 
-        DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(festivalUrl);
-        uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.VALUES_ONLY);
-
-        WebClient.builder().uriBuilderFactory(uriBuilderFactory).build();
-
-        FestivalApiResponse<FestivalDetailItems> result = WebClient.builder()
-                .uriBuilderFactory(uriBuilderFactory)
-                .baseUrl(festivalUrl)
-                .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(30 * 1024 * 1024))     //DataBufferLimitException 해결
-                .build()
+        FestivalApiResponse<FestivalDetailItems> result = webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .scheme("https")
+                        .host(festivalUrl)
                         .path("/detailCommon1")
                         .queryParam("MobileOS", "IOS")              //TODO: 서로 다른 환경에 대한 처리 -> 운영 계정 승인 시 고려
                         .queryParam("MobileApp", "Tripot")
@@ -177,7 +167,7 @@ public class FestivalService {
                 })
                 .block();
 
-        if (result.getResponse()==null || !result.getResponse().getHeader().getResultCode().equals("0000") ||
+        if (result.getResponse() == null || !result.getResponse().getHeader().getResultCode().equals("0000") ||
                 result.getResponse().getBody().getItems().getItem().isEmpty()) {
             throw new CustomException(StatusCode.FESTIVAL_DETAIL_FOUND_FAIL);
         }
@@ -196,8 +186,6 @@ public class FestivalService {
                 .detail(item.getOverview())
                 .build();
     }
-
-
 
 
 }
