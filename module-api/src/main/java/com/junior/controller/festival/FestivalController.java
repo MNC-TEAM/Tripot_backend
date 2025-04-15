@@ -2,6 +2,7 @@ package com.junior.controller.festival;
 
 import com.junior.controller.api.FestivalApi;
 import com.junior.dto.festival.FestivalCityCountDto;
+import com.junior.dto.festival.FestivalDetailDto;
 import com.junior.dto.festival.FestivalDto;
 import com.junior.dto.festival.FestivalMapDto;
 import com.junior.dto.story.GeoRect;
@@ -10,15 +11,10 @@ import com.junior.response.CommonResponse;
 import com.junior.service.festival.FestivalService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,7 +30,6 @@ public class FestivalController implements FestivalApi {
      * 축제 정보를 API로 받아와서 저장하는 기능
      * ADMIN 권한에서만 동작
      */
-    @Secured("ADMIN")
     @PostMapping("/api/v1/festivals")
     public ResponseEntity<CommonResponse<Object>> saveFestival(@RequestParam(value = "eventStartDate") String eventStartDate,
                                                                @RequestParam(value = "eventEndDate", required = false, defaultValue = "") String eventEndDate) {
@@ -45,7 +40,7 @@ public class FestivalController implements FestivalApi {
     }
 
     @GetMapping("/api/v1/festivals/cities/count")
-    public ResponseEntity<CommonResponse<List<FestivalCityCountDto>>> findFestivalCityCount(){
+    public ResponseEntity<CommonResponse<List<FestivalCityCountDto>>> findFestivalCityCount() {
         return ResponseEntity.status(StatusCode.FESTIVAL_FIND_CITY_COUNT_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_FIND_CITY_COUNT_SUCCESS, festivalService.findFestivalCityCount()));
     }
 
@@ -64,7 +59,7 @@ public class FestivalController implements FestivalApi {
     }
 
     @GetMapping("/api/v1/festivals/{festival_id}")
-    public ResponseEntity<CommonResponse<FestivalDetailDto>> findFestivalDetail(@PathVariable("festival_id") Long festivalId){
+    public ResponseEntity<CommonResponse<FestivalDetailDto>> findFestivalDetail(@PathVariable("festival_id") Long festivalId) {
         return ResponseEntity.status(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS, festivalService.findFestivalDetail(festivalId)));
     }
 
