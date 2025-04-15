@@ -19,8 +19,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -52,7 +52,28 @@ public class FestivalService {
     @Transactional
     public void saveFestival(String eventStartDate, String eventEndDate) {
 
+        String[] thOne = {"01", "03", "05", "07", "08", "10", "12"};
 
+        if (eventEndDate.isEmpty()) {
+            if (Arrays.asList(thOne).contains(eventStartDate.substring(4, 6))) {
+                eventEndDate = eventStartDate.substring(0, 6) + "31";
+            } else if (eventStartDate.substring(4, 6).equals("02")) {
+                //윤년 확인
+                int year = Integer.parseInt(eventStartDate.substring(0, 4));
+                if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {
+                    eventEndDate = eventStartDate.substring(0, 6) + "29";
+                } else {
+                    eventEndDate = eventStartDate.substring(0, 6) + "28";
+                }
+            } else {
+                eventEndDate = eventStartDate.substring(0, 6) + "30";
+            }
+
+        }
+
+        String finalEventEndDate = eventEndDate;
+
+        log.info("[{}] 축제 정보 가져오기 eventStartDate: {}, eventEndDate: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), eventStartDate, finalEventEndDate);
 
         FestivalApiResponse<FestivalApiItems> result = webClient
                 .get()
@@ -67,7 +88,7 @@ public class FestivalService {
                         .queryParam("_type", "json")
                         .queryParam("listYN", "Y")
                         .queryParam("eventStartDate", eventStartDate)
-                        .queryParam("eventEndDate", eventEndDate)
+                        .queryParam("eventEndDate", finalEventEndDate)
                         .queryParam("serviceKey", festivalApiKey)
                         .build(true))
                 .retrieve()
