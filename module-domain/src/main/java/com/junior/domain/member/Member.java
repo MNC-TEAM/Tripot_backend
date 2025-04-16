@@ -21,7 +21,8 @@ public class Member extends BaseEntity {
     private Long id;
 
     @Column(length = 25)
-    private String nickname;
+    @Builder.Default
+    private String nickname = "";
 
     private String username;
     private String password;

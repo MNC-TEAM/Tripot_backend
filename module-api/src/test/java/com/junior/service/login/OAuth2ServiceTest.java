@@ -103,7 +103,7 @@ class OAuth2ServiceTest {
         assertThat(response.getHeader("refresh_token")).isEqualTo("Bearer " + sampleRefresh);
 
         //새 회원이므로 isActivate는 false여야 함
-        assertThat(result.nickname()).isEqualTo("sample_nickname");
+        assertThat(result.nickname()).isEqualTo("");
         assertThat(result.isActivate()).isFalse();
     }
 
@@ -132,7 +132,6 @@ class OAuth2ServiceTest {
         given(jwtUtil.createJwt(any(LoginCreateJwtDto.class), eq("refresh"))).willReturn(sampleRefresh);
         given(memberRepository.existsByUsername(anyString())).willReturn(true);
         given(memberRepository.findByUsername(anyString())).willReturn(Optional.ofNullable(Member.builder()
-                .nickname("nickname")
                 .username("username")
                 .status(MemberStatus.PREACTIVE)
                 .role(MemberRole.USER)
@@ -150,7 +149,7 @@ class OAuth2ServiceTest {
         assertThat(response.getHeader("refresh_token")).isEqualTo("Bearer " + sampleRefresh);
 
         //새 회원이므로 isActivate는 false여야 함
-        assertThat(result.nickname()).isEqualTo("nickname");
+        assertThat(result.nickname()).isEqualTo("");
         assertThat(result.isActivate()).isFalse();
     }
 
@@ -180,7 +179,6 @@ class OAuth2ServiceTest {
         given(jwtUtil.createJwt(any(LoginCreateJwtDto.class), eq("refresh"))).willReturn(sampleRefresh);
         given(memberRepository.existsByUsername(anyString())).willReturn(true);
         given(memberRepository.findByUsername(anyString())).willReturn(Optional.ofNullable(Member.builder()
-                .nickname("nickname")
                 .username("username")
                 .status(MemberStatus.ACTIVE)
                 .role(MemberRole.USER)
@@ -198,7 +196,7 @@ class OAuth2ServiceTest {
         assertThat(response.getHeader("refresh_token")).isEqualTo("Bearer " + sampleRefresh);
 
         //새 회원이므로 isActivate는 false여야 함
-        assertThat(result.nickname()).isEqualTo("nickname");
+        assertThat(result.nickname()).isEqualTo("");
         assertThat(result.isActivate()).isTrue();
     }
 

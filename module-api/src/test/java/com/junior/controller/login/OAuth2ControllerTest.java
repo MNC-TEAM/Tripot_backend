@@ -44,7 +44,7 @@ class OAuth2ControllerTest extends BaseControllerTest {
                 .build();
         String kakaoProvider = "kakao";
 
-        CheckActiveMemberDto checkActiveMemberDto = new CheckActiveMemberDto("nickname", false);
+        CheckActiveMemberDto checkActiveMemberDto = new CheckActiveMemberDto("", false);
 
         String content = objectMapper.writeValueAsString(oAuth2LoginDto);
 
@@ -67,7 +67,7 @@ class OAuth2ControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.customCode").value(StatusCode.OAUTH2_LOGIN_SUCCESS.getCustomCode()))
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.OAUTH2_LOGIN_SUCCESS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
-                .andExpect(jsonPath("$.data.nickname").value("nickname"))
+                .andExpect(jsonPath("$.data.nickname").value(""))
                 .andExpect(jsonPath("$.data.isActivate").value(false));
 
 

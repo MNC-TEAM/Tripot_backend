@@ -137,7 +137,6 @@ public class OAuth2Service {
             log.info("[{}}] 신규 회원 생성 username: {}", Thread.currentThread().getStackTrace()[1].getClassName(), username);
 
             member = Member.builder()
-                    .nickname(userInfo.nickname())         //일단 전송 후 수정하는 방식
                     .username(username)
                     .role(MemberRole.USER)
                     //사용자 동의 정보: activeMember 기능에 추가
