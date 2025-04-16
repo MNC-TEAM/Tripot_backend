@@ -109,7 +109,7 @@ public class OAuth2IntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.customCode").value(StatusCode.OAUTH2_LOGIN_SUCCESS.getCustomCode()))
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.OAUTH2_LOGIN_SUCCESS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
-                .andExpect(jsonPath("$.data.nickname").value("nickname"))
+                .andExpect(jsonPath("$.data.nickname").value(""))
                 .andExpect(jsonPath("$.data.isActivate").value(false));
 
         verify(redisUtil).setDataExpire(anyString(), anyString(), anyLong());
