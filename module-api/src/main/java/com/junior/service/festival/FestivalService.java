@@ -78,7 +78,7 @@ public class FestivalService {
         FestivalApiResponse<FestivalApiItems> result = webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
+                        .scheme("http")
                         .host(festivalUrl)
                         .path("/searchFestival1")
                         .queryParam("numOfRows", 2000)
@@ -166,10 +166,11 @@ public class FestivalService {
         Festival targetFestival = festivalRepository.findById(id)
                 .orElseThrow(() -> new CustomException(StatusCode.FESTIVAL_NOT_FOUND));
 
+        log.info("[{}] 축제 상세정보 조회 title: {}, contentId: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), targetFestival.getTitle(), targetFestival.getContentId());
         FestivalApiResponse<FestivalDetailItems> result = webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
+                        .scheme("http")
                         .host(festivalUrl)
                         .path("/detailCommon1")
                         .queryParam("MobileOS", "IOS")              //TODO: 서로 다른 환경에 대한 처리 -> 운영 계정 승인 시 고려

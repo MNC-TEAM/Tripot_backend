@@ -51,6 +51,7 @@ class FestivalControllerTest extends BaseControllerTest {
         //when
         ResultActions actions = mockMvc.perform(
                 post("/api/v1/festivals")
+                        .queryParam("eventStartDate", "20250101")
                         .accept(MediaType.APPLICATION_JSON)
         );
 

@@ -68,6 +68,33 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @DisplayName("축제 저장 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomAdmin
+    void saveFestival() throws Exception {
+
+        //given
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                post("/api/v1/festivals")
+                        .queryParam("eventStartDate", "20250101")
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_CREATE_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_CREATE_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+
+        List<Festival> result = festivalRepository.findAll();
+        assertThat(result).isNotEmpty();
+    }
+
+    @Test
     @DisplayName("축제 개최시 개수 조회 - 응답이 정상적으로 반환되어야 함")
     @WithMockCustomUser
     void findFestivalCityCount() throws Exception {
