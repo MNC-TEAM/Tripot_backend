@@ -8,6 +8,7 @@ import com.junior.domain.report.ReportType;
 import com.junior.domain.story.Comment;
 import com.junior.domain.story.Story;
 import com.junior.dto.report.*;
+import com.junior.dto.story.AdminStoryDetailDto;
 import com.junior.exception.*;
 import com.junior.page.PageCustom;
 import com.junior.repository.comment.CommentRepository;
@@ -138,19 +139,54 @@ public class ReportService {
         return new PageCustom<>(result, report.getPageable(), report.getTotalElements());
     }
 
+    @Transactional
+    public AdminStoryDetailDto findReportTargetStoryDetail(Long reportId){
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow((() -> new ReportException(StatusCode.REPORT_NOT_FOUND)));
+
+        if (report.getReportType() != ReportType.STORY) {
+            throw new ReportException(StatusCode.REPORT_NOT_VALID);
+        }
+
+        report.confirmReport();
+
+        log.info("[{}] 신고 대상 스토리 상세 조회", Thread.currentThread().getStackTrace()[1].getMethodName());
+
+        return AdminStoryDetailDto.from(report.getStory());
+    }
+
+    @Deprecated
+    @Transactional
     public void confirmReport(Long id) {
 
         Report report = reportRepository.findById(id)
                 .orElseThrow(() -> new ReportException(StatusCode.REPORT_NOT_FOUND));
 
+        if (report.getReportStatus() == ReportStatus.CONFIRMED) {
+            throw new ReportException(StatusCode.REPORT_ALREADY_CONFIRMED);
+        } else if (report.getReportStatus() == ReportStatus.DELETED ||
+                (report.getReportType()==ReportType.STORY && report.getStory().getIsDeleted()) ||
+                (report.getReportType()==ReportType.COMMENT && report.getComment().getIsDeleted())) {
+            throw new ReportException(StatusCode.REPORT_TARGET_ALREADY_DELETED);
+        }
+
         log.info("[{}] 신고내역 확인 id: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), report.getId());
         report.confirmReport();
     }
 
+    @Transactional
     public void deleteReportTarget(Long id) {
 
         Report report = reportRepository.findById(id)
                 .orElseThrow(() -> new ReportException(StatusCode.REPORT_NOT_FOUND));
+
+        if (report.getReportStatus() == ReportStatus.CONFIRMED) {
+            throw new ReportException(StatusCode.REPORT_ALREADY_CONFIRMED);
+        } else if (report.getReportStatus() == ReportStatus.DELETED ||
+                (report.getReportType()==ReportType.STORY && report.getStory().getIsDeleted()) ||
+                (report.getReportType()==ReportType.COMMENT && report.getComment().getIsDeleted())) {
+            throw new ReportException(StatusCode.REPORT_TARGET_ALREADY_DELETED);
+        }
 
         log.info("[{}] 신고대상 글 삭제 id: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), report.getId());
         report.deleteReportTarget();

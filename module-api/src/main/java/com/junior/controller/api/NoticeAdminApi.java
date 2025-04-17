@@ -13,14 +13,17 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Notice Admin")
+@Validated
 public interface NoticeAdminApi {
 
     @Operation(summary = "공지사항 업로드", description = "공지사항을 업로드합니다.",
@@ -38,7 +41,7 @@ public interface NoticeAdminApi {
                                                     """
                                     )))
             })
-    public CommonResponse<Object> saveNotice(@AuthenticationPrincipal UserPrincipal principal, @RequestBody CreateNoticeDto createNoticeDto);
+    public CommonResponse<Object> saveNotice(@AuthenticationPrincipal UserPrincipal principal, @Valid @RequestBody CreateNoticeDto createNoticeDto);
 
 
     @Operation(summary = "공지사항 조회", description = "공지사항을 조회합니다.",
@@ -170,7 +173,7 @@ public interface NoticeAdminApi {
                                             )
                                     }))
             })
-    public CommonResponse<Object> updateNotice(@PathVariable(name = "notice_id") Long noticeId, @RequestBody UpdateNoticeDto updateNoticeDto);
+    public CommonResponse<Object> updateNotice(@PathVariable(name = "notice_id") Long noticeId, @Valid @RequestBody UpdateNoticeDto updateNoticeDto);
 
     @Operation(summary = "공지사항 삭제", description = "공지사항을 삭제합니다.",
             responses = {

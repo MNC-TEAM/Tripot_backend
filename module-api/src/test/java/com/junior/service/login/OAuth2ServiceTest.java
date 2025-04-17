@@ -9,21 +9,30 @@ import com.junior.dto.jwt.RefreshTokenDto;
 import com.junior.dto.member.CheckActiveMemberDto;
 import com.junior.dto.oauth2.OAuth2LoginDto;
 import com.junior.dto.oauth2.OAuth2Provider;
+import com.junior.dto.oauth2.OAuth2UserInfo;
 import com.junior.exception.JwtErrorException;
 import com.junior.exception.StatusCode;
 import com.junior.repository.member.MemberRepository;
 import com.junior.security.JwtUtil;
+import com.junior.strategy.oauth2.AppleOAuth2LoginStrategy;
+import com.junior.strategy.oauth2.KakaoOAuth2LoginStrategy;
+import com.junior.strategy.oauth2.OAuth2MemberStrategy;
 import com.junior.util.RedisUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,6 +52,18 @@ class OAuth2ServiceTest {
     private JwtUtil jwtUtil;
     @Mock
     private RedisUtil redisUtil;
+    @Spy
+    private List<OAuth2MemberStrategy> strategyList = new ArrayList<>();
+    @Mock
+    private KakaoOAuth2LoginStrategy kakaoOAuth2LoginStrategy;
+    @Mock
+    private AppleOAuth2LoginStrategy appleOAuth2LoginStrategy;
+
+    @BeforeEach
+    public void init(){
+        strategyList.add(kakaoOAuth2LoginStrategy);
+        strategyList.add(appleOAuth2LoginStrategy);
+    }
 
 
     @Test
@@ -56,11 +77,17 @@ class OAuth2ServiceTest {
                 .nickname("sample_nickname")
                 .build();
         OAuth2Provider kakaoProvider = OAuth2Provider.KAKAO;
+        OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfo.builder()
+                .id("1234")
+                .nickname("sample_nickname")
+                .provider(OAuth2Provider.KAKAO)
+                .build();
 
         String sampleAccess = "sample_access_token";
         String sampleRefresh = "sample_refresh_token";
 
-
+        given(kakaoOAuth2LoginStrategy.isTarget(OAuth2Provider.KAKAO)).willReturn(true);
+        given(kakaoOAuth2LoginStrategy.getOAuth2UserInfo(oAuth2LoginDto)).willReturn(oAuth2UserInfo);
         given(jwtUtil.createJwt(any(LoginCreateJwtDto.class), eq("access"))).willReturn(sampleAccess);
         given(jwtUtil.createJwt(any(LoginCreateJwtDto.class), eq("refresh"))).willReturn(sampleRefresh);
         given(memberRepository.existsByUsername(anyString())).willReturn(false);
@@ -76,7 +103,7 @@ class OAuth2ServiceTest {
         assertThat(response.getHeader("refresh_token")).isEqualTo("Bearer " + sampleRefresh);
 
         //새 회원이므로 isActivate는 false여야 함
-        assertThat(result.nickname()).isEqualTo("sample_nickname");
+        assertThat(result.nickname()).isEqualTo("");
         assertThat(result.isActivate()).isFalse();
     }
 
@@ -95,11 +122,16 @@ class OAuth2ServiceTest {
         String sampleAccess = "sample_access_token";
         String sampleRefresh = "sample_refresh_token";
 
+        given(kakaoOAuth2LoginStrategy.isTarget(OAuth2Provider.KAKAO)).willReturn(true);
+        given(kakaoOAuth2LoginStrategy.getOAuth2UserInfo(oAuth2LoginDto)).willReturn(OAuth2UserInfo.builder()
+                .id("1234")
+                .nickname("sample_nickname")
+                .provider(OAuth2Provider.KAKAO)
+                .build());
         given(jwtUtil.createJwt(any(LoginCreateJwtDto.class), eq("access"))).willReturn(sampleAccess);
         given(jwtUtil.createJwt(any(LoginCreateJwtDto.class), eq("refresh"))).willReturn(sampleRefresh);
         given(memberRepository.existsByUsername(anyString())).willReturn(true);
         given(memberRepository.findByUsername(anyString())).willReturn(Optional.ofNullable(Member.builder()
-                .nickname("nickname")
                 .username("username")
                 .status(MemberStatus.PREACTIVE)
                 .role(MemberRole.USER)
@@ -117,7 +149,7 @@ class OAuth2ServiceTest {
         assertThat(response.getHeader("refresh_token")).isEqualTo("Bearer " + sampleRefresh);
 
         //새 회원이므로 isActivate는 false여야 함
-        assertThat(result.nickname()).isEqualTo("nickname");
+        assertThat(result.nickname()).isEqualTo("");
         assertThat(result.isActivate()).isFalse();
     }
 
@@ -132,16 +164,21 @@ class OAuth2ServiceTest {
                 .nickname("nickname")
                 .build();
         OAuth2Provider kakaoProvider = OAuth2Provider.KAKAO;
+        OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfo.builder()
+                .id("1234")
+                .nickname("sample_nickname")
+                .provider(OAuth2Provider.KAKAO)
+                .build();
 
         String sampleAccess = "sample_access_token";
         String sampleRefresh = "sample_refresh_token";
 
-
+        given(kakaoOAuth2LoginStrategy.isTarget(OAuth2Provider.KAKAO)).willReturn(true);
+        given(kakaoOAuth2LoginStrategy.getOAuth2UserInfo(oAuth2LoginDto)).willReturn(oAuth2UserInfo);
         given(jwtUtil.createJwt(any(LoginCreateJwtDto.class), eq("access"))).willReturn(sampleAccess);
         given(jwtUtil.createJwt(any(LoginCreateJwtDto.class), eq("refresh"))).willReturn(sampleRefresh);
         given(memberRepository.existsByUsername(anyString())).willReturn(true);
         given(memberRepository.findByUsername(anyString())).willReturn(Optional.ofNullable(Member.builder()
-                .nickname("nickname")
                 .username("username")
                 .status(MemberStatus.ACTIVE)
                 .role(MemberRole.USER)
@@ -159,7 +196,7 @@ class OAuth2ServiceTest {
         assertThat(response.getHeader("refresh_token")).isEqualTo("Bearer " + sampleRefresh);
 
         //새 회원이므로 isActivate는 false여야 함
-        assertThat(result.nickname()).isEqualTo("nickname");
+        assertThat(result.nickname()).isEqualTo("");
         assertThat(result.isActivate()).isTrue();
     }
 

@@ -1,5 +1,6 @@
 package com.junior.controller.version;
 
+import com.junior.controller.api.VersionApi;
 import com.junior.domain.version.Platform;
 import com.junior.dto.version.VersionCheckDto;
 import com.junior.dto.version.VersionCheckResponseDto;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class VersionController {
+public class VersionController implements VersionApi {
 
     private final VersionService versionService;
 

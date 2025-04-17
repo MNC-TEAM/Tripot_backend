@@ -13,14 +13,17 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Q&A Admin")
+@Validated
 public interface QnaAdminApi {
 
     @Operation(summary = "Q&A 업로드", description = "Q&A을 업로드합니다.",
@@ -38,7 +41,7 @@ public interface QnaAdminApi {
                                                     """
                                     )))
             })
-    public CommonResponse<Object> saveQna(@AuthenticationPrincipal UserPrincipal principal, @RequestBody CreateQnaDto createQnaDto);
+    public CommonResponse<Object> saveQna(@AuthenticationPrincipal UserPrincipal principal, @Valid @RequestBody CreateQnaDto createQnaDto);
 
 
     @Operation(summary = "Q&A 조회", description = "Q&A를 조회합니다.",
@@ -170,7 +173,7 @@ public interface QnaAdminApi {
                                             )
                                     }))
             })
-    public CommonResponse<Object> updateQna(@PathVariable(name = "qna_id") Long qnaId, @RequestBody UpdateQnaDto updateQnaDto);
+    public CommonResponse<Object> updateQna(@PathVariable(name = "qna_id") Long qnaId, @Valid @RequestBody UpdateQnaDto updateQnaDto);
 
     @Operation(summary = "Q&A 삭제", description = "Q&A을 삭제합니다.",
             responses = {
