@@ -2,6 +2,7 @@ package com.junior.repository.festival;
 
 
 import com.junior.domain.festival.Festival;
+import com.junior.dto.festival.FestivalAdminDto;
 import com.junior.dto.festival.FestivalCityCountDto;
 import com.junior.dto.festival.FestivalDto;
 import com.junior.dto.festival.FestivalMapDto;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 
@@ -157,6 +159,63 @@ public class FestivalRepositoryTest extends BaseRepositoryTest {
         //then
         assertThat(resultList.size()).isEqualTo(1);
         assertThat(resultList.get(0).title()).isEqualTo("축제 3");
+
+    }
+
+    @Test
+    @DisplayName("축제 리스트 관리자 조회 - 기능이 정상적으로 동작해야 함")
+    void findFestivalAdmin() throws Exception {
+        //given
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        String q = "";
+
+        //when
+        Page<FestivalAdminDto> result = festivalRepository.findFestivalAdmin(pageRequest, q);
+        List<FestivalAdminDto> resultList = result.getContent();
+
+
+        //then
+        assertThat(resultList.size()).isEqualTo(9);
+        assertThat(resultList.get(0).title()).isEqualTo("축제 9");
+
+
+    }
+
+    @Test
+    @DisplayName("축제 리스트 관리자 조회 - 페이징이 정상적으로 동작해야 함")
+    void findFestivalAdminPaging() throws Exception {
+        //given
+        PageRequest pageRequest = PageRequest.of(1, 5);
+        String q = "";
+
+        //when
+        Page<FestivalAdminDto> result = festivalRepository.findFestivalAdmin(pageRequest, q);
+        List<FestivalAdminDto> resultList = result.getContent();
+
+
+        //then
+        assertThat(resultList.size()).isEqualTo(4);
+        assertThat(resultList.get(0).title()).isEqualTo("축제 4");
+
+
+    }
+
+    @Test
+    @DisplayName("축제 리스트 관리자 조회 - 검색 기능이 정상적으로 동작해야 함")
+    void findFestivalAdminByKeyword() throws Exception {
+        //given
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        String q = "3";
+
+        //when
+        Page<FestivalAdminDto> result = festivalRepository.findFestivalAdmin(pageRequest, q);
+        List<FestivalAdminDto> resultList = result.getContent();
+
+
+        //then
+        assertThat(resultList.size()).isEqualTo(1);
+        assertThat(resultList.get(0).title()).isEqualTo("축제 3");
+
 
     }
 }

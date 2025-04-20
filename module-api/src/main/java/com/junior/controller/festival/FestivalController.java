@@ -1,19 +1,17 @@
 package com.junior.controller.festival;
 
 import com.junior.controller.api.FestivalApi;
-import com.junior.dto.festival.FestivalCityCountDto;
-import com.junior.dto.festival.FestivalDetailDto;
-import com.junior.dto.festival.FestivalDto;
-import com.junior.dto.festival.FestivalMapDto;
+import com.junior.dto.festival.*;
 import com.junior.dto.story.GeoRect;
 import com.junior.exception.StatusCode;
+import com.junior.page.PageCustom;
 import com.junior.response.CommonResponse;
 import com.junior.service.festival.FestivalService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,5 +61,10 @@ public class FestivalController implements FestivalApi {
         return ResponseEntity.status(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS, festivalService.findFestivalDetail(festivalId)));
     }
 
+    @GetMapping("/api/v1/admin/festivals")
+    @Override
+    public ResponseEntity<CommonResponse<PageCustom<FestivalAdminDto>>> findFestivalAdmin(Pageable pageable, String q) {
+        return ResponseEntity.status(StatusCode.FESTIVAL_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_FIND_SUCCESS, festivalService.findFestivalAdmin(pageable, q)));
+    }
 
 }

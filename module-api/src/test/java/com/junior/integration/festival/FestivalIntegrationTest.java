@@ -287,4 +287,59 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
 
 
     }
+
+    @Test
+    @DisplayName("축제 관리자 조회 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomAdmin
+    void findFestivalAdmin() throws Exception {
+        //given
+        Integer size = 10;
+        String q = "";
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/festivals")
+                        .queryParam("size", size.toString())
+                        .queryParam("q", q)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.content.length()").value(9));
+
+    }
+
+    @Test
+    @DisplayName("축제 관리자 조회 - 검색이 정상적으로 반환되어야 함")
+    @WithMockCustomAdmin
+    void findFestivalAdminWithKeyword() throws Exception {
+        //given
+        Integer size = 10;
+        String q = "3";
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/festivals")
+                        .queryParam("size", size.toString())
+                        .queryParam("q", q)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.content.length()").value(1))
+                .andExpect(jsonPath("$.data.content[0].id").value(3));
+
+    }
 }

@@ -1,12 +1,14 @@
 package com.junior.controller.festival;
 
 import com.junior.controller.BaseControllerTest;
+import com.junior.dto.festival.FestivalAdminDto;
 import com.junior.dto.festival.FestivalCityCountDto;
 import com.junior.dto.festival.FestivalDto;
 import com.junior.dto.festival.FestivalMapDto;
 import com.junior.dto.story.GeoPointDto;
 import com.junior.dto.story.GeoRect;
 import com.junior.exception.StatusCode;
+import com.junior.page.PageCustom;
 import com.junior.security.WithMockCustomAdmin;
 import com.junior.security.WithMockCustomUser;
 import com.junior.service.festival.FestivalService;
@@ -176,6 +178,53 @@ class FestivalControllerTest extends BaseControllerTest {
                         .queryParam("cursorId", cursorId.toString())
                         .queryParam("size", size.toString())
                         .queryParam("city", city)
+                        .queryParam("q", q)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.content[0].id").value(0))
+                .andExpect(jsonPath("$.data.content[1].id").value(1))
+                .andExpect(jsonPath("$.data.content[2].title").value("title"));
+
+
+
+    }
+
+    @Test
+    @DisplayName("축제 관리자 조회 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomAdmin
+    public void findFestivalAdmin() throws Exception {
+        //given
+        Integer size = 10;
+        String q = "";
+
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
+        List<FestivalAdminDto> resultList = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            resultList.add(FestivalAdminDto.builder()
+                    .duration("duration")
+                    .location("location")
+                    .title("title")
+                    .id((long) i)
+                    .build());
+        }
+
+        PageCustom<FestivalAdminDto> result = new PageCustom<>(resultList, pageRequest, 4);
+
+        given(festivalService.findFestivalAdmin(any(Pageable.class), anyString())).willReturn(result);
+        //when
+
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/festivals")
+                        .queryParam("size", size.toString())
                         .queryParam("q", q)
                         .accept(MediaType.APPLICATION_JSON)
         );

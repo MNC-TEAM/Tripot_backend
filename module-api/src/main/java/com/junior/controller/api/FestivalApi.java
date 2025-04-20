@@ -1,9 +1,11 @@
 package com.junior.controller.api;
 
+import com.junior.dto.festival.FestivalAdminDto;
 import com.junior.dto.festival.FestivalCityCountDto;
 import com.junior.dto.festival.FestivalDto;
 import com.junior.dto.festival.FestivalMapDto;
 import com.junior.dto.story.GeoRect;
+import com.junior.page.PageCustom;
 import com.junior.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -51,4 +54,8 @@ public interface FestivalApi {
                                                                     @RequestParam(name = "size") int size,
                                                                     @RequestParam(name = "city", required = false, defaultValue = "") String city,
                                                                     @RequestParam(name = "q", required = false, defaultValue = "") String q);
+
+    @GetMapping("/api/v1/admin/festivals")
+    ResponseEntity<CommonResponse<PageCustom<FestivalAdminDto>>> findFestivalAdmin(@PageableDefault(size = 15, page = 1) Pageable pageable, @RequestParam(name = "q") String q);
+
 }

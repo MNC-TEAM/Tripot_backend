@@ -4,13 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.junior.config.WebClientConfig;
 import com.junior.domain.festival.Festival;
-import com.junior.dto.festival.FestivalCityCountDto;
-import com.junior.dto.festival.FestivalDetailDto;
-import com.junior.dto.festival.FestivalDto;
-import com.junior.dto.festival.FestivalMapDto;
+import com.junior.dto.festival.*;
 import com.junior.dto.festival.api.*;
 import com.junior.dto.story.GeoPointDto;
 import com.junior.dto.story.GeoRect;
+import com.junior.page.PageCustom;
 import com.junior.repository.festival.FestivalRepository;
 import com.junior.service.BaseServiceTest;
 import com.junior.util.CustomStringUtil;
@@ -20,10 +18,7 @@ import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -303,6 +298,38 @@ class FestivalServiceTest extends BaseServiceTest {
         //then
         assertThat(festivalDetail.detail()).isEqualTo(detail);
         assertThat(festivalDetail.contentId()).isEqualTo(festival.getContentId());
+
+    }
+
+
+    @Test
+    @DisplayName("관리자 축제 리스트 출력 - 축제 리스트를 출력해야 함")
+    void findFestivalAdmin() throws Exception {
+        //given
+        PageRequest pageRequest1 = PageRequest.of(1, 10);
+        String q = "";
+
+        PageRequest pageRequest2 = PageRequest.of(0, 10);
+
+        List<FestivalAdminDto> resultList = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            resultList.add(FestivalAdminDto.builder()
+                    .duration("duration")
+                    .location("location")
+                    .title("title")
+                    .id((long) i)
+                    .build());
+        }
+
+        PageImpl<FestivalAdminDto> result = new PageImpl<>(resultList, pageRequest2, 0);
+
+        given(festivalRepository.findFestivalAdmin(any(Pageable.class), anyString())).willReturn(result);
+
+        //when
+        PageCustom<FestivalAdminDto> res = festivalService.findFestivalAdmin(pageRequest1, q);
+
+        //then
+        assertThat(res.getContent().size()).isEqualTo(4);
 
     }
 }

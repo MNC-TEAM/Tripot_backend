@@ -5,13 +5,16 @@ import com.junior.dto.story.GeoPointDto;
 import com.junior.util.CustomStringUtil;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 
@@ -63,6 +66,7 @@ public class FestivalRepositoryImpl implements FestivalRepositoryCustom {
     @Override
     public Slice<FestivalDto> findFestival(Long cursorId, Pageable pageable, String city, String q) {
 
+        log.info("[{}] 축제내용 조회 쿼리 실행", Thread.currentThread().getStackTrace()[1].getMethodName());
         List<FestivalDto> resultList = queryFactory
                 .select(
                         new QFestivalDto(
@@ -92,6 +96,41 @@ public class FestivalRepositoryImpl implements FestivalRepositoryCustom {
         }
 
         return new SliceImpl<>(resultList, pageable, hasNext);
+    }
+
+    @Override
+    public Page<FestivalAdminDto> findFestivalAdmin(Pageable pageable, String q){
+
+        log.info("[{}] 관리자 축제내용 조회 쿼리 실행", Thread.currentThread().getStackTrace()[1].getMethodName());
+        List<FestivalAdminDto> result = queryFactory
+                .select(
+                        new QFestivalAdminDto(
+                                festival.id,
+                                festival.title,
+                                festival.startDate,
+                                festival.endDate,
+                                festival.city,
+                                festival.location
+                        )
+                )
+                .from(festival)
+                .where(
+                        queryContains(q)
+                )
+                .orderBy(festival.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        log.info("[{}] 관리자 축제내용 카운트 쿼리 실행", Thread.currentThread().getStackTrace()[1].getMethodName());
+        JPAQuery<Long> count = queryFactory
+                .select(
+                        festival.count()
+                )
+                .from(festival)
+                .where(queryContains(q));
+
+        return PageableExecutionUtils.getPage(result, pageable, count::fetchOne);
     }
 
     private static BooleanExpression idLt(Long cursorId) {

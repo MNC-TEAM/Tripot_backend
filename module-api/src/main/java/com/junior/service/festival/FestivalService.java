@@ -1,20 +1,20 @@
 package com.junior.service.festival;
 
 import com.junior.domain.festival.Festival;
-import com.junior.dto.festival.FestivalCityCountDto;
-import com.junior.dto.festival.FestivalDetailDto;
-import com.junior.dto.festival.FestivalDto;
-import com.junior.dto.festival.FestivalMapDto;
+import com.junior.dto.festival.*;
 import com.junior.dto.festival.api.*;
 import com.junior.dto.story.GeoRect;
 import com.junior.exception.CustomException;
 import com.junior.exception.StatusCode;
+import com.junior.page.PageCustom;
 import com.junior.repository.festival.FestivalRepository;
 import com.junior.util.CustomStringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -207,6 +207,14 @@ public class FestivalService {
                 .imgUrl(targetFestival.getImgUrl())
                 .detail(item.getOverview())
                 .build();
+    }
+
+    public PageCustom<FestivalAdminDto> findFestivalAdmin(Pageable pageable, String q){
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
+
+        Page<FestivalAdminDto> result = festivalRepository.findFestivalAdmin(pageRequest, q);
+
+        return new PageCustom<>(result.getContent(), result.getPageable(), result.getTotalElements());
     }
 
 
