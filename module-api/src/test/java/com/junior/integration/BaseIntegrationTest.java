@@ -2,6 +2,7 @@ package com.junior.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.junior.config.SecurityConfig;
+import com.junior.domain.festival.Festival;
 import com.junior.domain.member.Member;
 import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
@@ -19,6 +20,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,6 +140,20 @@ public class BaseIntegrationTest {
                 .member(member)
                 .content("content")
                 .story(story)
+                .build();
+    }
+
+    protected Festival createFestival(String title, String city, double lat, double logt, long contentId){
+        return Festival.builder()
+                .contentId(contentId)
+                .title(title)
+                .city(city)
+                .location("location")
+                .imgUrl("url.com")
+                .startDate(LocalDate.of(2025, 1, 1))
+                .endDate(LocalDate.of(2025, 1, 2))
+                .lat(lat)
+                .logt(logt)
                 .build();
     }
 }

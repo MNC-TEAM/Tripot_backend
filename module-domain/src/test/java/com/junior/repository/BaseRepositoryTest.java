@@ -1,6 +1,7 @@
 package com.junior.repository;
 
 import com.junior.TestConfig;
+import com.junior.domain.festival.Festival;
 import com.junior.domain.member.Member;
 import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +81,20 @@ public class BaseRepositoryTest {
                 .reportType(ReportType.COMMENT)
                 .comment(comment)
                 .reportReason(ReportReason.SPAMMARKET)
+                .build();
+    }
+
+    public Festival createFestival(String title, String city, double lat, double logt){
+        return Festival.builder()
+                .contentId((long) (Math.random() * 1000))
+                .title(title)
+                .city(city)
+                .location("location")
+                .imgUrl("url.com")
+                .startDate(LocalDate.of(2025, 1, 1))
+                .endDate(LocalDate.of(2025, 1, 2))
+                .lat(lat)
+                .logt(logt)
                 .build();
     }
 

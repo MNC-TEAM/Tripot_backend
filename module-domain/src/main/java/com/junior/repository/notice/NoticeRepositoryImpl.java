@@ -25,15 +25,6 @@ public class NoticeRepositoryImpl implements NoticeRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
-    private static BooleanExpression idLt(Long cursorId) {
-
-        return cursorId != null ? notice.id.lt(cursorId) : null;
-    }
-
-    private static BooleanExpression queryContains(String q) {
-        return notice.title.contains(q).or(notice.content.contains(q));
-    }
-
     /**
      * 관리자 페이지에서의 공지사항 조회
      * @param q
@@ -103,5 +94,13 @@ public class NoticeRepositoryImpl implements NoticeRepositoryCustom {
         return new SliceImpl<>(resultList, pageable, hasNext);
 
 
+    }
+
+    private static BooleanExpression idLt(Long cursorId) {
+        return cursorId != null ? notice.id.lt(cursorId) : null;
+    }
+
+    private static BooleanExpression queryContains(String q) {
+        return notice.title.contains(q).or(notice.content.contains(q));
     }
 }
