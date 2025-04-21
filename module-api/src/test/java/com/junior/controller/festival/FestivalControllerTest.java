@@ -1,10 +1,7 @@
 package com.junior.controller.festival;
 
 import com.junior.controller.BaseControllerTest;
-import com.junior.dto.festival.FestivalAdminDto;
-import com.junior.dto.festival.FestivalCityCountDto;
-import com.junior.dto.festival.FestivalDto;
-import com.junior.dto.festival.FestivalMapDto;
+import com.junior.dto.festival.*;
 import com.junior.dto.story.GeoPointDto;
 import com.junior.dto.story.GeoRect;
 import com.junior.exception.StatusCode;
@@ -198,6 +195,43 @@ class FestivalControllerTest extends BaseControllerTest {
     }
 
     @Test
+    @DisplayName("축제 상세조회 - 응답이 정상적으로 반환되어야 함")
+    void findFestivalDetail() throws Exception {
+        //given
+        Long festivalId = 1L;
+
+        FestivalDetailDto result = FestivalDetailDto.builder()
+                .id(1L)
+                .contentId(3113671L)
+                .title("title")
+                .location("location")
+                .detail("detail")
+                .city("city")
+                .imgUrl("imgurl")
+                .duration("duration")
+                .build();
+
+        given(festivalService.findFestivalDetail(anyLong())).willReturn(result);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/festivals/{festival_id}", festivalId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.detail").value("detail"));
+
+    }
+
+    @Test
     @DisplayName("축제 관리자 조회 - 응답이 정상적으로 반환되어야 함")
     @WithMockCustomAdmin
     public void findFestivalAdmin() throws Exception {
@@ -241,6 +275,42 @@ class FestivalControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.data.content[2].title").value("title"));
 
 
+
+    }
+
+    @Test
+    @DisplayName("관리자 축제 상세조회 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomAdmin
+    void findFestivalAdminDetail() throws Exception {
+        //given
+        Long festivalId = 1L;
+
+        FestivalDetailAdminDto result = FestivalDetailAdminDto.builder()
+                .id(1L)
+                .contentId(3113671L)
+                .title("title")
+                .location("location")
+                .detail("detail")
+                .duration("duration")
+                .build();
+
+        given(festivalService.findFestivalAdminDetail(anyLong())).willReturn(result);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/festivals/{festival_id}", festivalId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.detail").value("detail"));
 
     }
 }

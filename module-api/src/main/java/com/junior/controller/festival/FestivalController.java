@@ -56,15 +56,22 @@ public class FestivalController implements FestivalApi {
         return ResponseEntity.status(StatusCode.FESTIVAL_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_FIND_SUCCESS, festivalService.findFestival(cursorId, size, city, q)));
     }
 
+    @Override
     @GetMapping("/api/v1/festivals/{festival_id}")
     public ResponseEntity<CommonResponse<FestivalDetailDto>> findFestivalDetail(@PathVariable("festival_id") Long festivalId) {
         return ResponseEntity.status(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS, festivalService.findFestivalDetail(festivalId)));
     }
 
-    @GetMapping("/api/v1/admin/festivals")
     @Override
+    @GetMapping("/api/v1/admin/festivals")
     public ResponseEntity<CommonResponse<PageCustom<FestivalAdminDto>>> findFestivalAdmin(Pageable pageable, String q) {
         return ResponseEntity.status(StatusCode.FESTIVAL_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_FIND_SUCCESS, festivalService.findFestivalAdmin(pageable, q)));
+    }
+
+    @Override
+    @GetMapping("/api/v1/admin/festivals/{festival_id}")
+    public ResponseEntity<CommonResponse<FestivalDetailAdminDto>> findFestivalAdminDetail(@PathVariable("festival_id") Long festivalId) {
+        return ResponseEntity.status(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS, festivalService.findFestivalAdminDetail(festivalId)));
     }
 
 }

@@ -143,9 +143,9 @@ public class BaseIntegrationTest {
                 .build();
     }
 
-    protected Festival createFestival(String title, String city, double lat, double logt){
+    protected Festival createFestival(String title, String city, double lat, double logt, long contentId){
         return Festival.builder()
-                .contentId((long) (Math.random() * 1000))
+                .contentId(contentId)
                 .title(title)
                 .city(city)
                 .location("location")

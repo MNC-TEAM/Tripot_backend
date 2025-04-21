@@ -332,4 +332,82 @@ class FestivalServiceTest extends BaseServiceTest {
         assertThat(res.getContent().size()).isEqualTo(4);
 
     }
+
+    @Test
+    @DisplayName("관리자 축제 상세정보 조회 - 로직이 정상적으로 동작해야 함")
+    void findFestivalAdminDetail() throws JsonProcessingException {
+
+        //given
+        Festival festival = Festival.builder()
+                .city("서울특별시")
+                .contentId(3113671L)
+                .startDate(CustomStringUtil.stringToDate("20250509"))
+                .endDate(CustomStringUtil.stringToDate("20250511"))
+                .title("가락몰 빵축제 전국빵지자랑")
+                .location("송파구 양재대로 932 (가락동) 가락몰 3층 하늘공원")
+                .imgUrl("imgUrl.com")
+                .lat(37.4960786971)
+                .logt(127.1107693087)
+                .build();
+
+
+
+        given(festivalRepository.findById(anyLong())).willReturn(Optional.ofNullable(festival));
+
+        String detail = "전국 각지의 농수축산물이 모이는 가락몰에서, 전국 각지의 빵 맛집들이 모여 서울 최초의 전국 빵 축제를 개최한다.";
+        FestivalDetailItem sampleFestivalApi = FestivalDetailItem.builder()
+                .addr1("서울특별시 송파구 양재대로 932 (가락동)")
+                .addr2("가락몰 3층 하늘공원")
+                .contentid("3113671")
+                .eventstartdate("20250509")
+                .eventenddate("20250511")
+                .firstimage("http://tong.visitkorea.or.kr/cms/resource/91/3484791_image2_1.jpg")
+                .mapx("127.1107693087")
+                .mapy("37.4960786971")
+                .title("가락몰 빵축제 전국빵지자랑")
+                .overview(detail)
+                .build();
+
+        FestivalDetailItems festivalDetailItems = FestivalDetailItems
+                .builder()
+                .item(new ArrayList<>())
+                .build();
+
+        festivalDetailItems.getItem().add(sampleFestivalApi);
+
+        FestivalBody<FestivalDetailItems> festivalBody = FestivalBody.<FestivalDetailItems>builder()
+                .items(festivalDetailItems)
+                .pageNo(1)
+                .numOfRows(1)
+                .totalCount(1)
+                .build();
+
+        FestivalApiResponse<FestivalDetailItems> festivalApiResponse = FestivalApiResponse.<FestivalDetailItems>builder()
+                .response(
+                        FestivalApiInnerResponse.<FestivalDetailItems>builder()
+                                .header(FestivalHeader.builder()
+                                        .resultCode("0000")
+                                        .resultMsg("OK")
+                                        .build())
+                                .body(festivalBody)
+                                .build()
+                ).build();
+
+
+        //webClient 요청 시 받게 될 가짜 응답을 미리 설정
+        mockWebServer.enqueue(new MockResponse()
+                .addHeader("Content-Type", "application/json")
+                .setResponseCode(200)
+                .setBody(
+                        objectMapper.writeValueAsString(festivalApiResponse)
+                ));
+
+        //when
+        FestivalDetailAdminDto festivalDetail = festivalService.findFestivalAdminDetail(1L);
+
+        //then
+        assertThat(festivalDetail.detail()).isEqualTo(detail);
+        assertThat(festivalDetail.contentId()).isEqualTo(festival.getContentId());
+
+    }
 }

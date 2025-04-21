@@ -2,9 +2,6 @@ package com.junior.integration.festival;
 
 import com.junior.domain.festival.Festival;
 import com.junior.domain.member.Member;
-import com.junior.dto.festival.FestivalCityCountDto;
-import com.junior.dto.festival.FestivalDto;
-import com.junior.dto.festival.FestivalMapDto;
 import com.junior.dto.story.GeoPointDto;
 import com.junior.dto.story.GeoRect;
 import com.junior.exception.StatusCode;
@@ -13,25 +10,17 @@ import com.junior.repository.festival.FestivalRepository;
 import com.junior.repository.member.MemberRepository;
 import com.junior.security.WithMockCustomAdmin;
 import com.junior.security.WithMockCustomUser;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -59,7 +48,10 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
         memberRepository.save(activeTestMember2);
 
         for (int i = 1; i <= 9; i++) {
-            Festival festival = createFestival("축제 " + i, i % 2 == 1 ? "서울특별시" : "강원특별자치도", i % 2 == 1 ? 37.0 : 40.0, i % 2 == 1 ? 125.0 : 130.0);
+            Festival festival = createFestival("축제 " + i, i % 2 == 1 ? "서울특별시" : "강원특별자치도",
+                    i % 2 == 1 ? 37.0 : 40.0,
+                    i % 2 == 1 ? 125.0 : 130.0,
+                    i == 1 ? 3113671L : (long) (Math.random() * 1000));
 
             festivalRepository.save(festival);
         }
@@ -187,7 +179,6 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.data.content[2].title").value("축제 7"));
 
 
-
     }
 
     @Test
@@ -222,7 +213,6 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.data.content[2].title").value("축제 2"));
 
 
-
     }
 
     @Test
@@ -252,7 +242,6 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.content.length()").value(1))
                 .andExpect(jsonPath("$.data.content[0].id").value(3));
-
 
 
     }
@@ -285,6 +274,54 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.data.content.length()").value(5));
 
 
+    }
+
+    @Test
+    @DisplayName("축제 상세정보 조회 - 응답이 정상적으로 작동해야 함")
+    void findFestivalDetail() throws Exception {
+        //given
+        Long festivalId = 1L;
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/festivals/{festival_id}", festivalId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.detail").isNotEmpty());
+
+    }
+
+    @Test
+    @DisplayName("관리자 축제 상세정보 조회 - 응답이 정상적으로 작동해야 함")
+    @WithMockCustomAdmin
+    void findFestivalAdminDetail() throws Exception {
+        //given
+        Long festivalId = 1L;
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/festivals/{festival_id}", festivalId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.detail").isNotEmpty());
 
     }
 

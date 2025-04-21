@@ -217,5 +217,51 @@ public class FestivalService {
         return new PageCustom<>(result.getContent(), result.getPageable(), result.getTotalElements());
     }
 
+    public FestivalDetailAdminDto findFestivalAdminDetail(Long id) {
+
+        Festival targetFestival = festivalRepository.findById(id)
+                .orElseThrow(() -> new CustomException(StatusCode.FESTIVAL_NOT_FOUND));
+
+        log.info("[{}] 관리자 축제 상세정보 조회 title: {}, contentId: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), targetFestival.getTitle(), targetFestival.getContentId());
+        FestivalApiResponse<FestivalDetailItems> result = webClient
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .scheme("http")
+                        .host(festivalUrl)
+                        .path("/detailCommon1")
+                        .queryParam("MobileOS", "IOS")              //TODO: 서로 다른 환경에 대한 처리 -> 운영 계정 승인 시 고려
+                        .queryParam("MobileApp", "Tripot")
+                        .queryParam("_type", "json")
+                        .queryParam("contentId", targetFestival.getContentId())
+                        .queryParam("defaultYN", "Y")
+                        .queryParam("firstImageYN", "Y")
+                        .queryParam("addrinfoYN", "Y")
+                        .queryParam("mapinfoYN", "Y")
+                        .queryParam("overviewYN", "Y")
+                        .queryParam("serviceKey", festivalApiKey)
+                        .build(true))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<FestivalApiResponse<FestivalDetailItems>>() {
+                })
+                .block();
+
+        if (result.getResponse() == null || !result.getResponse().getHeader().getResultCode().equals("0000") ||
+                result.getResponse().getBody().getItems().getItem().isEmpty()) {
+            throw new CustomException(StatusCode.FESTIVAL_DETAIL_FOUND_FAIL);
+        }
+
+        FestivalDetailItem item = result.getResponse().getBody().getItems().getItem().get(0);
+
+
+        return FestivalDetailAdminDto.builder()
+                .id(id)
+                .contentId(Long.valueOf(item.getContentid()))
+                .title(targetFestival.getTitle())
+                .location(targetFestival.getCity() + " " + targetFestival.getLocation())
+                .duration(CustomStringUtil.durationToString(targetFestival.getStartDate(), targetFestival.getEndDate()))
+                .detail(item.getOverview())
+                .build();
+    }
+
 
 }
