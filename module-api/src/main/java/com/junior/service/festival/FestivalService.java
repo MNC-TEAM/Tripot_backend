@@ -52,6 +52,8 @@ public class FestivalService {
     @Transactional
     public void saveFestival(String eventStartDate, String eventEndDate) {
 
+        festivalRepository.truncateFestival();
+
         String[] thOne = {"01", "03", "05", "07", "08", "10", "12"};
 
         if (eventEndDate.isEmpty()) {
