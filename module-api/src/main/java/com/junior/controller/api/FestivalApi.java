@@ -132,7 +132,10 @@ public interface FestivalApi {
                               ]
                             }
                             """)))
-    ResponseEntity<CommonResponse<List<FestivalMapDto>>> findFestivalByMap(@RequestBody GeoRect geoRect);
+    ResponseEntity<CommonResponse<List<FestivalMapDto>>> findFestivalByMap(@RequestParam(name = "geoPointLtY") Double geoPointLtY,
+                                                                           @RequestParam(name = "geoPointLtX") Double geoPointLtX,
+                                                                           @RequestParam(name = "geoPointRbY") Double geoPointRbY,
+                                                                           @RequestParam(name = "geoPointRbX") Double geoPointRbX);
 
 
     @Operation(summary = "축제 리스트 조회", description = "조건에 부합하는 축제 리스트를 조회합니다.")

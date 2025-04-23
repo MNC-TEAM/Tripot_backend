@@ -2,8 +2,6 @@ package com.junior.integration.festival;
 
 import com.junior.domain.festival.Festival;
 import com.junior.domain.member.Member;
-import com.junior.dto.story.GeoPointDto;
-import com.junior.dto.story.GeoRect;
 import com.junior.exception.StatusCode;
 import com.junior.integration.BaseIntegrationTest;
 import com.junior.repository.festival.FestivalRepository;
@@ -119,22 +117,20 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
     @DisplayName("지도 좌표 기반 축제 리스트 조회 - 응답이 정상적으로 반환되어야 함")
     public void findFestivalByMap() throws Exception {
         //given
-        GeoRect geoRect = GeoRect.builder()
-                .geoPointLt(GeoPointDto.builder()
-                        .latitude(35.0)
-                        .longitude(125.0).build())
-                .geoPointRb(GeoPointDto.builder()
-                        .latitude(39.0)
-                        .longitude(129.0).build())
-                .build();
 
-        String content = objectMapper.writeValueAsString(geoRect);
+        Double geoPointLtY = 35.0;
+        Double geoPointLtX = 125.0;
+        Double geoPointRbY = 39.0;
+        Double geoPointRbX = 129.0;
+
 
         //when
         ResultActions actions = mockMvc.perform(
                 get("/api/v1/festivals/map")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content)
+                        .queryParam("geoPointLtY", geoPointLtY.toString())
+                        .queryParam("geoPointLtX", geoPointLtX.toString())
+                        .queryParam("geoPointRbY", geoPointRbY.toString())
+                        .queryParam("geoPointRbX", geoPointRbX.toString())
                         .accept(MediaType.APPLICATION_JSON)
         );
 
