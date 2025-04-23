@@ -100,14 +100,11 @@ class FestivalControllerTest extends BaseControllerTest {
     @DisplayName("지도 좌표 기반 축제 리스트 조회 - 응답이 정상적으로 반환되어야 함")
     public void findFestivalByMap() throws Exception {
         //given
-        GeoRect geoRect = GeoRect.builder()
-                .geoPointLt(GeoPointDto.builder()
-                        .latitude(35.0)
-                        .longitude(125.0).build())
-                .geoPointRb(GeoPointDto.builder()
-                        .latitude(39.0)
-                        .longitude(129.0).build())
-                .build();
+
+        Double geoPointLtY=35.0;
+        Double geoPointLtX=125.0;
+        Double geoPointRbY=39.0;
+        Double geoPointRbX=129.0;
 
         List<FestivalMapDto> festivalMapDtoList = new ArrayList<>();
         for (int i = 1; i <= 4; i++) {
@@ -118,14 +115,16 @@ class FestivalControllerTest extends BaseControllerTest {
                     .build());
         }
 
-        String content = objectMapper.writeValueAsString(geoRect);
 
-        given(festivalService.findFestivalByMap(geoRect)).willReturn(festivalMapDtoList);
+        given(festivalService.findFestivalByMap(anyDouble(),anyDouble(),anyDouble(),anyDouble())).willReturn(festivalMapDtoList);
         //when
         ResultActions actions = mockMvc.perform(
                 get("/api/v1/festivals/map")
+                        .queryParam("geoPointLtY", geoPointLtY.toString())
+                        .queryParam("geoPointLtX", geoPointLtX.toString())
+                        .queryParam("geoPointRbY", geoPointRbY.toString())
+                        .queryParam("geoPointRbX", geoPointRbX.toString())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(content)
                         .accept(MediaType.APPLICATION_JSON)
         );
 

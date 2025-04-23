@@ -55,27 +55,19 @@ public class FestivalRepositoryTest extends BaseRepositoryTest {
     @DisplayName("지도 좌표 기반 축제 조회 - 응답을 정상적으로 반환해야 함")
     public void findFestivalByMap() throws Exception {
         //given
-        GeoRect geoRect = GeoRect.builder()
-                .geoPointLt(GeoPointDto.builder()
-                        .latitude(35.0)
-                        .longitude(125.0).build())
-                .geoPointRb(GeoPointDto.builder()
-                        .latitude(39.0)
-                        .longitude(129.0).build())
-                .build();
+        Double geoPointLtY = 35.0;
+        Double geoPointLtX = 125.0;
+        Double geoPointRbY = 39.0;
+        Double geoPointRbX = 129.0;
 
-        GeoRect geoRect2 = GeoRect.builder()
-                .geoPointLt(GeoPointDto.builder()
-                        .latitude(39.0)
-                        .longitude(129.0).build())
-                .geoPointRb(GeoPointDto.builder()
-                        .latitude(42.0)
-                        .longitude(132.0).build())
-                .build();
+        Double geoPointLtY2 = 39.0;
+        Double geoPointLtX2 = 129.0;
+        Double geoPointRbY2 = 42.0;
+        Double geoPointRbX2 = 132.0;
 
         //when
-        List<FestivalMapDto> result = festivalRepository.findFestivalByMap(geoRect.geoPointLt(), geoRect.geoPointRb());
-        List<FestivalMapDto> result2 = festivalRepository.findFestivalByMap(geoRect2.geoPointLt(), geoRect2.geoPointRb());
+        List<FestivalMapDto> result = festivalRepository.findFestivalByMap(geoPointLtY, geoPointLtX, geoPointRbY, geoPointRbX);
+        List<FestivalMapDto> result2 = festivalRepository.findFestivalByMap(geoPointLtY2, geoPointLtX2, geoPointRbY2, geoPointRbX2);
 
         //then
         //(37, 125) 5개, 40, 130 4개 존재
@@ -122,7 +114,6 @@ public class FestivalRepositoryTest extends BaseRepositoryTest {
 
 
     }
-
 
 
     @Test
