@@ -134,11 +134,14 @@ public class FestivalService {
         }
     }
 
-    public List<FestivalMapDto> findFestivalByMap(GeoRect geoRect) {
+    public List<FestivalMapDto> findFestivalByMap(Double geoPointLtY,
+                                                  Double geoPointLtX,
+                                                  Double geoPointRbY,
+                                                  Double geoPointRbX) {
 
         log.info("[{}] 지도 내 확인 가능한 축제 내역 조회", Thread.currentThread().getStackTrace()[1].getMethodName());
 
-        return festivalRepository.findFestivalByMap(geoRect.geoPointLt(), geoRect.geoPointRb());
+        return festivalRepository.findFestivalByMap(geoPointLtY, geoPointLtX, geoPointRbY, geoPointRbX);
     }
 
     public List<FestivalCityCountDto> findFestivalCityCount() {

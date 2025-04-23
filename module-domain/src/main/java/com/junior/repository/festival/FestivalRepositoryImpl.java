@@ -43,7 +43,10 @@ public class FestivalRepositoryImpl implements FestivalRepositoryCustom {
     }
 
     @Override
-    public List<FestivalMapDto> findFestivalByMap(GeoPointDto geoPointLt, GeoPointDto geoPointRb) {
+    public List<FestivalMapDto> findFestivalByMap(Double geoPointLtY,
+                                                  Double geoPointLtX,
+                                                  Double geoPointRbY,
+                                                  Double geoPointRbX) {
         return queryFactory
                 .select(
                         new QFestivalMapDto(
@@ -52,12 +55,12 @@ public class FestivalRepositoryImpl implements FestivalRepositoryCustom {
                 )
                 .from(festival)
                 .where(festival.lat.between(
-                                Math.min(geoPointLt.latitude(), geoPointRb.latitude()),
-                                Math.max(geoPointLt.latitude(), geoPointRb.latitude())
+                                Math.min(geoPointLtY, geoPointRbY),
+                                Math.max(geoPointLtY, geoPointRbY)
                         ),
                         festival.logt.between(
-                                Math.min(geoPointLt.longitude(), geoPointRb.longitude()),
-                                Math.max(geoPointLt.longitude(), geoPointRb.longitude())
+                                Math.min(geoPointLtX, geoPointRbX),
+                                Math.max(geoPointLtX, geoPointRbX)
                         )
                 )
                 .fetch();

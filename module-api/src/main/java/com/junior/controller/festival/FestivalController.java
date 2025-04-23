@@ -43,8 +43,11 @@ public class FestivalController implements FestivalApi {
     }
 
     @GetMapping("/api/v1/festivals/map")
-    public ResponseEntity<CommonResponse<List<FestivalMapDto>>> findFestivalByMap(GeoRect geoRect) {
-        return ResponseEntity.status(StatusCode.FESTIVAL_FIND_MAP_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_FIND_MAP_SUCCESS, festivalService.findFestivalByMap(geoRect)));
+    public ResponseEntity<CommonResponse<List<FestivalMapDto>>> findFestivalByMap(Double geoPointLtY,
+                                                                                  Double geoPointLtX,
+                                                                                  Double geoPointRbY,
+                                                                                  Double geoPointRbX) {
+        return ResponseEntity.status(StatusCode.FESTIVAL_FIND_MAP_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_FIND_MAP_SUCCESS, festivalService.findFestivalByMap(geoPointLtY, geoPointLtX, geoPointRbY, geoPointRbX)));
     }
 
     @GetMapping("/api/v1/festivals")

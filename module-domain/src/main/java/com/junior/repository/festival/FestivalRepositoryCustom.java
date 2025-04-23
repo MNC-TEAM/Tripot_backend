@@ -15,7 +15,10 @@ import java.util.List;
 public interface FestivalRepositoryCustom {
 
     List<FestivalCityCountDto> findFestivalCityCount();
-    List<FestivalMapDto> findFestivalByMap(GeoPointDto geoPointLt, GeoPointDto geoPointRb);
+    List<FestivalMapDto> findFestivalByMap(Double geoPointLtY,
+                                           Double geoPointLtX,
+                                           Double geoPointRbY,
+                                           Double geoPointRbX);
     Slice<FestivalDto> findFestival(Long cursorId, Pageable pageable, String city, String q);
     Page<FestivalAdminDto> findFestivalAdmin(Pageable pageable, String q);
 }

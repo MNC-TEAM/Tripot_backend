@@ -177,11 +177,16 @@ class FestivalServiceTest extends BaseServiceTest {
                     .build());
         }
 
-        given(festivalRepository.findFestivalByMap(geoRect.geoPointLt(), geoRect.geoPointRb()))
+        Double geoPointLtY=35.0;
+        Double geoPointLtX=125.0;
+        Double geoPointRbY=39.0;
+        Double geoPointRbX=129.0;
+
+        given(festivalRepository.findFestivalByMap(geoPointLtY, geoPointLtX, geoPointRbY, geoPointRbX))
                 .willReturn(festivalMapDtoList);
 
         //when
-        List<FestivalMapDto> result = festivalService.findFestivalByMap(geoRect);
+        List<FestivalMapDto> result = festivalService.findFestivalByMap(geoPointLtY, geoPointLtX, geoPointRbY, geoPointRbX);
 
         //then
         assertThat(result.size()).isEqualTo(4);
