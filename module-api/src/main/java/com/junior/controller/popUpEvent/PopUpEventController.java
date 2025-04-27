@@ -10,6 +10,7 @@ import com.junior.response.CommonResponse;
 import com.junior.security.UserPrincipal;
 import com.junior.service.popUpEvent.PopUpEventService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class PopUpEventController implements PopUpEventApi {
     }
 
 //    @Operation(summary = "팝업 이벤트 수정 (ADMIN만 가능)")
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public CommonResponse<Object> editEvent(@AuthenticationPrincipal UserPrincipal userPrincipal,
                           @PathVariable("id") Long popUpEventId,
                           @RequestBody UpdatePopUpEventDto updatePopUpEventDto) {
@@ -67,10 +68,20 @@ public class PopUpEventController implements PopUpEventApi {
 //    @Operation(summary = "스크롤 기반 팝업 이벤트 조회")
     @GetMapping("/scroll")
     public CommonResponse<Slice<ResponsePopUpEventDto>> scrollEvents(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(required = false, name = "cursorId") Long cursorId,
             @RequestParam(defaultValue = "10", name = "size") int size) {
-        Slice<ResponsePopUpEventDto> responsePopUpEventDtos = popUpEventService.loadPopUpEventsOnScroll(userPrincipal, cursorId, size);
+        Slice<ResponsePopUpEventDto> responsePopUpEventDtos = popUpEventService.loadPopUpEventsOnScroll(cursorId, size);
+
+        return CommonResponse.success(StatusCode.POPUPEVENT_READ_SUCCESS, responsePopUpEventDtos);
+    }
+
+    @GetMapping("/list")
+    public CommonResponse<Page<ResponsePopUpEventDto>> getPopUpEventByPage(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestParam(defaultValue = "0", name = "page") int page,
+            @RequestParam(defaultValue = "10", name = "size") int size
+    ) {
+        Page<ResponsePopUpEventDto> responsePopUpEventDtos = popUpEventService.getPopUpEventsByPage(userPrincipal, page, size);
 
         return CommonResponse.success(StatusCode.POPUPEVENT_READ_SUCCESS, responsePopUpEventDtos);
     }

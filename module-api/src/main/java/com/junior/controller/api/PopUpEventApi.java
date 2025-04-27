@@ -12,10 +12,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "PopUpEvent")
+@Tag(name = "팝업스토어")
 public interface PopUpEventApi {
 
-    @Operation(summary = "팝업스토어", description = "팝업스토어 생성",
+    @Operation(summary = "팝업스토어 생성", description = "팝업스토어 생성",
             responses = {
                     @ApiResponse(responseCode = "200", description = "팝업이벤트 생성 성공",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommonResponse.class),
