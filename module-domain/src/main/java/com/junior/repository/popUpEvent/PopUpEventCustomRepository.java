@@ -15,4 +15,6 @@ public interface PopUpEventCustomRepository {
     Slice<ResponsePopUpEventDto> loadPopUpEventOnScroll(Pageable pageable, Long cursorId);
 
     Page<ResponsePopUpEventDto> loadPopUpEventByPage(Pageable pageable);
+
+    ResponsePopUpEventDto getPopUpEventById(Long id);
 }
