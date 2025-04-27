@@ -12,9 +12,7 @@ import com.junior.exception.StatusCode;
 import com.junior.repository.popUpEvent.PopUpEventRepository;
 import com.junior.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,11 +73,22 @@ public class PopUpEventService {
         return popUpEventRepository.findEventByPos(geoPointLt, geoPointRb);
     }
 
-    public Slice<ResponsePopUpEventDto> loadPopUpEventsOnScroll(UserPrincipal userPrincipal, Long cursorId, int size) {
-        Member findMember = userPrincipal.getMember();
+    public Slice<ResponsePopUpEventDto> loadPopUpEventsOnScroll(Long cursorId, int size) {
 
         Pageable pageable = PageRequest.of(0, size);
 
-        return popUpEventRepository.loadPopUpEventOnScroll(findMember, pageable, cursorId);
+        return popUpEventRepository.loadPopUpEventOnScroll(pageable, cursorId);
+    }
+
+    public Page<ResponsePopUpEventDto> getPopUpEventsByPage(UserPrincipal userPrincipal, int page, int size) {
+        Member findMember = userPrincipal.getMember();
+
+        if(findMember.getRole() != MemberRole.ADMIN) {
+            throw new PermissionException(StatusCode.PERMISSION_ERROR);
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return popUpEventRepository.loadPopUpEventByPage(pageable);
     }
 }
