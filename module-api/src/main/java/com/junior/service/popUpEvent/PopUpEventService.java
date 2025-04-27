@@ -91,4 +91,9 @@ public class PopUpEventService {
 
         return popUpEventRepository.loadPopUpEventByPage(pageable);
     }
+
+    public ResponsePopUpEventDto getPopUpEventsById(Long popUpEventId) {
+
+        return popUpEventRepository.getPopUpEventById(popUpEventId);
+    }
 }

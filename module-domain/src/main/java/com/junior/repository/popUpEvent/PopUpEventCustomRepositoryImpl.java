@@ -123,4 +123,19 @@ public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepositor
 
         return new PageImpl<>(popUpEvents, pageable, totalCnt);
     }
+
+    @Override
+    public ResponsePopUpEventDto getPopUpEventById(Long id) {
+
+        return query.select(
+                        new QResponsePopUpEventDto(
+                                popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
+                        )
+                )
+                .from(popUpEvent)
+                .where(
+                        popUpEvent.isDeleted.eq(false)
+                )
+                .fetchOne();
+    }
 }
