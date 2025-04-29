@@ -48,7 +48,6 @@ public class FestivalService {
      * 관리자 권한으로만 수행 가능
      */
 
-    //TODO: 이거 매월 초 자동실행시켜도 무방한지 고민해보기
     @Transactional
     public void saveFestival(String eventStartDate, String eventEndDate) {
 
