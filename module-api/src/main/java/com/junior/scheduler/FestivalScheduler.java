@@ -43,7 +43,6 @@ public class FestivalScheduler {
     @Scheduled(cron = "0 0 3 * * *", zone = "Asia/Seoul")
     @Transactional
     public void saveFestivalAuto(){
-        festivalRepository.truncateFestival();
 
         String eventStartDate = LocalDate.now().toString().replaceAll("-", "");
         String eventEndDate = "";

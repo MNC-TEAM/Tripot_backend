@@ -10,8 +10,4 @@ public interface FestivalRepository extends JpaRepository<Festival, Long>, Festi
 
     boolean existsByContentId(Long contentId);
 
-    @Transactional
-    @Modifying
-    @Query(value = "TRUNCATE TABLE festival", nativeQuery = true)
-    void truncateFestival();
 }
