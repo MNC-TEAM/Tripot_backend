@@ -114,6 +114,33 @@ public class FestivalLikeIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @DisplayName("축제 북마크 저장 - 이미 저장된 북마크일 경우 예외를 발생시켜야 함")
+    @WithMockCustomUser
+    void saveFailIfDuplicateFestivalLike() throws Exception {
+
+
+        //given
+        Long festivalId = 2L;
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                post("/api/v1/festivals/{festival_id}/likes", festivalId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_LIKE_DUPLICATE.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_LIKE_DUPLICATE.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(false))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+
+
+    }
+
+    @Test
     @DisplayName("축제 북마크 삭제 - 응답을 정상적으로 반환해야 함")
     @WithMockCustomUser
     void delete() throws Exception {

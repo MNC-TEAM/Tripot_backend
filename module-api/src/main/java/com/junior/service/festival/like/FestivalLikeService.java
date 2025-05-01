@@ -35,6 +35,10 @@ public class FestivalLikeService {
         Festival festival = festivalRepository.findById(festivalId)
                 .orElseThrow(() -> new CustomException(StatusCode.FESTIVAL_NOT_FOUND));
 
+        if (festivalLikeRepository.existsByMemberAndFestival(member, festival)) {
+            throw new CustomException(StatusCode.FESTIVAL_LIKE_DUPLICATE);
+        }
+
         log.info("[{}] 축제 북마크 저장 member: {}, festival: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername(), festival.getTitle());
 
         festivalLikeRepository.save(FestivalLike.builder()

@@ -159,8 +159,10 @@ public enum StatusCode {
     FESTIVAL_LIKE_CREATE_SUCCESS(201, "FESTIVAL-LIKE-SUCCESS-001", ""),
     FESTIVAL_LIKE_DELETE_SUCCESS(200, "FESTIVAL-LIKE-SUCCESS-002", ""),
 
+
     //축제 북마크 관련 실패 코드
-    FESTIVAL_LIKE_NOT_FOUND(400, "FESTIVAL-LIKE-FAIL-001", "이미 해제된 북마크입니다."),
+    FESTIVAL_LIKE_NOT_FOUND(400, "FESTIVAL-LIKE-FAIL-001", "이미 해제된 좋아요입니다."),
+    FESTIVAL_LIKE_DUPLICATE(400, "FESTIVAL-LIKE-FAIL-002", "이미 설정된 좋아요입니다."),
 
     // 공통 예외
     UNKNOWN_ERROR(500, "UNKNOWN-ERROR-001", "서버 에러가 발생했습니다.");
