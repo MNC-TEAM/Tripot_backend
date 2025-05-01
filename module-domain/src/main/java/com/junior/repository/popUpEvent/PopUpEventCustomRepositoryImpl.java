@@ -59,7 +59,7 @@ public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepositor
     public List<ResponsePopUpEventDto> findEventByPos(GeoPointDto geoPointLt, GeoPointDto geoPointRb) {
 
         return query.select(new QResponsePopUpEventDto(
-                        popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
+                        popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.location, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
                 ))
                 .from(popUpEvent)
                 .where(popUpEvent.latitude.between(
@@ -81,7 +81,7 @@ public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepositor
 //        return null;
         List<ResponsePopUpEventDto> popUpEvents = query.select(
                         new QResponsePopUpEventDto(
-                                popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
+                                popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.location, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
                         )
                 )
                 .from(popUpEvent)
@@ -102,7 +102,7 @@ public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepositor
     public Page<ResponsePopUpEventDto> loadPopUpEventByPage(Pageable pageable) {
         List<ResponsePopUpEventDto> popUpEvents = query.select(
                         new QResponsePopUpEventDto(
-                                popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
+                                popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.location, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
                         )
                 )
                 .from(popUpEvent)
@@ -129,7 +129,7 @@ public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepositor
 
         return query.select(
                         new QResponsePopUpEventDto(
-                                popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
+                                popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.location, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
                         )
                 )
                 .from(popUpEvent)
