@@ -88,7 +88,7 @@ public class PopUpEventController implements PopUpEventApi {
 
     @GetMapping("/{popUpEventId}")
     public CommonResponse<ResponsePopUpEventDto> getPopUpEventById(
-            @RequestParam("popUpId") Long popUpEventId
+            @PathVariable("popUpId") Long popUpEventId
     ) {
         ResponsePopUpEventDto responsePupUpEventDto = popUpEventService.getPopUpEventsById(popUpEventId);
 

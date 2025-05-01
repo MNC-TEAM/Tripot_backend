@@ -25,6 +25,9 @@ public class PopUpEvent extends BaseEntity {
     @Column(length = 255)
     private String city;
 
+    @Column(length = 255)
+    private String location;
+
     // 이벤트 관련 링크
     @Column(nullable = false)
     private String eventUrl;
@@ -50,6 +53,7 @@ public class PopUpEvent extends BaseEntity {
         this.startDate = updatePopUpEventDto.startDate();
         this.endDate = updatePopUpEventDto.endDate();
         this.city = updatePopUpEventDto.city();
+        this.location = updatePopUpEventDto.location();
     }
 
     public void delete() {
@@ -65,6 +69,7 @@ public class PopUpEvent extends BaseEntity {
                 .startDate(createNewPopUpEventDto.startDate())
                 .endDate(createNewPopUpEventDto.endDate())
                 .city(createNewPopUpEventDto.city())
+                .location(createNewPopUpEventDto.location())
                 .build();
     }
 }
