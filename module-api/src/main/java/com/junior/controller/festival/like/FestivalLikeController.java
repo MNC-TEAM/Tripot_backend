@@ -1,7 +1,6 @@
 package com.junior.controller.festival.like;
 
 import com.junior.controller.api.FestivalLikeApi;
-import com.junior.dto.festival.like.CreateFestivalLikeDto;
 import com.junior.exception.StatusCode;
 import com.junior.response.CommonResponse;
 import com.junior.security.UserPrincipal;
@@ -30,6 +29,10 @@ public class FestivalLikeController implements FestivalLikeApi {
     }
 
 
-        return ResponseEntity.status(StatusCode.FESTIVAL_LIKE_CREATE_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_LIKE_CREATE_SUCCESS, null));
+    @DeleteMapping("/api/v1/festivals/{festival_id}/likes")
+    public ResponseEntity<CommonResponse<Object>> delete(@AuthenticationPrincipal UserPrincipal principal, @PathVariable(name = "festival_id") Long festivalId) {
+        festivalLikeService.delete(principal, festivalId);
+
+        return ResponseEntity.status(StatusCode.FESTIVAL_LIKE_DELETE_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_LIKE_DELETE_SUCCESS, null));
     }
 }

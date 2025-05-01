@@ -3,7 +3,6 @@ package com.junior.service.festival.like;
 import com.junior.domain.festival.Festival;
 import com.junior.domain.festival.like.FestivalLike;
 import com.junior.domain.member.Member;
-import com.junior.dto.festival.like.CreateFestivalLikeDto;
 import com.junior.exception.CustomException;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.StatusCode;
@@ -14,6 +13,7 @@ import com.junior.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,5 +42,20 @@ public class FestivalLikeService {
                 .festival(festival)
                 .build());
 
+    }
+
+    @Transactional
+    public void delete(UserPrincipal principal, Long festivalId){
+        Member member = memberRepository.findById(principal.getMember().getId()).orElseThrow(
+                () -> new NotValidMemberException(StatusCode.INVALID_MEMBER)
+        );
+
+        Festival festival = festivalRepository.findById(festivalId)
+                .orElseThrow(() -> new CustomException(StatusCode.FESTIVAL_NOT_FOUND));
+
+        FestivalLike festivalLike = festivalLikeRepository.findByMemberAndFestival(member, festival)
+                .orElseThrow(() -> new CustomException(StatusCode.FESTIVAL_LIKE_NOT_FOUND));
+
+        festivalLikeRepository.delete(festivalLike);
     }
 }

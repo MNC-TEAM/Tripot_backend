@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -87,7 +88,7 @@ public class FestivalLikeIntegrationTest extends BaseIntegrationTest {
 
 
         //given
-        Long festivalId = 1L;
+        Long festivalId = 5L;
 
         //when
         ResultActions actions = mockMvc.perform(
@@ -107,7 +108,38 @@ public class FestivalLikeIntegrationTest extends BaseIntegrationTest {
         FestivalLike festivalLike = festivalLikeRepository.findById(5L).orElseThrow(RuntimeException::new);
 
         assertThat(festivalLike.getMember().getId()).isEqualTo(2);
-        assertThat(festivalLike.getFestival().getId()).isEqualTo(1);
+        assertThat(festivalLike.getFestival().getId()).isEqualTo(5);
+
+
+    }
+
+    @Test
+    @DisplayName("축제 북마크 삭제 - 응답을 정상적으로 반환해야 함")
+    @WithMockCustomUser
+    void delete() throws Exception {
+
+
+        //given
+        Long festivalId = 1L;
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                MockMvcRequestBuilders.delete("/api/v1/festivals/{festival_id}/likes", festivalId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_LIKE_DELETE_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_LIKE_DELETE_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+
+
+        assertThat(festivalLikeRepository.findById(1L)).isEmpty();
+
 
 
     }
