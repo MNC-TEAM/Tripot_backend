@@ -143,15 +143,15 @@ public class BaseIntegrationTest {
                 .build();
     }
 
-    protected Festival createFestival(String title, String city, double lat, double logt, long contentId){
+    protected Festival createFestival(String title, String city, double lat, double logt, long contentId, LocalDate startDate, LocalDate endDate) {
         return Festival.builder()
                 .contentId(contentId)
                 .title(title)
                 .city(city)
                 .location("location")
                 .imgUrl("url.com")
-                .startDate(LocalDate.of(2025, 1, 1))
-                .endDate(LocalDate.of(2025, 1, 2))
+                .startDate(startDate)
+                .endDate(endDate)
                 .lat(lat)
                 .logt(logt)
                 .build();

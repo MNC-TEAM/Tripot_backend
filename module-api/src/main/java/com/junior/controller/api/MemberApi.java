@@ -17,7 +17,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -81,8 +80,8 @@ public interface MemberApi {
                                     )))
             })
     public CommonResponse<Boolean> checkNicknameValid(@Size(max = 25, message = "닉네임은 25자까지 가능합니다.")
-                                                          @NotNull(message = "닉네임은 필수 값입니다.")
-                                                          @Pattern(regexp = "^[가-힣a-zA-Z0-9\\s]+$", message = "잘못된 닉네임 형식입니다.") String nickname);
+                                                      @NotNull(message = "닉네임은 필수 값입니다.")
+                                                      @Pattern(regexp = "^[가-힣a-zA-Z0-9\\s]+$", message = "잘못된 닉네임 형식입니다.") String nickname);
 
     @Operation(summary = "회원 조회", description = "회원의 정보를 조회합니다.",
             responses = {

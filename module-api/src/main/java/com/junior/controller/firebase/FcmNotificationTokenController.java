@@ -21,7 +21,7 @@ public class FcmNotificationTokenController {
 
     @PostMapping("/subscribe")
     public CommonResponse<Object> subscribe(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                           @RequestBody FcmTokenDto fcmTokenDto) {
+                                            @RequestBody FcmTokenDto fcmTokenDto) {
         fcmNotificationTokenService.subscribe(userPrincipal, fcmTokenDto);
 
         return CommonResponse.success(StatusCode.FCM_CREATE_SUCCESS, null);

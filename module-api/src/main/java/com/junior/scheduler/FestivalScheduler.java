@@ -9,7 +9,6 @@ import com.junior.exception.StatusCode;
 import com.junior.repository.festival.FestivalRepository;
 import com.junior.util.CustomStringUtil;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -42,7 +41,7 @@ public class FestivalScheduler {
      */
     @Scheduled(cron = "0 0 3 * * *", zone = "Asia/Seoul")
     @Transactional
-    public void saveFestivalAuto(){
+    public void saveFestivalAuto() {
 
         String eventStartDate = LocalDate.now().toString().replaceAll("-", "");
         String eventEndDate = "";
@@ -123,7 +122,6 @@ public class FestivalScheduler {
             }
         }
     }
-
 
 
 }

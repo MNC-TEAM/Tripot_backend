@@ -2,12 +2,10 @@ package com.junior.controller.version;
 
 import com.junior.controller.BaseControllerTest;
 import com.junior.domain.version.Platform;
-import com.junior.dto.version.VersionCheckDto;
 import com.junior.dto.version.VersionCheckResponseDto;
 import com.junior.dto.version.VersionDto;
 import com.junior.exception.StatusCode;
 import com.junior.security.WithMockCustomAdmin;
-import com.junior.security.WithMockCustomUser;
 import com.junior.service.version.VersionService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -30,7 +30,7 @@ public class S3Controller {
 
     @PostMapping("/news")
     public CommonResponse<Object> filesUpload(
-        @RequestParam(name = "imgs") List<MultipartFile> images
+            @RequestParam(name = "imgs") List<MultipartFile> images
     ) {
         List<String> urls = s3Service.saveFiles(images);
 

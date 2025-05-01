@@ -2,22 +2,18 @@ package com.junior.service.version;
 
 import com.junior.domain.version.Platform;
 import com.junior.domain.version.Version;
-import com.junior.dto.version.VersionCheckDto;
 import com.junior.dto.version.VersionCheckResponseDto;
 import com.junior.dto.version.VersionDto;
 import com.junior.repository.version.VersionRepository;
 import com.junior.service.BaseServiceTest;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;

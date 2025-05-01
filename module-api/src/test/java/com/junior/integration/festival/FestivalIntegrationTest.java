@@ -12,13 +12,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -26,6 +32,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class FestivalIntegrationTest extends BaseIntegrationTest {
+
+    private static final Clock PRESENT_CLOCK = Clock.fixed(Instant.parse("2025-01-15T10:00:00Z"), ZoneId.systemDefault());
+
+    @SpyBean
+    private Clock clock;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -35,6 +46,11 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach
     void init() {
+
+        //20250115 기준으로 테스트 진행
+        given(clock.instant()).willReturn(PRESENT_CLOCK.instant());
+        given(clock.getZone()).willReturn(PRESENT_CLOCK.getZone());
+
         Member preactiveTestMember = createPreactiveTestMember();
         Member activeTestMember = createActiveTestMember();
         Member testAdmin = createAdmin();
@@ -45,11 +61,14 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
         memberRepository.save(testAdmin);
         memberRepository.save(activeTestMember2);
 
-        for (int i = 1; i <= 9; i++) {
+
+        for (int i = 1; i <= 18; i++) {
             Festival festival = createFestival("축제 " + i, i % 2 == 1 ? "서울특별시" : "강원특별자치도",
                     i % 2 == 1 ? 37.0 : 40.0,
                     i % 2 == 1 ? 125.0 : 130.0,
-                    i == 1 ? 3113671L : (long) (Math.random() * 1000));
+                    i == 1 ? 3113671L : (long) (Math.random() * 1000),
+                    i <= 9 ? LocalDate.of(2025, 1, 1) : LocalDate.of(2025, 2, 1),
+                    i <= 9 ? LocalDate.of(2025, 1, 31) : LocalDate.of(2025, 2, 28));
 
             festivalRepository.save(festival);
         }

@@ -2,7 +2,6 @@ package com.junior.controller.festival;
 
 import com.junior.controller.api.FestivalApi;
 import com.junior.dto.festival.*;
-import com.junior.dto.story.GeoRect;
 import com.junior.exception.StatusCode;
 import com.junior.page.PageCustom;
 import com.junior.response.CommonResponse;

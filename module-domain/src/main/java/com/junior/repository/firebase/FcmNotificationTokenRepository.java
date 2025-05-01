@@ -18,6 +18,7 @@ public interface FcmNotificationTokenRepository extends JpaRepository<FcmNotific
     public boolean existsByToken(String token);
 
     public Optional<FcmNotificationToken> findByToken(String token);
+
     public List<FcmNotificationToken> findByMember(Member member);
 
     @Modifying(clearAutomatically = true)

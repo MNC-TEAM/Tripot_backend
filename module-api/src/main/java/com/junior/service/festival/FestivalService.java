@@ -3,7 +3,6 @@ package com.junior.service.festival;
 import com.junior.domain.festival.Festival;
 import com.junior.dto.festival.*;
 import com.junior.dto.festival.api.*;
-import com.junior.dto.story.GeoRect;
 import com.junior.exception.CustomException;
 import com.junior.exception.StatusCode;
 import com.junior.page.PageCustom;
@@ -211,7 +210,7 @@ public class FestivalService {
                 .build();
     }
 
-    public PageCustom<FestivalAdminDto> findFestivalAdmin(Pageable pageable, String q){
+    public PageCustom<FestivalAdminDto> findFestivalAdmin(Pageable pageable, String q) {
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
 
         Page<FestivalAdminDto> result = festivalRepository.findFestivalAdmin(pageRequest, q);

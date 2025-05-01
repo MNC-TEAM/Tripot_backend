@@ -1,6 +1,5 @@
 package com.junior.config;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +12,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 public class WebClientConfig {
 
     @Bean
-    public WebClient webClient(){
+    public WebClient webClient() {
         return WebClient.builder()
                 .uriBuilderFactory(defaultUriBuilderFactory())
                 .exchangeStrategies(exchangeStrategies())

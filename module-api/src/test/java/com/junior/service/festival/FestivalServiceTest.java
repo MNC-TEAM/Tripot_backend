@@ -2,24 +2,22 @@ package com.junior.service.festival;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.junior.config.WebClientConfig;
 import com.junior.domain.festival.Festival;
 import com.junior.dto.festival.*;
 import com.junior.dto.festival.api.*;
-import com.junior.dto.story.GeoPointDto;
-import com.junior.dto.story.GeoRect;
 import com.junior.page.PageCustom;
 import com.junior.repository.festival.FestivalRepository;
 import com.junior.service.BaseServiceTest;
 import com.junior.util.CustomStringUtil;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.data.domain.*;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
@@ -27,7 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
@@ -37,17 +34,12 @@ import static org.mockito.Mockito.verify;
 class FestivalServiceTest extends BaseServiceTest {
 
 
+    public static MockWebServer mockWebServer;
+    public static ObjectMapper objectMapper;
     @InjectMocks
     private FestivalService festivalService;
-
     @Mock
     private FestivalRepository festivalRepository;
-
-    public static MockWebServer mockWebServer;
-
-    public static ObjectMapper objectMapper;
-
-
 
     @BeforeEach
     void init() throws IOException {
@@ -67,7 +59,6 @@ class FestivalServiceTest extends BaseServiceTest {
                 .build();
         // 조작된 WebClient 주입
         festivalService = new FestivalService(webClient, festivalRepository, baseUrl, key);
-
 
 
     }
@@ -159,14 +150,6 @@ class FestivalServiceTest extends BaseServiceTest {
     @DisplayName("지도 좌표 기반 축제 리스트 출력 - 해당 조건에 맞는 축제의 ID와 좌표를 정상적으로 리턴해야 함")
     void findFestivalByMap() throws Exception {
         //given
-        GeoRect geoRect = GeoRect.builder()
-                .geoPointLt(GeoPointDto.builder()
-                        .latitude(35.0)
-                        .longitude(125.0).build())
-                .geoPointRb(GeoPointDto.builder()
-                        .latitude(39.0)
-                        .longitude(129.0).build())
-                .build();
 
         List<FestivalMapDto> festivalMapDtoList = new ArrayList<>();
         for (int i = 1; i <= 4; i++) {
@@ -177,10 +160,10 @@ class FestivalServiceTest extends BaseServiceTest {
                     .build());
         }
 
-        Double geoPointLtY=35.0;
-        Double geoPointLtX=125.0;
-        Double geoPointRbY=39.0;
-        Double geoPointRbX=129.0;
+        Double geoPointLtY = 35.0;
+        Double geoPointLtX = 125.0;
+        Double geoPointRbY = 39.0;
+        Double geoPointRbX = 129.0;
 
         given(festivalRepository.findFestivalByMap(geoPointLtY, geoPointLtX, geoPointRbY, geoPointRbX))
                 .willReturn(festivalMapDtoList);
@@ -244,7 +227,6 @@ class FestivalServiceTest extends BaseServiceTest {
                 .lat(37.4960786971)
                 .logt(127.1107693087)
                 .build();
-
 
 
         given(festivalRepository.findById(anyLong())).willReturn(Optional.ofNullable(festival));
@@ -354,7 +336,6 @@ class FestivalServiceTest extends BaseServiceTest {
                 .lat(37.4960786971)
                 .logt(127.1107693087)
                 .build();
-
 
 
         given(festivalRepository.findById(anyLong())).willReturn(Optional.ofNullable(festival));

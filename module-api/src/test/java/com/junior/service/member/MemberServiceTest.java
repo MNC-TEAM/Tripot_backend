@@ -5,7 +5,6 @@ import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
 import com.junior.domain.member.SignUpType;
 import com.junior.dto.member.*;
-import com.junior.dto.qna.QnaAdminDto;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.StatusCode;
 import com.junior.page.PageCustom;
@@ -254,7 +253,6 @@ class MemberServiceTest extends BaseServiceTest {
         assertThat(memberInfo.role()).isEqualTo(MemberRole.USER);
 
 
-
     }
 
     @Test
@@ -416,9 +414,9 @@ class MemberServiceTest extends BaseServiceTest {
 
 
     }
-    
+
     @Test
-    @DisplayName("회원 리스트 조회 - 회원 리스트를 정상적으로 조회할 수 있어야 함")        
+    @DisplayName("회원 리스트 조회 - 회원 리스트를 정상적으로 조회할 수 있어야 함")
     public void findMembers() throws Exception {
         //given
         PageRequest pageRequest = PageRequest.of(1, 20);
@@ -449,7 +447,7 @@ class MemberServiceTest extends BaseServiceTest {
         //then
         assertThat(result.getContent().size()).isEqualTo(10);
         assertThat(result.getPageable().getNumber()).isEqualTo(1);
-        
+
     }
 
 

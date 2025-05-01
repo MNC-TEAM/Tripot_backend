@@ -2,7 +2,6 @@ package com.junior.controller.version;
 
 import com.junior.controller.api.VersionApi;
 import com.junior.domain.version.Platform;
-import com.junior.dto.version.VersionCheckDto;
 import com.junior.dto.version.VersionCheckResponseDto;
 import com.junior.dto.version.VersionDto;
 import com.junior.exception.StatusCode;
@@ -12,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

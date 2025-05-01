@@ -2,8 +2,6 @@ package com.junior.controller.festival;
 
 import com.junior.controller.BaseControllerTest;
 import com.junior.dto.festival.*;
-import com.junior.dto.story.GeoPointDto;
-import com.junior.dto.story.GeoRect;
 import com.junior.exception.StatusCode;
 import com.junior.page.PageCustom;
 import com.junior.security.WithMockCustomAdmin;
@@ -24,9 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -101,10 +97,10 @@ class FestivalControllerTest extends BaseControllerTest {
     public void findFestivalByMap() throws Exception {
         //given
 
-        Double geoPointLtY=35.0;
-        Double geoPointLtX=125.0;
-        Double geoPointRbY=39.0;
-        Double geoPointRbX=129.0;
+        Double geoPointLtY = 35.0;
+        Double geoPointLtX = 125.0;
+        Double geoPointRbY = 39.0;
+        Double geoPointRbX = 129.0;
 
         List<FestivalMapDto> festivalMapDtoList = new ArrayList<>();
         for (int i = 1; i <= 4; i++) {
@@ -116,7 +112,7 @@ class FestivalControllerTest extends BaseControllerTest {
         }
 
 
-        given(festivalService.findFestivalByMap(anyDouble(),anyDouble(),anyDouble(),anyDouble())).willReturn(festivalMapDtoList);
+        given(festivalService.findFestivalByMap(anyDouble(), anyDouble(), anyDouble(), anyDouble())).willReturn(festivalMapDtoList);
         //when
         ResultActions actions = mockMvc.perform(
                 get("/api/v1/festivals/map")
@@ -188,7 +184,6 @@ class FestivalControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.data.content[0].id").value(0))
                 .andExpect(jsonPath("$.data.content[1].id").value(1))
                 .andExpect(jsonPath("$.data.content[2].title").value("title"));
-
 
 
     }
@@ -272,7 +267,6 @@ class FestivalControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.data.content[0].id").value(0))
                 .andExpect(jsonPath("$.data.content[1].id").value(1))
                 .andExpect(jsonPath("$.data.content[2].title").value("title"));
-
 
 
     }

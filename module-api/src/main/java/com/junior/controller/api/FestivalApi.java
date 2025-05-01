@@ -1,7 +1,6 @@
 package com.junior.controller.api;
 
 import com.junior.dto.festival.*;
-import com.junior.dto.story.GeoRect;
 import com.junior.page.PageCustom;
 import com.junior.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
