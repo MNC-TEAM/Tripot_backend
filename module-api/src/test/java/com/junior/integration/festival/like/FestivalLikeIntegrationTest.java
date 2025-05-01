@@ -3,17 +3,23 @@ package com.junior.integration.festival.like;
 import com.junior.domain.festival.Festival;
 import com.junior.domain.festival.like.FestivalLike;
 import com.junior.domain.member.Member;
+import com.junior.dto.festival.FestivalDto;
 import com.junior.exception.StatusCode;
 import com.junior.integration.BaseIntegrationTest;
-import com.junior.repository.festival.FestivalLikeRepository;
+import com.junior.repository.festival.like.FestivalLikeRepository;
 import com.junior.repository.festival.FestivalRepository;
 import com.junior.repository.member.MemberRepository;
+import com.junior.security.UserPrincipal;
 import com.junior.security.WithMockCustomUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -22,10 +28,14 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -138,6 +148,35 @@ public class FestivalLikeIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.data").value(nullValue()));
 
 
+    }
+
+    @Test
+    @DisplayName("좋아요 한 축제 조회 - 응답을 정상적으로 반환해야 함")
+    @WithMockCustomUser
+    void findFestivalLike() throws Exception {
+
+
+        //given
+        Integer size = 5;
+
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/festivals/likes")
+                        .queryParam("size", size.toString())
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.content.length()").value(4))
+                .andExpect(jsonPath("$.data.content[0].id").value(4))
+                .andExpect(jsonPath("$.data.content[1].id").value(3));
     }
 
     @Test

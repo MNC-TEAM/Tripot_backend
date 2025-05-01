@@ -1,6 +1,8 @@
 package com.junior.repository.festival;
 
+import com.junior.domain.member.Member;
 import com.junior.dto.festival.*;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -18,6 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.junior.domain.festival.QFestival.festival;
+import static com.junior.domain.festival.like.QFestivalLike.festivalLike;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -114,6 +117,8 @@ public class FestivalRepositoryImpl implements FestivalRepositoryCustom {
 
         return new SliceImpl<>(resultList, pageable, hasNext);
     }
+
+
 
     @Override
     public Page<FestivalAdminDto> findFestivalAdmin(Pageable pageable, String q) {

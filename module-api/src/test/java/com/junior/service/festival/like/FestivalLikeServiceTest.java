@@ -6,7 +6,7 @@ import com.junior.domain.member.Member;
 import com.junior.exception.CustomException;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.StatusCode;
-import com.junior.repository.festival.FestivalLikeRepository;
+import com.junior.repository.festival.like.FestivalLikeRepository;
 import com.junior.repository.festival.FestivalRepository;
 import com.junior.repository.member.MemberRepository;
 import com.junior.security.UserPrincipal;
@@ -15,14 +15,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -121,6 +121,32 @@ class FestivalLikeServiceTest extends BaseServiceTest {
 
     }
 
+    @Test
+    @DisplayName("좋아요 한 축제 조회 - 기능이 정상 동작해야 함")
+    void findFestivalLike() throws Exception {
+        //given
+        Member member = createActiveTestMember();
+        Festival festival = createFestival("축제 " + 1, "서울특별시",
+                37.0,
+                125.0,
+                3113671L,
+                LocalDate.of(2025, 1, 1),
+                LocalDate.of(2025, 1, 31));
+
+        UserPrincipal principal = new UserPrincipal(member);
+        Long cursorId = 2L;
+        int size = 5;
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(member));
+
+
+        //when
+        festivalLikeService.findFestivalLike(cursorId, size, principal);
+
+        //then
+        verify(festivalLikeRepository).findFestivalLike(anyLong(), any(Pageable.class), any(Member.class));
+
+    }
 
     @Test
     @DisplayName("축제 북마크 삭제 - 삭제 메서드가 정상 실행되어야 함")
