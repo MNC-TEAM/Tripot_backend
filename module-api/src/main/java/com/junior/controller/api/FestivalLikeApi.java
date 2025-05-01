@@ -11,5 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface FestivalLikeApi {
 
     ResponseEntity<CommonResponse<Object>> save(@AuthenticationPrincipal UserPrincipal principal,
-                                                       @RequestBody CreateFestivalLikeDto createFestivalLikeDto);
+                                                       Long festivalId);
+
+    ResponseEntity<CommonResponse<Object>> delete(@AuthenticationPrincipal UserPrincipal principal, Long festivalId);
 }

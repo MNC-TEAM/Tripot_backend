@@ -18,19 +18,21 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class FestivalLikeService {
 
     private final MemberRepository memberRepository;
     private final FestivalRepository festivalRepository;
     private final FestivalLikeRepository festivalLikeRepository;
 
-    public void save(UserPrincipal principal, CreateFestivalLikeDto createFestivalLikeDto) {
+    @Transactional
+    public void save(UserPrincipal principal, Long festivalId) {
 
         Member member = memberRepository.findById(principal.getMember().getId()).orElseThrow(
                 () -> new NotValidMemberException(StatusCode.INVALID_MEMBER)
         );
 
-        Festival festival = festivalRepository.findById(createFestivalLikeDto.festivalId())
+        Festival festival = festivalRepository.findById(festivalId)
                 .orElseThrow(() -> new CustomException(StatusCode.FESTIVAL_NOT_FOUND));
 
         log.info("[{}] 축제 북마크 저장 member: {}, festival: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername(), festival.getTitle());

@@ -51,14 +51,12 @@ class FestivalLikeServiceTest extends BaseServiceTest {
 
 
         UserPrincipal principal = new UserPrincipal(member);
-        CreateFestivalLikeDto createFestivalLikeDto = CreateFestivalLikeDto.builder()
-                .festivalId(1L)
-                .build();
+        Long festivalId = 1L;
 
         given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(member));
         given(festivalRepository.findById(anyLong())).willReturn(Optional.ofNullable(festival));
 
-        festivalLikeService.save(principal, createFestivalLikeDto);
+        festivalLikeService.save(principal, festivalId);
 
         verify(festivalLikeRepository).save(any(FestivalLike.class));
 

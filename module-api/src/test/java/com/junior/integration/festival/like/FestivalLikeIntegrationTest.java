@@ -89,17 +89,11 @@ public class FestivalLikeIntegrationTest extends BaseIntegrationTest {
 
 
         //given
-        CreateFestivalLikeDto createFestivalLikeDto = CreateFestivalLikeDto.builder()
-                .festivalId(1L)
-                .build();
-
-        String content = objectMapper.writeValueAsString(createFestivalLikeDto);
+        Long festivalId = 1L;
 
         //when
         ResultActions actions = mockMvc.perform(
-                post("/api/v1/festival-likes")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content)
+                post("/api/v1/festivals/{festival_id}/likes", festivalId)
                         .accept(MediaType.APPLICATION_JSON)
         );
 
