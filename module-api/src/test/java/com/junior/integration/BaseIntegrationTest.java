@@ -3,6 +3,7 @@ package com.junior.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.junior.config.SecurityConfig;
 import com.junior.domain.festival.Festival;
+import com.junior.domain.festival.like.FestivalLike;
 import com.junior.domain.member.Member;
 import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
@@ -154,6 +155,13 @@ public class BaseIntegrationTest {
                 .endDate(endDate)
                 .lat(lat)
                 .logt(logt)
+                .build();
+    }
+
+    protected FestivalLike createFestivalLike(Member member, Festival festival) {
+        return FestivalLike.builder()
+                .member(member)
+                .festival(festival)
                 .build();
     }
 }
