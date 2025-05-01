@@ -1,7 +1,6 @@
 package com.junior.controller.festival.like;
 
 import com.junior.controller.BaseControllerTest;
-import com.junior.dto.festival.like.CreateFestivalLikeDto;
 import com.junior.exception.StatusCode;
 import com.junior.security.WithMockCustomUser;
 import com.junior.service.festival.like.FestivalLikeService;

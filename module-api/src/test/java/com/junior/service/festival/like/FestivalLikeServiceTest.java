@@ -3,7 +3,6 @@ package com.junior.service.festival.like;
 import com.junior.domain.festival.Festival;
 import com.junior.domain.festival.like.FestivalLike;
 import com.junior.domain.member.Member;
-import com.junior.dto.festival.like.CreateFestivalLikeDto;
 import com.junior.repository.festival.FestivalLikeRepository;
 import com.junior.repository.festival.FestivalRepository;
 import com.junior.repository.member.MemberRepository;
