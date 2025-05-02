@@ -5,12 +5,14 @@ import com.junior.dto.festival.*;
 import com.junior.exception.StatusCode;
 import com.junior.page.PageCustom;
 import com.junior.response.CommonResponse;
+import com.junior.security.UserPrincipal;
 import com.junior.service.festival.FestivalService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,8 +62,8 @@ public class FestivalController implements FestivalApi {
 
     @Override
     @GetMapping("/api/v1/festivals/{festival_id}")
-    public ResponseEntity<CommonResponse<FestivalDetailDto>> findFestivalDetail(@PathVariable("festival_id") Long festivalId) {
-        return ResponseEntity.status(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS, festivalService.findFestivalDetail(festivalId)));
+    public ResponseEntity<CommonResponse<FestivalDetailDto>> findFestivalDetail(@PathVariable("festival_id") Long festivalId, @AuthenticationPrincipal UserPrincipal principal) {
+        return ResponseEntity.status(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS, festivalService.findFestivalDetail(festivalId, principal)));
     }
 
     @Override

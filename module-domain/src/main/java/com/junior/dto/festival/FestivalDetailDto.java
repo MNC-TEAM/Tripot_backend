@@ -11,7 +11,8 @@ public record FestivalDetailDto(
         String location,
         String duration,
         String imgUrl,
-        String detail
+        String detail,
+        boolean isLiked
 
 ) {
 }

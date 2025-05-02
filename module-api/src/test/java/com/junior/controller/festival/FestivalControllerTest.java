@@ -4,6 +4,7 @@ import com.junior.controller.BaseControllerTest;
 import com.junior.dto.festival.*;
 import com.junior.exception.StatusCode;
 import com.junior.page.PageCustom;
+import com.junior.security.UserPrincipal;
 import com.junior.security.WithMockCustomAdmin;
 import com.junior.security.WithMockCustomUser;
 import com.junior.service.festival.FestivalService;
@@ -203,9 +204,11 @@ class FestivalControllerTest extends BaseControllerTest {
                 .city("city")
                 .imgUrl("imgurl")
                 .duration("duration")
+                .isLiked(false)
                 .build();
 
-        given(festivalService.findFestivalDetail(anyLong())).willReturn(result);
+        given(festivalService.findFestivalDetail(anyLong(), any())).willReturn(result);
+
 
         //when
         ResultActions actions = mockMvc.perform(

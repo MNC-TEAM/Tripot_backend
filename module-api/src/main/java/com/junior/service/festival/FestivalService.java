@@ -1,12 +1,17 @@
 package com.junior.service.festival;
 
 import com.junior.domain.festival.Festival;
+import com.junior.domain.member.Member;
 import com.junior.dto.festival.*;
 import com.junior.dto.festival.api.*;
 import com.junior.exception.CustomException;
+import com.junior.exception.NotValidMemberException;
 import com.junior.exception.StatusCode;
 import com.junior.page.PageCustom;
 import com.junior.repository.festival.FestivalRepository;
+import com.junior.repository.festival.like.FestivalLikeRepository;
+import com.junior.repository.member.MemberRepository;
+import com.junior.security.UserPrincipal;
 import com.junior.util.CustomStringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,16 +35,28 @@ public class FestivalService {
     private final WebClient webClient;
 
     private final FestivalRepository festivalRepository;
+    private final MemberRepository memberRepository;
 
     private final String festivalUrl;
 
     private final String festivalApiKey;
+    private final FestivalLikeRepository festivalLikeRepository;
 
-    public FestivalService(WebClient webClient, FestivalRepository festivalRepository, @Value("${data-api.festival.url}") String festivalUrl, @Value("${data-api.festival.key}") String festivalApiKey) {
+
+    public FestivalService(WebClient webClient,
+                           FestivalRepository festivalRepository,
+                           MemberRepository memberRepository,
+                           FestivalLikeRepository festivalLikeRepository,
+                           @Value("${data-api.festival.url}") String festivalUrl,
+                           @Value("${data-api.festival.key}") String festivalApiKey
+    ) {
+
         this.webClient = webClient;
         this.festivalRepository = festivalRepository;
+        this.memberRepository = memberRepository;
         this.festivalUrl = festivalUrl;
         this.festivalApiKey = festivalApiKey;
+        this.festivalLikeRepository = festivalLikeRepository;
     }
 
     /**
@@ -162,10 +179,13 @@ public class FestivalService {
         return festivalRepository.findFestival(cursorId, pageRequest, city, q);
     }
 
-    public FestivalDetailDto findFestivalDetail(Long id) {
+    public FestivalDetailDto findFestivalDetail(Long id, UserPrincipal principal) {
 
         Festival targetFestival = festivalRepository.findById(id)
                 .orElseThrow(() -> new CustomException(StatusCode.FESTIVAL_NOT_FOUND));
+
+        Member member = principal != null ? memberRepository.findById(principal.getMember().getId())
+                .orElseThrow(() -> new NotValidMemberException(StatusCode.MEMBER_NOT_FOUND)) : null;
 
         log.info("[{}] 축제 상세정보 조회 title: {}, contentId: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), targetFestival.getTitle(), targetFestival.getContentId());
         FestivalApiResponse<FestivalDetailItems> result = webClient
@@ -197,6 +217,7 @@ public class FestivalService {
 
         FestivalDetailItem item = result.getResponse().getBody().getItems().getItem().get(0);
 
+        boolean isLiked = member != null && festivalLikeRepository.existsByMemberAndFestival(member, targetFestival);
 
         return FestivalDetailDto.builder()
                 .id(id)
@@ -207,6 +228,7 @@ public class FestivalService {
                 .duration(CustomStringUtil.durationToString(targetFestival.getStartDate(), targetFestival.getEndDate()))
                 .imgUrl(targetFestival.getImgUrl())
                 .detail(item.getOverview())
+                .isLiked(isLiked)
                 .build();
     }
 

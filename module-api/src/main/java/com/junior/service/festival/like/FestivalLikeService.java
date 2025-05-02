@@ -73,6 +73,7 @@ public class FestivalLikeService {
         FestivalLike festivalLike = festivalLikeRepository.findByMemberAndFestival(member, festival)
                 .orElseThrow(() -> new CustomException(StatusCode.FESTIVAL_LIKE_NOT_FOUND));
 
+        log.info("[{}] 축제 북마크 삭제 member: {}, festival: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), member.getUsername(), festival.getTitle());
         festivalLikeRepository.delete(festivalLike);
     }
 }

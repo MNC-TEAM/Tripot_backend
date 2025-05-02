@@ -7,6 +7,8 @@ import com.junior.dto.festival.*;
 import com.junior.dto.festival.api.*;
 import com.junior.page.PageCustom;
 import com.junior.repository.festival.FestivalRepository;
+import com.junior.repository.festival.like.FestivalLikeRepository;
+import com.junior.repository.member.MemberRepository;
 import com.junior.service.BaseServiceTest;
 import com.junior.util.CustomStringUtil;
 import okhttp3.mockwebserver.MockResponse;
@@ -40,6 +42,10 @@ class FestivalServiceTest extends BaseServiceTest {
     private FestivalService festivalService;
     @Mock
     private FestivalRepository festivalRepository;
+    @Mock
+    private MemberRepository memberRepository;
+    @Mock
+    private FestivalLikeRepository festivalLikeRepository;
 
     @BeforeEach
     void init() throws IOException {
@@ -58,7 +64,7 @@ class FestivalServiceTest extends BaseServiceTest {
                 .uriBuilderFactory(factory)
                 .build();
         // 조작된 WebClient 주입
-        festivalService = new FestivalService(webClient, festivalRepository, baseUrl, key);
+        festivalService = new FestivalService(webClient, festivalRepository, memberRepository, festivalLikeRepository, baseUrl, key);
 
 
     }
@@ -280,7 +286,7 @@ class FestivalServiceTest extends BaseServiceTest {
                 ));
 
         //when
-        FestivalDetailDto festivalDetail = festivalService.findFestivalDetail(1L);
+        FestivalDetailDto festivalDetail = festivalService.findFestivalDetail(1L, null);
 
         //then
         assertThat(festivalDetail.detail()).isEqualTo(detail);

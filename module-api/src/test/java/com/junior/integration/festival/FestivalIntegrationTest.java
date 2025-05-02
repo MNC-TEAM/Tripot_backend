@@ -1,10 +1,12 @@
 package com.junior.integration.festival;
 
 import com.junior.domain.festival.Festival;
+import com.junior.domain.festival.like.FestivalLike;
 import com.junior.domain.member.Member;
 import com.junior.exception.StatusCode;
 import com.junior.integration.BaseIntegrationTest;
 import com.junior.repository.festival.FestivalRepository;
+import com.junior.repository.festival.like.FestivalLikeRepository;
 import com.junior.repository.member.MemberRepository;
 import com.junior.security.WithMockCustomAdmin;
 import com.junior.security.WithMockCustomUser;
@@ -44,6 +46,9 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private FestivalRepository festivalRepository;
 
+    @Autowired
+    private FestivalLikeRepository festivalLikeRepository;
+
     @BeforeEach
     void init() {
 
@@ -71,6 +76,13 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
                     i <= 9 ? LocalDate.of(2025, 1, 31) : LocalDate.of(2025, 2, 28));
 
             festivalRepository.save(festival);
+
+            if(i==1){
+                festivalLikeRepository.save(FestivalLike.builder()
+                        .member(activeTestMember)
+                        .festival(festival)
+                        .build());
+            }
         }
 
 
@@ -311,7 +323,36 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.detail").isNotEmpty());
+                .andExpect(jsonPath("$.data.detail").isNotEmpty())
+                .andExpect(jsonPath("$.data.isLiked").value(false));
+
+
+    }
+
+    @Test
+    @DisplayName("축제 상세정보 조회 - 좋아요 누른 축제 좋아요 여부가 정상 작동해야 함")
+    @WithMockCustomUser
+    void findFestivalDetailLike() throws Exception {
+        //given
+        Long festivalId = 1L;
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/festivals/{festival_id}", festivalId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.FESTIVAL_DETAIL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.detail").isNotEmpty())
+                .andExpect(jsonPath("$.data.isLiked").value(true));
+
 
     }
 
