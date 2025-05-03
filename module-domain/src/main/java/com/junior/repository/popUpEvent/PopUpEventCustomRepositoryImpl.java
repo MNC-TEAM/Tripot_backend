@@ -134,6 +134,7 @@ public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepositor
                 )
                 .from(popUpEvent)
                 .where(
+                        popUpEvent.id.eq(id),
                         popUpEvent.isDeleted.eq(false)
                 )
                 .fetchOne();
