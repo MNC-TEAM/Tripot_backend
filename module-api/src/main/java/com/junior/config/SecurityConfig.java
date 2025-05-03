@@ -88,6 +88,7 @@ public class SecurityConfig {
                         // 팝업 스토어 조회
                         .requestMatchers("/api/v1/pop-up-events/map").permitAll()
                         .requestMatchers("/api/v1/pop-up-events/scroll").permitAll()
+                        .requestMatchers(HttpMethod.GET,"api/v1/pop-up-events/*").permitAll()
                         // 팝업 스토어 생성, 수정, 삭제 권한 체크
                         .requestMatchers(HttpMethod.POST,"/api/v1/pop-up-events").hasRole(MemberRole.ADMIN.name())
                         .requestMatchers(HttpMethod.PATCH,"/api/v1/pop-up-events/*").hasRole(MemberRole.ADMIN.name())
