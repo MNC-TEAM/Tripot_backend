@@ -10,18 +10,17 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.junior.domain.popUpEvent.QPopUpEvent.popUpEvent;
 import static com.junior.domain.story.QStory.story;
 
 @Slf4j
 @RequiredArgsConstructor
-public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepository{
+public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepository {
 
     private final JPAQueryFactory query;
 
@@ -60,7 +59,7 @@ public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepositor
     public List<ResponsePopUpEventDto> findEventByPos(GeoPointDto geoPointLt, GeoPointDto geoPointRb) {
 
         return query.select(new QResponsePopUpEventDto(
-                        popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
+                        popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.location, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
                 ))
                 .from(popUpEvent)
                 .where(popUpEvent.latitude.between(
@@ -78,11 +77,11 @@ public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepositor
     }
 
     @Override
-    public Slice<ResponsePopUpEventDto> loadPopUpEventOnScroll(Member findMember, Pageable pageable, Long cursorId) {
+    public Slice<ResponsePopUpEventDto> loadPopUpEventOnScroll(Pageable pageable, Long cursorId) {
 //        return null;
         List<ResponsePopUpEventDto> popUpEvents = query.select(
                         new QResponsePopUpEventDto(
-                                popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
+                                popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.location, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
                         )
                 )
                 .from(popUpEvent)
@@ -97,5 +96,47 @@ public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepositor
         boolean hasNext = isHaveNextStoryList(popUpEvents, pageable);
 
         return new SliceImpl<>(popUpEvents, pageable, hasNext);
+    }
+
+    @Override
+    public Page<ResponsePopUpEventDto> loadPopUpEventByPage(Pageable pageable) {
+        List<ResponsePopUpEventDto> popUpEvents = query.select(
+                        new QResponsePopUpEventDto(
+                                popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.location, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
+                        )
+                )
+                .from(popUpEvent)
+                .where(
+                        popUpEvent.isDeleted.eq(false)
+                )
+                .limit(pageable.getPageSize())
+                .offset(pageable.getOffset())
+                .orderBy(getOrderByClause("desc"))
+                .fetch();
+
+        long totalCnt = Optional.ofNullable(
+                query.select(popUpEvent.count())
+                        .from(popUpEvent)
+                        .where(popUpEvent.isDeleted.eq(false))
+                        .fetchOne()
+        ).orElse(0L);
+
+        return new PageImpl<>(popUpEvents, pageable, totalCnt);
+    }
+
+    @Override
+    public ResponsePopUpEventDto getPopUpEventById(Long id) {
+
+        return query.select(
+                        new QResponsePopUpEventDto(
+                                popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.location, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
+                        )
+                )
+                .from(popUpEvent)
+                .where(
+                        popUpEvent.id.eq(id),
+                        popUpEvent.isDeleted.eq(false)
+                )
+                .fetchOne();
     }
 }

@@ -11,6 +11,7 @@ public record CreateNewPopUpEventDto(
     // 이벤트 관련 링크
     String eventUrl,
     String city,
+    String location,
 
     // 마커에 사용될 위도(latitude), 경도(longitude)
     double latitude,

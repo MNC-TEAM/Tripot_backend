@@ -13,6 +13,7 @@ public record ResponsePopUpEventDto(
         // 이벤트 관련 링크
         String eventUrl,
         String city,
+        String location,
 
         // 마커에 사용될 위도(latitude), 경도(longitude)
         double latitude,
@@ -24,12 +25,12 @@ public record ResponsePopUpEventDto(
 ) {
 
     @QueryProjection
-
-    public ResponsePopUpEventDto(Long id, String eventName, String eventUrl, String city, double latitude, double longitude, LocalDateTime startDate, LocalDateTime endDate) {
+    public ResponsePopUpEventDto(Long id, String eventName, String eventUrl, String city, String location, double latitude, double longitude, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
         this.eventName = eventName;
         this.eventUrl = eventUrl;
         this.city = city;
+        this.location = location;
         this.latitude = latitude;
         this.longitude = longitude;
         this.startDate = startDate;

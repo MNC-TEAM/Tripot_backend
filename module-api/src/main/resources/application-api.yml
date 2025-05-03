@@ -28,3 +28,11 @@ cloud:
       credentials:
         accessKey: ${AWS_S3_ACCESS_KEY_ID}
         secretKey: ${AWS_S3_SECRET_ACCESS_KEY}
+
+data-api:
+  festival:
+    url: ${FESTIVAL_URL}
+    key: ${FESTIVAL_API_KEY}
+  festival-detail:
+    url: ${FESTIVAL_DETAIL_URL}
+    key: ${FESTIVAL_API_KEY}

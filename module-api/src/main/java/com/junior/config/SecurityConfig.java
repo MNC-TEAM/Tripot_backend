@@ -85,14 +85,26 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/comment/*/child").permitAll()
                         // public 스토리 리스트 조회
                         .requestMatchers("/api/v1/public/stories/**").permitAll()
+                        // 팝업 스토어 조회
+                        .requestMatchers("/api/v1/pop-up-events/map").permitAll()
+                        .requestMatchers("/api/v1/pop-up-events/scroll").permitAll()
+                        .requestMatchers(HttpMethod.GET,"api/v1/pop-up-events/*").permitAll()
+                        // 팝업 스토어 생성, 수정, 삭제 권한 체크
+                        .requestMatchers(HttpMethod.POST,"/api/v1/pop-up-events").hasRole(MemberRole.ADMIN.name())
+                        .requestMatchers(HttpMethod.PATCH,"/api/v1/pop-up-events/*").hasRole(MemberRole.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/pop-up-events/*").hasRole(MemberRole.ADMIN.name())
 
                         .requestMatchers("/api/v1/versions/*/check").permitAll()
-
                         //admin 관련 설정
                         .requestMatchers("/api/v1/admin/**").hasRole(MemberRole.ADMIN.name())
                         .requestMatchers("/createTestMember").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/actuator/prometheus").permitAll()
+
+                        //축제 저장 기능
+                        .requestMatchers(HttpMethod.POST, "/api/v1/festivals").hasRole(MemberRole.ADMIN.name())
+                        //축제 조회 기능
+                        .requestMatchers(HttpMethod.GET, "/api/v1/festivals/**").permitAll()
                         .anyRequest().authenticated());
 
 
