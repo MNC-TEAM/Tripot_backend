@@ -36,3 +36,8 @@ data-api:
   festival-detail:
     url: ${FESTIVAL_DETAIL_URL}
     key: ${FESTIVAL_API_KEY}
+
+admin-web:
+  url:
+    dev: ${ADMIN_WEB_DEV}
+    prod: ${ADMIN_WEB_PROD}
