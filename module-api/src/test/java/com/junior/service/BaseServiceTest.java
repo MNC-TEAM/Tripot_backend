@@ -1,6 +1,7 @@
 package com.junior.service;
 
 import com.junior.domain.admin.Notice;
+import com.junior.domain.festival.Festival;
 import com.junior.domain.member.Member;
 import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+
+import java.time.LocalDate;
 
 @ExtendWith(MockitoExtension.class)
 public class BaseServiceTest {
@@ -128,5 +131,19 @@ public class BaseServiceTest {
 
         return profileImg;
 
+    }
+
+    protected Festival createFestival(String title, String city, double lat, double logt, long contentId, LocalDate startDate, LocalDate endDate) {
+        return Festival.builder()
+                .contentId(contentId)
+                .title(title)
+                .city(city)
+                .location("location")
+                .imgUrl("url.com")
+                .startDate(startDate)
+                .endDate(endDate)
+                .lat(lat)
+                .logt(logt)
+                .build();
     }
 }

@@ -18,7 +18,7 @@ import static com.junior.domain.member.QMember.member;
 
 @RequiredArgsConstructor
 @Slf4j
-public class MemberRepositoryImpl implements MemberRepositoryCustom{
+public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 

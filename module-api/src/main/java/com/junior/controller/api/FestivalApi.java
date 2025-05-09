@@ -1,9 +1,9 @@
 package com.junior.controller.api;
 
 import com.junior.dto.festival.*;
-import com.junior.dto.story.GeoRect;
 import com.junior.page.PageCustom;
 import com.junior.response.CommonResponse;
+import com.junior.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -15,10 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -283,7 +283,8 @@ public interface FestivalApi {
                                                                 "location": "서울특별시 location",
                                                                 "duration": "2025년 1월 1일 - 2025년 1월 2일",
                                                                 "imgUrl": "url.com",
-                                                                "detail": "전국 각지의 농수축산물이 모이는 가락몰에서, 전국 각지의 빵 맛집들이 모여 서울 최초의 전국 빵 축제를 개최한다. 축제는 5월 9일(금)부터 5월 11일(일)까지 3일간, 가락몰 하늘공원에서 진행된다. 20개의 전국 유명 빵집이 참여하며, 총 100종 이상의 다양한 빵을 선보인다. 축제 기간 동안 버블&매직쇼, 풍선 빵 오마카세와 같은 다양한 볼거리와 가락몰 및 행사장 구매고객대상 꽝없는 빵쿠폰 뽑기와 신라호텔 망고쇼트케이크, 나폴레옹과자점 쿠키세트 추첨 이벤트도 진행된다.선착순 400명의 사전 예약자에게는 1만원 빵쿠폰도 제공된다. 사진맛집 가락몰 하늘공원에서, 향긋한 빵 향기와 함께 가족, 친구, 연인과 멋진 추억을 남길 수 있다."
+                                                                "detail": "전국 각지의 농수축산물이 모이는 가락몰에서, 전국 각지의 빵 맛집들이 모여 서울 최초의 전국 빵 축제를 개최한다. 축제는 5월 9일(금)부터 5월 11일(일)까지 3일간, 가락몰 하늘공원에서 진행된다. 20개의 전국 유명 빵집이 참여하며, 총 100종 이상의 다양한 빵을 선보인다. 축제 기간 동안 버블&매직쇼, 풍선 빵 오마카세와 같은 다양한 볼거리와 가락몰 및 행사장 구매고객대상 꽝없는 빵쿠폰 뽑기와 신라호텔 망고쇼트케이크, 나폴레옹과자점 쿠키세트 추첨 이벤트도 진행된다.선착순 400명의 사전 예약자에게는 1만원 빵쿠폰도 제공된다. 사진맛집 가락몰 하늘공원에서, 향긋한 빵 향기와 함께 가족, 친구, 연인과 멋진 추억을 남길 수 있다.",
+                                                                "isLiked": false
                                                               }
                                                             }
                                                             """
@@ -305,7 +306,7 @@ public interface FestivalApi {
                                     ))
                     })
     })
-    ResponseEntity<CommonResponse<FestivalDetailDto>> findFestivalDetail(@PathVariable("festival_id") Long festivalId);
+    ResponseEntity<CommonResponse<FestivalDetailDto>> findFestivalDetail(@PathVariable("festival_id") Long festivalId, @AuthenticationPrincipal UserPrincipal principal);
 
     @GetMapping("/api/v1/admin/festivals")
     @ApiResponse(responseCode = "200", description = "축제 리스트 조회 성공",

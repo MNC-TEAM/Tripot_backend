@@ -1,13 +1,17 @@
 package com.junior.service.festival;
 
 import com.junior.domain.festival.Festival;
+import com.junior.domain.member.Member;
 import com.junior.dto.festival.*;
 import com.junior.dto.festival.api.*;
-import com.junior.dto.story.GeoRect;
 import com.junior.exception.CustomException;
+import com.junior.exception.NotValidMemberException;
 import com.junior.exception.StatusCode;
 import com.junior.page.PageCustom;
 import com.junior.repository.festival.FestivalRepository;
+import com.junior.repository.festival.like.FestivalLikeRepository;
+import com.junior.repository.member.MemberRepository;
+import com.junior.security.UserPrincipal;
 import com.junior.util.CustomStringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +26,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -31,16 +36,28 @@ public class FestivalService {
     private final WebClient webClient;
 
     private final FestivalRepository festivalRepository;
+    private final MemberRepository memberRepository;
 
     private final String festivalUrl;
 
     private final String festivalApiKey;
+    private final FestivalLikeRepository festivalLikeRepository;
 
-    public FestivalService(WebClient webClient, FestivalRepository festivalRepository, @Value("${data-api.festival.url}") String festivalUrl, @Value("${data-api.festival.key}") String festivalApiKey) {
+
+    public FestivalService(WebClient webClient,
+                           FestivalRepository festivalRepository,
+                           MemberRepository memberRepository,
+                           FestivalLikeRepository festivalLikeRepository,
+                           @Value("${data-api.festival.url}") String festivalUrl,
+                           @Value("${data-api.festival.key}") String festivalApiKey
+    ) {
+
         this.webClient = webClient;
         this.festivalRepository = festivalRepository;
+        this.memberRepository = memberRepository;
         this.festivalUrl = festivalUrl;
         this.festivalApiKey = festivalApiKey;
+        this.festivalLikeRepository = festivalLikeRepository;
     }
 
     /**
@@ -48,11 +65,8 @@ public class FestivalService {
      * 관리자 권한으로만 수행 가능
      */
 
-    //TODO: 이거 매월 초 자동실행시켜도 무방한지 고민해보기
     @Transactional
     public void saveFestival(String eventStartDate, String eventEndDate) {
-
-        festivalRepository.truncateFestival();
 
         String[] thOne = {"01", "03", "05", "07", "08", "10", "12"};
 
@@ -85,7 +99,7 @@ public class FestivalService {
                         .path("/searchFestival1")
                         .queryParam("numOfRows", 2000)
                         .queryParam("pageNo", 1)
-                        .queryParam("MobileOS", "IOS")              //TODO: 서로 다른 환경에 대한 처리 -> 운영 계정 승인 시 고려
+                        .queryParam("MobileOS", "ETC")              //TODO: 서로 다른 환경에 대한 처리 -> 운영 계정 승인 시 고려
                         .queryParam("MobileApp", "Tripot")
                         .queryParam("_type", "json")
                         .queryParam("listYN", "Y")
@@ -106,7 +120,7 @@ public class FestivalService {
 
         for (FestivalApiItem festivalInfo : item) {
 
-
+            //존재하지 않는 축제일 경우 저장
             if (!festivalRepository.existsByContentId(Long.valueOf(festivalInfo.getContentid()))) {
                 String fullLocation = festivalInfo.getAddr1() + " " + festivalInfo.getAddr2();
 
@@ -129,6 +143,12 @@ public class FestivalService {
                         .build();
 
                 festivalRepository.save(festival);
+
+            }
+            //존재하는 축제일 경우 값 업데이트
+            else{
+                Festival festival = festivalRepository.findByContentId(Long.valueOf(festivalInfo.getContentid())).get();
+                festival.updateInfo(festivalInfo);
 
             }
         }
@@ -166,10 +186,13 @@ public class FestivalService {
         return festivalRepository.findFestival(cursorId, pageRequest, city, q);
     }
 
-    public FestivalDetailDto findFestivalDetail(Long id) {
+    public FestivalDetailDto findFestivalDetail(Long id, UserPrincipal principal) {
 
         Festival targetFestival = festivalRepository.findById(id)
                 .orElseThrow(() -> new CustomException(StatusCode.FESTIVAL_NOT_FOUND));
+
+        Member member = principal != null ? memberRepository.findById(principal.getMember().getId())
+                .orElseThrow(() -> new NotValidMemberException(StatusCode.MEMBER_NOT_FOUND)) : null;
 
         log.info("[{}] 축제 상세정보 조회 title: {}, contentId: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), targetFestival.getTitle(), targetFestival.getContentId());
         FestivalApiResponse<FestivalDetailItems> result = webClient
@@ -178,7 +201,7 @@ public class FestivalService {
                         .scheme("http")
                         .host(festivalUrl)
                         .path("/detailCommon1")
-                        .queryParam("MobileOS", "IOS")              //TODO: 서로 다른 환경에 대한 처리 -> 운영 계정 승인 시 고려
+                        .queryParam("MobileOS", "ETC")
                         .queryParam("MobileApp", "Tripot")
                         .queryParam("_type", "json")
                         .queryParam("contentId", targetFestival.getContentId())
@@ -201,6 +224,7 @@ public class FestivalService {
 
         FestivalDetailItem item = result.getResponse().getBody().getItems().getItem().get(0);
 
+        boolean isLiked = member != null && festivalLikeRepository.existsByMemberAndFestival(member, targetFestival);
 
         return FestivalDetailDto.builder()
                 .id(id)
@@ -211,10 +235,11 @@ public class FestivalService {
                 .duration(CustomStringUtil.durationToString(targetFestival.getStartDate(), targetFestival.getEndDate()))
                 .imgUrl(targetFestival.getImgUrl())
                 .detail(item.getOverview())
+                .isLiked(isLiked)
                 .build();
     }
 
-    public PageCustom<FestivalAdminDto> findFestivalAdmin(Pageable pageable, String q){
+    public PageCustom<FestivalAdminDto> findFestivalAdmin(Pageable pageable, String q) {
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
 
         Page<FestivalAdminDto> result = festivalRepository.findFestivalAdmin(pageRequest, q);
@@ -234,7 +259,7 @@ public class FestivalService {
                         .scheme("http")
                         .host(festivalUrl)
                         .path("/detailCommon1")
-                        .queryParam("MobileOS", "IOS")              //TODO: 서로 다른 환경에 대한 처리 -> 운영 계정 승인 시 고려
+                        .queryParam("MobileOS", "ETC")
                         .queryParam("MobileApp", "Tripot")
                         .queryParam("_type", "json")
                         .queryParam("contentId", targetFestival.getContentId())

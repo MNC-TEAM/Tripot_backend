@@ -1,10 +1,9 @@
 package com.junior.repository.festival;
 
+import com.junior.domain.member.Member;
 import com.junior.dto.festival.*;
-import com.junior.dto.story.GeoPointDto;
-import com.junior.util.CustomStringUtil;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.micrometer.common.util.StringUtils;
@@ -16,16 +15,32 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.support.PageableExecutionUtils;
 
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.junior.domain.festival.QFestival.festival;
+import static com.junior.domain.festival.like.QFestivalLike.festivalLike;
 
 @RequiredArgsConstructor
 @Slf4j
 public class FestivalRepositoryImpl implements FestivalRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final Clock clock;
 
+    private static BooleanExpression idLt(Long cursorId) {
+
+        return cursorId != null ? festival.id.lt(cursorId) : null;
+    }
+
+    private static BooleanExpression queryContains(String q) {
+        return festival.title.contains(q);
+    }
+
+    private static BooleanExpression cityEq(String city) {
+        return !StringUtils.isBlank(city) ? festival.city.eq(city) : null;
+    }
 
     @Override
     public List<FestivalCityCountDto> findFestivalCityCount() {
@@ -37,6 +52,7 @@ public class FestivalRepositoryImpl implements FestivalRepositoryCustom {
                         )
                 )
                 .from(festival)
+                .where(timeBetween())
                 .groupBy(festival.city)
                 .orderBy(festival.city.asc())
                 .fetch();
@@ -61,7 +77,8 @@ public class FestivalRepositoryImpl implements FestivalRepositoryCustom {
                         festival.logt.between(
                                 Math.min(geoPointLtX, geoPointRbX),
                                 Math.max(geoPointLtX, geoPointRbX)
-                        )
+                        ),
+                        timeBetween()
                 )
                 .fetch();
     }
@@ -84,7 +101,7 @@ public class FestivalRepositoryImpl implements FestivalRepositoryCustom {
                         )
                 )
                 .from(festival)
-                .where(idLt(cursorId), queryContains(q), cityEq(city))
+                .where(idLt(cursorId), queryContains(q), cityEq(city), timeBetween())
                 .limit(pageable.getPageSize() + 1)
                 .orderBy(festival.id.desc())
                 .fetch();
@@ -101,8 +118,10 @@ public class FestivalRepositoryImpl implements FestivalRepositoryCustom {
         return new SliceImpl<>(resultList, pageable, hasNext);
     }
 
+
+
     @Override
-    public Page<FestivalAdminDto> findFestivalAdmin(Pageable pageable, String q){
+    public Page<FestivalAdminDto> findFestivalAdmin(Pageable pageable, String q) {
 
         log.info("[{}] 관리자 축제내용 조회 쿼리 실행", Thread.currentThread().getStackTrace()[1].getMethodName());
         List<FestivalAdminDto> result = queryFactory
@@ -118,7 +137,7 @@ public class FestivalRepositoryImpl implements FestivalRepositoryCustom {
                 )
                 .from(festival)
                 .where(
-                        queryContains(q)
+                        queryContains(q), timeBetween()
                 )
                 .orderBy(festival.id.desc())
                 .offset(pageable.getOffset())
@@ -136,17 +155,10 @@ public class FestivalRepositoryImpl implements FestivalRepositoryCustom {
         return PageableExecutionUtils.getPage(result, pageable, count::fetchOne);
     }
 
-    private static BooleanExpression idLt(Long cursorId) {
-
-        return cursorId != null ? festival.id.lt(cursorId) : null;
-    }
-
-    private static BooleanExpression queryContains(String q) {
-        return festival.title.contains(q);
-    }
-
-    private static BooleanExpression cityEq(String city){
-        return !StringUtils.isBlank(city) ? festival.city.eq(city) : null;
+    private BooleanExpression timeBetween() {
+        LocalDate now = LocalDate.now(clock);
+        log.info(now.toString());
+        return festival.startDate.before(now).and(festival.endDate.after(now));
     }
 
 

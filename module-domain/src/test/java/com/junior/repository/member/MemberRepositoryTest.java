@@ -117,8 +117,7 @@ class MemberRepositoryTest {
         assertThat(result.getTotalElements()).isEqualTo(31);
         assertThat(content.size()).isEqualTo(20);
         assertThat(content.get(0).id()).isEqualTo(31);
-        assertThat(content.get(content.size()-1).id()).isEqualTo(12);
-
+        assertThat(content.get(content.size() - 1).id()).isEqualTo(12);
 
 
     }
@@ -152,7 +151,6 @@ class MemberRepositoryTest {
         assertThat(content.size()).isEqualTo(1);
         assertThat(content.get(0).id()).isEqualTo(1);
         assertThat(content.get(0).nickname()).isEqualTo("테스트닉");
-
 
 
     }

@@ -6,32 +6,48 @@ import com.junior.dto.festival.FestivalAdminDto;
 import com.junior.dto.festival.FestivalCityCountDto;
 import com.junior.dto.festival.FestivalDto;
 import com.junior.dto.festival.FestivalMapDto;
-import com.junior.dto.story.GeoPointDto;
-import com.junior.dto.story.GeoRect;
 import com.junior.repository.BaseRepositoryTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
+import static org.mockito.BDDMockito.given;
 
 public class FestivalRepositoryTest extends BaseRepositoryTest {
 
+
+    private static final Clock PRESENT_CLOCK = Clock.fixed(Instant.parse("2025-01-15T10:00:00Z"), ZoneId.systemDefault());
+
+    @SpyBean
+    private Clock clock;
     @Autowired
     private FestivalRepository festivalRepository;
 
     @BeforeEach
     void init() {
 
-        for (int i = 1; i <= 9; i++) {
-            Festival festival = createFestival("축제 " + i, i % 2 == 1 ? "서울특별시" : "강원특별자치도", i % 2 == 1 ? 37.0 : 40.0, i % 2 == 1 ? 125.0 : 130.0);
+        //20250115 기준으로 테스트 진행
+        given(clock.instant()).willReturn(PRESENT_CLOCK.instant());
+        given(clock.getZone()).willReturn(PRESENT_CLOCK.getZone());
+
+        //각 축제는 1/1-1/31, 10번 축제부터는 조회되지 않아야 함
+        for (int i = 1; i <= 18; i++) {
+
+            Festival festival = createFestival("축제 " + i, i % 2 == 1 ? "서울특별시" : "강원특별자치도", i % 2 == 1 ? 37.0 : 40.0, i % 2 == 1 ? 125.0 : 130.0,
+                    i <= 9 ? LocalDate.of(2025, 1, 1) : LocalDate.of(2025, 2, 1),
+                    i <= 9 ? LocalDate.of(2025, 1, 31) : LocalDate.of(2025, 2, 28));
 
             festivalRepository.save(festival);
         }
@@ -42,10 +58,12 @@ public class FestivalRepositoryTest extends BaseRepositoryTest {
     public void findFestivalCityCount() throws Exception {
         //given
 
+
         //when
         List<FestivalCityCountDto> festivalCityCount = festivalRepository.findFestivalCityCount();
 
         //then
+        assertThat(festivalCityCount.size()).isEqualTo(2);
         assertThat(festivalCityCount.get(0).count()).isEqualTo(4);          //강원에서 개최하는 축제는 5개
         assertThat(festivalCityCount.get(1).count()).isEqualTo(5);          //서울에서 개최하는 축제는 4개
 

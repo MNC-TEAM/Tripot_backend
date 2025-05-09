@@ -3,7 +3,6 @@ package com.junior.event.like;
 import com.google.firebase.messaging.*;
 import com.junior.domain.firebase.FcmNotificationToken;
 import com.junior.domain.member.Member;
-import com.junior.domain.story.Comment;
 import com.junior.domain.story.Story;
 import com.junior.repository.firebase.FcmNotificationTokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,7 @@ public class LikeEventListener {
     private final MessageSource ms;
 
     private MulticastMessage getLikeMessage(Story story, Member likeMember, List<String> tokens) {
-        String message = ms.getMessage("push.like.content",new Object[]{likeMember.getNickname()}, null, null);
+        String message = ms.getMessage("push.like.content", new Object[]{likeMember.getNickname()}, null, null);
 
         Notification notification = Notification.builder()
                 .setTitle(story.getTitle())

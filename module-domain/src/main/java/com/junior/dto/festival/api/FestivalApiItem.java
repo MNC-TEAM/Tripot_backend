@@ -55,5 +55,4 @@ public class FestivalApiItem {
     private String title;
 
 
-
 }

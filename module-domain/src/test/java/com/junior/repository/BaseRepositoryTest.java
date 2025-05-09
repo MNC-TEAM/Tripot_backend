@@ -84,15 +84,15 @@ public class BaseRepositoryTest {
                 .build();
     }
 
-    public Festival createFestival(String title, String city, double lat, double logt){
+    public Festival createFestival(String title, String city, double lat, double logt, LocalDate startDate, LocalDate endDate) {
         return Festival.builder()
                 .contentId((long) (Math.random() * 1000))
                 .title(title)
                 .city(city)
                 .location("location")
                 .imgUrl("url.com")
-                .startDate(LocalDate.of(2025, 1, 1))
-                .endDate(LocalDate.of(2025, 1, 2))
+                .startDate(startDate)
+                .endDate(endDate)
                 .lat(lat)
                 .logt(logt)
                 .build();

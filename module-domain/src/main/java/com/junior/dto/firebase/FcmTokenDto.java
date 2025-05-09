@@ -1,6 +1,6 @@
 package com.junior.dto.firebase;
 
-public record FcmTokenDto (
+public record FcmTokenDto(
         String fcmToken
 ) {
 
