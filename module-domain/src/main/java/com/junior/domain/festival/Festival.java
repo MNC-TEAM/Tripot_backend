@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(indexes = @Index(name = "festival_idx_lat_logt", columnList = "lat, logt"))
+@Table(indexes = {@Index(name = "idx_festival_start_date_end_date_lat_logt", columnList = "start_date, end_date, lat, logt")})
 public class Festival {
 
     @Id
