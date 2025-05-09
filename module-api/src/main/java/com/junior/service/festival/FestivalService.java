@@ -26,6 +26,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -119,7 +120,7 @@ public class FestivalService {
 
         for (FestivalApiItem festivalInfo : item) {
 
-
+            //존재하지 않는 축제일 경우 저장
             if (!festivalRepository.existsByContentId(Long.valueOf(festivalInfo.getContentid()))) {
                 String fullLocation = festivalInfo.getAddr1() + " " + festivalInfo.getAddr2();
 
@@ -142,6 +143,12 @@ public class FestivalService {
                         .build();
 
                 festivalRepository.save(festival);
+
+            }
+            //존재하는 축제일 경우 값 업데이트
+            else{
+                Festival festival = festivalRepository.findByContentId(Long.valueOf(festivalInfo.getContentid())).get();
+                festival.updateInfo(festivalInfo);
 
             }
         }

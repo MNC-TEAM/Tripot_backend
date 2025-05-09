@@ -1,5 +1,7 @@
 package com.junior.domain.festival;
 
+import com.junior.dto.festival.api.FestivalApiItem;
+import com.junior.util.CustomStringUtil;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -44,4 +46,22 @@ public class Festival {
     private Double logt;
 
 
+    public void updateInfo(FestivalApiItem festivalInfo) {
+        String fullLocation = festivalInfo.getAddr1() + " " + festivalInfo.getAddr2();
+
+
+        String[] split = fullLocation.split(" ");
+        String city = split.length != 0 ? split[0] : "";
+        String location = split.length != 0 ? fullLocation.substring(city.length()).trim() : "";
+
+        this.contentId = Long.valueOf(festivalInfo.getContentid());
+        this.title = festivalInfo.getTitle();
+        this.city = city;
+        this.location = location;
+        this.imgUrl = festivalInfo.getFirstimage();
+        this.startDate = CustomStringUtil.stringToDate(festivalInfo.getEventstartdate());
+        this.endDate = CustomStringUtil.stringToDate(festivalInfo.getEventenddate());
+        this.lat = Double.valueOf(festivalInfo.getMapy());
+        this.logt = Double.valueOf(festivalInfo.getMapx());
+    }
 }
