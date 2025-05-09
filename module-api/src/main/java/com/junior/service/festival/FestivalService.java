@@ -99,7 +99,7 @@ public class FestivalService {
                         .path("/searchFestival1")
                         .queryParam("numOfRows", 2000)
                         .queryParam("pageNo", 1)
-                        .queryParam("MobileOS", "IOS")              //TODO: 서로 다른 환경에 대한 처리 -> 운영 계정 승인 시 고려
+                        .queryParam("MobileOS", "ETC")              //TODO: 서로 다른 환경에 대한 처리 -> 운영 계정 승인 시 고려
                         .queryParam("MobileApp", "Tripot")
                         .queryParam("_type", "json")
                         .queryParam("listYN", "Y")
@@ -201,7 +201,7 @@ public class FestivalService {
                         .scheme("http")
                         .host(festivalUrl)
                         .path("/detailCommon1")
-                        .queryParam("MobileOS", "IOS")              //TODO: 서로 다른 환경에 대한 처리 -> 운영 계정 승인 시 고려
+                        .queryParam("MobileOS", "ETC")
                         .queryParam("MobileApp", "Tripot")
                         .queryParam("_type", "json")
                         .queryParam("contentId", targetFestival.getContentId())
@@ -259,7 +259,7 @@ public class FestivalService {
                         .scheme("http")
                         .host(festivalUrl)
                         .path("/detailCommon1")
-                        .queryParam("MobileOS", "IOS")              //TODO: 서로 다른 환경에 대한 처리 -> 운영 계정 승인 시 고려
+                        .queryParam("MobileOS", "ETC")
                         .queryParam("MobileApp", "Tripot")
                         .queryParam("_type", "json")
                         .queryParam("contentId", targetFestival.getContentId())
