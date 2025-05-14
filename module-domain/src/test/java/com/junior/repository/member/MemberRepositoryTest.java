@@ -99,6 +99,7 @@ class MemberRepositoryTest {
                     .username("사용자 " + i)
                     .role(MemberRole.USER)
                     .signUpType(SignUpType.KAKAO)
+                    .status(i != 30 ? MemberStatus.ACTIVE : MemberStatus.DELETE)
                     .build();
 
             memberRepository.save(member);
@@ -117,6 +118,9 @@ class MemberRepositoryTest {
         assertThat(result.getTotalElements()).isEqualTo(31);
         assertThat(content.size()).isEqualTo(20);
         assertThat(content.get(0).id()).isEqualTo(31);
+        assertThat(content.get(0).isWithdraw()).isTrue();
+        assertThat(content.get(1).isWithdraw()).isFalse();
+
         assertThat(content.get(content.size() - 1).id()).isEqualTo(12);
 
 
@@ -151,6 +155,7 @@ class MemberRepositoryTest {
         assertThat(content.size()).isEqualTo(1);
         assertThat(content.get(0).id()).isEqualTo(1);
         assertThat(content.get(0).nickname()).isEqualTo("테스트닉");
+        assertThat(content.get(0).isWithdraw()).isFalse();
 
 
     }

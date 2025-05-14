@@ -1,6 +1,7 @@
 package com.junior.repository.member;
 
 import com.junior.domain.member.MemberRole;
+import com.junior.domain.member.MemberStatus;
 import com.junior.dto.member.MemberListResponseDto;
 import com.junior.dto.member.QMemberListResponseDto;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -32,7 +33,9 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                                 member.signUpType,
                                 member.status,
                                 member.createdDate,
-                                member.role
+                                member.role,
+                                member.status.eq(MemberStatus.DELETE),
+                                member.lastModifiedDate
                         )
                 )
                 .from(member)
