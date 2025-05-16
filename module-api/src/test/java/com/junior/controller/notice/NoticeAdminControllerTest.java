@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +78,7 @@ class NoticeAdminControllerTest extends BaseControllerTest {
 
         List<NoticeAdminDto> result = new ArrayList<>();
 
-        result.add(new NoticeAdminDto(1L, "title"));
+        result.add(new NoticeAdminDto(1L, "title", LocalDateTime.of(2025, 1, 1, 0, 0)));
 
 
         given(noticeAdminService.findNotice(anyString(), any(Pageable.class))).willReturn(new PageCustom<>(result, resultPageable, result.size()));
