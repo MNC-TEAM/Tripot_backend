@@ -52,7 +52,7 @@ class AdminStoryControllerTest extends BaseControllerTest {
                 .title("title")
                 .city("서울")
                 .isDeleted(false)
-                .createdUsername("username")
+                .createdNickname("nickname")
                 .build();
 
         storyDtos.add(storyDto);
@@ -74,7 +74,7 @@ class AdminStoryControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.pageable.number").value(1))
                 .andExpect(jsonPath("$.data.content[0].city").value("서울"))
-                .andExpect(jsonPath("$.data.content[0].createdUsername").value("username"));
+                .andExpect(jsonPath("$.data.content[0].createdNickname").value("nickname"));
     }
 
     @Test

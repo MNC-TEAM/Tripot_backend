@@ -45,7 +45,7 @@ class AdminStoryServiceTest {
                 .title("title")
                 .city("서울")
                 .isDeleted(false)
-                .createdUsername("username")
+                .createdNickname("nickname")
                 .build();
 
         storyDtos.add(storyDto);

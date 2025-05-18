@@ -74,7 +74,72 @@ public class AdminStoryIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.data.pageable.number").value(2))
                 .andExpect(jsonPath("$.data.content[0].id").value(3))
                 .andExpect(jsonPath("$.data.content[0].isDeleted").value(false))
-                .andExpect(jsonPath("$.data.content[0].createdUsername").value("테스트사용자유저네임"));
+                .andExpect(jsonPath("$.data.content[0].deletedDateTime").doesNotExist())
+                .andExpect(jsonPath("$.data.content[0].createdNickname").value("테스트사용자닉네임"));
+
+
+    }
+
+    @Test
+    @DisplayName("관리자 스토리 페이지 조회 - 탈퇴회원에 대한 닉네임 표기가 정상적으로 이루어져야 함")
+    @WithMockCustomAdmin
+    void findDeleteStory() throws Exception {
+
+        //given
+        Member withdrewMember = memberRepository.findById(2L).orElseThrow(RuntimeException::new);
+        withdrewMember.deleteMember();
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/stories")
+                        .param("page", "2")
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.STORY_READ_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.STORY_READ_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.pageable.number").value(2))
+                .andExpect(jsonPath("$.data.content[0].id").value(3))
+                .andExpect(jsonPath("$.data.content[0].isDeleted").value(false))
+                .andExpect(jsonPath("$.data.content[0].deletedDateTime").doesNotExist())
+                .andExpect(jsonPath("$.data.content[0].createdNickname").value("탈퇴회원"));
+
+
+    }
+
+    @Test
+    @DisplayName("관리자 스토리 페이지 조회 - 삭제된 스토리에 대해 삭제일자가 정상적으로 표시되어야 함")
+    @WithMockCustomAdmin
+    void findStoryByWithdrewMember() throws Exception {
+
+        //given
+        Story deleteStory = storyRepository.findById(3L).orElseThrow(RuntimeException::new);
+        deleteStory.deleteStory();
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/stories")
+                        .param("page", "2")
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.STORY_READ_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.STORY_READ_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.pageable.number").value(2))
+                .andExpect(jsonPath("$.data.content[0].id").value(3))
+                .andExpect(jsonPath("$.data.content[0].isDeleted").value(true))
+                .andExpect(jsonPath("$.data.content[0].deletedDateTime").exists())
+                .andExpect(jsonPath("$.data.content[0].createdNickname").value("테스트사용자닉네임"));
 
 
     }

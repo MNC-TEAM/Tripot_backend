@@ -446,7 +446,9 @@ class StoryCustomRepositoryImplTest {
         Assertions.assertThat(content.get(0).city()).isEqualTo("대전");
         Assertions.assertThat(content.get(0).id()).isEqualTo(18);
         Assertions.assertThat(content.get(0).isDeleted()).isFalse();
-        Assertions.assertThat(content.get(0).createdUsername()).isEqualTo("username");
+        Assertions.assertThat(content.get(0).createdNickname()).isEqualTo("nickname");
+        Assertions.assertThat(content.get(0).createdDateTime()).isNotNull();
+        Assertions.assertThat(content.get(0).deletedDateTime()).isNull();           //삭제되지 않았으므로 미표기
         Assertions.assertThat(content.get(1).city()).isEqualTo("서울");
         Assertions.assertThat(content.get(1).id()).isEqualTo(17);
 
