@@ -7,8 +7,10 @@ import com.junior.dto.popUpEvent.CreateNewPopUpEventDto;
 import com.junior.dto.popUpEvent.ResponsePopUpEventDto;
 import com.junior.dto.popUpEvent.UpdatePopUpEventDto;
 import com.junior.dto.story.GeoPointDto;
+import com.junior.exception.CustomException;
 import com.junior.exception.PermissionException;
 import com.junior.exception.StatusCode;
+import com.junior.repository.popUpEvent.PopUpEventLikeRepository;
 import com.junior.repository.popUpEvent.PopUpEventRepository;
 import com.junior.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import java.util.List;
 public class PopUpEventService {
 
     private final PopUpEventRepository popUpEventRepository;
+    private final PopUpEventLikeRepository popUpEventLikeRepository;
 
     @Transactional
     public void createEvent(UserPrincipal userPrincipal, CreateNewPopUpEventDto createNewPopUpEventDto) {
@@ -92,8 +95,15 @@ public class PopUpEventService {
         return popUpEventRepository.loadPopUpEventByPage(pageable);
     }
 
-    public ResponsePopUpEventDto getPopUpEventsById(Long popUpEventId) {
+    public ResponsePopUpEventDto getPopUpEventsById(UserPrincipal userPrincipal, Long popUpEventId) {
 
-        return popUpEventRepository.getPopUpEventById(popUpEventId);
+        Member findMember = userPrincipal.getMember();
+
+        PopUpEvent popUpEvent = popUpEventRepository.findById(popUpEventId)
+                .orElseThrow(() -> new CustomException(StatusCode.POPUPEVENT_READ_FAIL));
+
+        boolean isLiked = popUpEventLikeRepository.existsByMemberAndPopUpEvent(findMember, popUpEvent);
+
+        return ResponsePopUpEventDto.from(popUpEvent, isLiked);
     }
 }
