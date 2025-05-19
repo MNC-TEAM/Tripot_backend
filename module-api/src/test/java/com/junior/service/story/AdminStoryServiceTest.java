@@ -1,10 +1,12 @@
 package com.junior.service.story;
 
+import com.junior.domain.member.Member;
 import com.junior.domain.story.Story;
 import com.junior.dto.story.AdminStoryDetailDto;
 import com.junior.dto.story.AdminStoryDto;
 import com.junior.page.PageCustom;
 import com.junior.repository.story.StoryRepository;
+import com.junior.service.BaseServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +27,7 @@ import static org.mockito.BDDMockito.given;
 
 
 @ExtendWith(MockitoExtension.class)
-class AdminStoryServiceTest {
+class AdminStoryServiceTest extends BaseServiceTest {
 
     @Mock
     private StoryRepository storyRepository;
@@ -34,7 +36,7 @@ class AdminStoryServiceTest {
     private AdminStoryService adminStoryService;
 
     @Test
-    @DisplayName("관리자 전용 스토리 페이지 조회가 정상적으로 이루어져야 함")
+    @DisplayName("관리자 전용 스토리 페이지 조회 - 정상적으로 이루어져야 함")
     void findStory() {
 
         //given
@@ -68,10 +70,12 @@ class AdminStoryServiceTest {
     }
 
     @Test
-    @DisplayName("스토리 상세 조회 기능이 정상 동작해야 함")
+    @DisplayName("관리자 스토리 상세 조회 기능 - 정상 동작해야 함")
     void findStoryDetail() {
 
         //given
+        Member member = createActiveTestMember();
+
         Story story = Story.builder()
                 .id(1L)
                 .title("title")
@@ -82,6 +86,7 @@ class AdminStoryServiceTest {
                 .city("서울")
                 .likeCnt(3L)
                 .imgUrls(new ArrayList<>())
+                .member(member)
                 .build();
 
         given(storyRepository.findById(anyLong())).willReturn(Optional.ofNullable(story));
@@ -96,7 +101,41 @@ class AdminStoryServiceTest {
     }
 
     @Test
-    @DisplayName("스토리 삭제 기능이 정상 동작해야 함")
+    @DisplayName("관리자 스토리 상세 조회 기능 - 탈퇴 회원일 경우 닉네임 처리가 정상적으로 동작해야 함")
+    void findStoryDetailWithWithdrewMember() {
+
+        //given
+        Member member = createWithdrewMember();
+
+        Story story = Story.builder()
+                .id(1L)
+                .title("title")
+                .content("content")
+                .thumbnailImg("thumbnail")
+                .latitude(-10.0)
+                .longitude(10.0)
+                .city("서울")
+                .likeCnt(3L)
+                .imgUrls(new ArrayList<>())
+                .member(member)
+                .build();
+
+        given(storyRepository.findById(anyLong())).willReturn(Optional.ofNullable(story));
+
+        //when
+        AdminStoryDetailDto result = adminStoryService.findStoryDetail(1L);
+
+        //then
+        assertThat(result.city()).isEqualTo("서울");
+        assertThat(result.likeCnt()).isEqualTo(3L);
+        assertThat(result.isDeleted()).isFalse();
+        assertThat(result.authorNick()).isEqualTo("탈퇴회원");
+    }
+
+
+
+    @Test
+    @DisplayName("관리자 스토리 삭제 기능 - 정상 동작해야 함")
     void deleteStory() {
 
         //given

@@ -7,6 +7,7 @@ import com.junior.integration.BaseIntegrationTest;
 import com.junior.repository.member.MemberRepository;
 import com.junior.repository.story.StoryRepository;
 import com.junior.security.WithMockCustomAdmin;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,9 @@ public class AdminStoryIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private StoryRepository storyRepository;
+
+    @Autowired
+    private EntityManager em;
 
     @BeforeEach
     void init() {
@@ -83,7 +87,7 @@ public class AdminStoryIntegrationTest extends BaseIntegrationTest {
     @Test
     @DisplayName("관리자 스토리 페이지 조회 - 탈퇴회원에 대한 닉네임 표기가 정상적으로 이루어져야 함")
     @WithMockCustomAdmin
-    void findDeleteStory() throws Exception {
+    void findStoryByWithdrewMember() throws Exception {
 
         //given
         Member withdrewMember = memberRepository.findById(2L).orElseThrow(RuntimeException::new);
@@ -115,7 +119,7 @@ public class AdminStoryIntegrationTest extends BaseIntegrationTest {
     @Test
     @DisplayName("관리자 스토리 페이지 조회 - 삭제된 스토리에 대해 삭제일자가 정상적으로 표시되어야 함")
     @WithMockCustomAdmin
-    void findStoryByWithdrewMember() throws Exception {
+    void findDeleteStory() throws Exception {
 
         //given
         Story deleteStory = storyRepository.findById(3L).orElseThrow(RuntimeException::new);
@@ -150,7 +154,6 @@ public class AdminStoryIntegrationTest extends BaseIntegrationTest {
     void findStoryDetail() throws Exception {
 
         //given
-        String q = "12";
 
 
         //when
@@ -168,6 +171,70 @@ public class AdminStoryIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.id").value(10))
                 .andExpect(jsonPath("$.data.isDeleted").value(false));
+
+
+    }
+
+    @Test
+    @DisplayName("관리자 스토리 상세조회 - 탈퇴 회원일 경우 닉네임 처리가 정상적으로 이루어져야 함")
+    @WithMockCustomAdmin
+    void findStoryDetailByWithdrewMember() throws Exception {
+
+        //given
+
+        Member withdrewMember = memberRepository.findById(2L).orElseThrow(RuntimeException::new);
+        withdrewMember.deleteMember();
+
+        //회원 탈퇴를 적용하기 위한 영속성 컨텍스트 초기화
+        em.flush();
+        em.clear();
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/stories/{story_id}", 10)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.STORY_READ_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.STORY_READ_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.id").value(10))
+                .andExpect(jsonPath("$.data.isDeleted").value(false))
+                .andExpect(jsonPath("$.data.authorNick").value("탈퇴회원"));
+
+
+    }
+
+    @Test
+    @DisplayName("관리자 스토리 상세조회 - 삭제된 스토리일 경우 삭제일자가 있어야 함")
+    @WithMockCustomAdmin
+    void findStoryDetailWithDeletedStory() throws Exception {
+
+        //given
+        Story story = storyRepository.findById(10L).orElseThrow(RuntimeException::new);
+        story.deleteStory();
+
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/stories/{story_id}", 10)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.STORY_READ_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.STORY_READ_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.id").value(10))
+                .andExpect(jsonPath("$.data.isDeleted").value(true))
+                .andExpect(jsonPath("$.data.deletedDate").exists());
 
 
     }
