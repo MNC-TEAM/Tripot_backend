@@ -1,5 +1,6 @@
 package com.junior.controller.popUpEvent;
 
+import com.junior.controller.api.PopUpEventLikeApi;
 import com.junior.dto.popUpEvent.ResponsePopUpEventDto;
 import com.junior.exception.StatusCode;
 import com.junior.response.CommonResponse;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
-public class PopUpEventLikeController {
+public class PopUpEventLikeController implements PopUpEventLikeApi {
     private final PopUpEventLikeService popUpEventLikeService;
 
     @PostMapping("/{popUpEventId}/like")
