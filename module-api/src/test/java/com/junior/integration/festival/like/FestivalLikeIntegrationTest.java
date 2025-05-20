@@ -3,23 +3,17 @@ package com.junior.integration.festival.like;
 import com.junior.domain.festival.Festival;
 import com.junior.domain.festival.like.FestivalLike;
 import com.junior.domain.member.Member;
-import com.junior.dto.festival.FestivalDto;
 import com.junior.exception.StatusCode;
 import com.junior.integration.BaseIntegrationTest;
-import com.junior.repository.festival.like.FestivalLikeRepository;
 import com.junior.repository.festival.FestivalRepository;
+import com.junior.repository.festival.like.FestivalLikeRepository;
 import com.junior.repository.member.MemberRepository;
-import com.junior.security.UserPrincipal;
 import com.junior.security.WithMockCustomUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -28,12 +22,9 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -205,7 +196,6 @@ public class FestivalLikeIntegrationTest extends BaseIntegrationTest {
 
 
         assertThat(festivalLikeRepository.findById(1L)).isEmpty();
-
 
 
     }

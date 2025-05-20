@@ -43,11 +43,13 @@ public class CommentAdminIntegrationTest extends BaseIntegrationTest {
         Member activeTestMember = createActiveTestMember();
         Member testAdmin = createAdmin();
         Member activeTestMember2 = createActiveTestMember2();
+        Member withdrewTestMember = createWithdrewMember();
 
         memberRepository.save(preactiveTestMember);
         memberRepository.save(activeTestMember);
         memberRepository.save(testAdmin);
         memberRepository.save(activeTestMember2);
+        memberRepository.save(withdrewTestMember);
 
 
         Story story = createStory(activeTestMember);
@@ -59,6 +61,9 @@ public class CommentAdminIntegrationTest extends BaseIntegrationTest {
 
             commentRepository.save(comment);
         }
+
+        Comment withdrewComment = createComment(withdrewTestMember, story);
+        commentRepository.save(withdrewComment);
 
     }
 
@@ -83,7 +88,10 @@ public class CommentAdminIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.COMMENT_READ_SUCCESS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.pageable.number").value(1))
-                .andExpect(jsonPath("$.data.content[0].id").value(18));
+                .andExpect(jsonPath("$.data.content[0].id").value(19))
+                .andExpect(jsonPath("$.data.content[1].id").value(18))
+                .andExpect(jsonPath("$.data.content[0].createdNickname").value("탈퇴회원"))
+                .andExpect(jsonPath("$.data.content[1].createdNickname").value("테스트사용자닉네임"));
 
     }
 

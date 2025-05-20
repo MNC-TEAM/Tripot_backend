@@ -2,6 +2,7 @@ package com.junior.repository.story.custom;
 
 import com.junior.domain.like.QLike;
 import com.junior.domain.member.Member;
+import com.junior.domain.member.MemberStatus;
 import com.junior.domain.story.QStory;
 import com.junior.domain.story.Story;
 import com.junior.dto.story.*;
@@ -9,6 +10,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -329,7 +331,15 @@ public class StoryCustomRepositoryImpl implements StoryCustomRepository {
     public Page<AdminStoryDto> findAllStories(Pageable pageable, String keyword) {
 
         List<AdminStoryDto> result = query.select(new QAdminStoryDto(
-                        story.title, story.city, story.id, story.member.username, story.isDeleted
+                        story.title,
+                        story.city,
+                        story.id,
+                        new CaseBuilder()
+                                .when(story.member.status.eq(MemberStatus.DELETE)).then("탈퇴회원")
+                                .otherwise(story.member.nickname),
+                        story.isDeleted,
+                        story.createdDate,
+                        story.lastModifiedDate
                 ))
                 .from(story)
                 .leftJoin(story.member, member)

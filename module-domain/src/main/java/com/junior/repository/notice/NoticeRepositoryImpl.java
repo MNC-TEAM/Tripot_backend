@@ -46,7 +46,8 @@ public class NoticeRepositoryImpl implements NoticeRepositoryCustom {
         List<NoticeAdminDto> searchResult = queryFactory.select(
                         new QNoticeAdminDto(
                                 notice.id,
-                                notice.title
+                                notice.title,
+                                notice.createdDate
                         )
                 )
                 .from(notice)

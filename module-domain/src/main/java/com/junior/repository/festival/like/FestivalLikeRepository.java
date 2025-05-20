@@ -9,5 +9,6 @@ import java.util.Optional;
 
 public interface FestivalLikeRepository extends JpaRepository<FestivalLike, Long>, FestivalLikeRepositoryCustom {
     Optional<FestivalLike> findByMemberAndFestival(Member member, Festival festival);
+
     boolean existsByMemberAndFestival(Member member, Festival festival);
 }

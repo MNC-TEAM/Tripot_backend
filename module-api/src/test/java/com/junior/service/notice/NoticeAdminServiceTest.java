@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -98,7 +99,7 @@ class NoticeAdminServiceTest extends BaseServiceTest {
 
         List<NoticeAdminDto> dtoList = new ArrayList<>();
 
-        dtoList.add(new NoticeAdminDto(1L, "title"));
+        dtoList.add(new NoticeAdminDto(1L, "title", LocalDateTime.of(2025, 1, 1, 0, 0)));
 
         String q = "";
         Pageable requestPageable = PageRequest.of(1, 15);

@@ -4,7 +4,6 @@ import com.junior.controller.BaseControllerTest;
 import com.junior.dto.festival.*;
 import com.junior.exception.StatusCode;
 import com.junior.page.PageCustom;
-import com.junior.security.UserPrincipal;
 import com.junior.security.WithMockCustomAdmin;
 import com.junior.security.WithMockCustomUser;
 import com.junior.service.festival.FestivalService;

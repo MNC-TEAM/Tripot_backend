@@ -58,15 +58,18 @@ public interface NoticeAdminApi {
                                                              "content": [
                                                                  {
                                                                      "id": 3,
-                                                                     "title": "타이틀"
+                                                                     "title": "타이틀",
+                                                                     "createdDateTime":"2025-05-17T03:24:50.961063"
                                                                  },
                                                                  {
                                                                      "id": 2,
-                                                                     "title": "타이틀"
+                                                                     "title": "타이틀",
+                                                                     "createdDateTime":"2025-05-17T03:24:50.961063"
                                                                  },
                                                                  {
                                                                      "id": 1,
-                                                                     "title": "타이틀"
+                                                                     "title": "타이틀",
+                                                                     "createdDateTime":"2025-05-17T03:24:50.961063"
                                                                  }
                                                              ],
                                                              "pageable": {

@@ -19,7 +19,7 @@ import static com.junior.domain.popUpEvent.QPopUpEventLike.popUpEventLike;
 
 @RequiredArgsConstructor
 @Slf4j
-public class PopUpEventLikeCustomRepositoryImpl implements PopUpEventLikeCustomRepository{
+public class PopUpEventLikeCustomRepositoryImpl implements PopUpEventLikeCustomRepository {
 
     private final JPAQueryFactory query;
 

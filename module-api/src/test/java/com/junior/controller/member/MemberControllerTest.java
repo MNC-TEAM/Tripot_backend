@@ -266,6 +266,7 @@ class MemberControllerTest extends BaseControllerTest {
                         .status(MemberStatus.ACTIVE)
                         .nickname("닉네임")
                         .createdDate(LocalDateTime.MIN)
+                        .isWithdraw(false)
                         .build()
         );
 

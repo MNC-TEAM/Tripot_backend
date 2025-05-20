@@ -9,5 +9,6 @@ import java.util.Optional;
 
 public interface PopUpEventLikeRepository extends JpaRepository<PopUpEventLike, Long>, PopUpEventLikeCustomRepository {
     boolean existsByMemberAndPopUpEvent(Member member, PopUpEvent popUpEvent);
+
     Optional<PopUpEventLike> findByMemberAndPopUpEvent(Member member, PopUpEvent popUpEvent);
 }

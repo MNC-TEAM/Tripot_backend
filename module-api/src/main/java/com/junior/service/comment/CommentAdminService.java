@@ -1,5 +1,7 @@
 package com.junior.service.comment;
 
+import com.junior.domain.member.Member;
+import com.junior.domain.member.MemberStatus;
 import com.junior.domain.story.Comment;
 import com.junior.dto.comment.CommentAdminDto;
 import com.junior.exception.CommentNotFoundException;
@@ -57,10 +59,12 @@ public class CommentAdminService {
 
     private CommentAdminDto convertToDto(Comment comment) {
 
+        Member author = comment.getMember();
+
         return CommentAdminDto.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
-                .createdUsername(comment.getMember().getUsername())
+                .createdNickname(author.getStatus() != MemberStatus.DELETE ? author.getNickname() : "탈퇴회원")
                 .isDeleted(comment.getIsDeleted())
                 .build();
     }

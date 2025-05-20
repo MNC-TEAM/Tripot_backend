@@ -40,7 +40,7 @@ public class PopUpEventLikeService {
 
         boolean isLikePopUpEvent = popUpEventLikeRepository.existsByMemberAndPopUpEvent(member, popUpEvent);
 
-        if(isLikePopUpEvent) {
+        if (isLikePopUpEvent) {
             PopUpEventLike popUpEventLike = popUpEventLikeRepository.findByMemberAndPopUpEvent(member, popUpEvent)
                     .orElseThrow(() -> new CustomException(StatusCode.POPUPEVENT_LIKE_NOT_FOUND));
 
@@ -69,7 +69,7 @@ public class PopUpEventLikeService {
         return popUpEventLikeRepository.findPopUpEventByScroll(pageable, cursorId, member);
     }
 
-    public void delete(UserPrincipal principal, Long popUpEventId){
+    public void delete(UserPrincipal principal, Long popUpEventId) {
         Member member = memberRepository.findById(principal.getMember().getId()).orElseThrow(
                 () -> new NotValidMemberException(StatusCode.INVALID_MEMBER));
 

@@ -50,7 +50,7 @@ class CommentAdminControllerTest extends BaseControllerTest {
         CommentAdminDto commentAdminDto = CommentAdminDto.builder()
                 .id(1L)
                 .content("test comment content")
-                .createdUsername("username")
+                .createdNickname("nickname")
                 .isDeleted(false)
                 .build();
 
@@ -72,7 +72,7 @@ class CommentAdminControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.COMMENT_READ_SUCCESS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.pageable.number").value(1))
-                .andExpect(jsonPath("$.data.content[0].createdUsername").value("username"));
+                .andExpect(jsonPath("$.data.content[0].createdNickname").value("nickname"));
 
     }
 

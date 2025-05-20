@@ -26,51 +26,55 @@ public interface AdminStoryApi {
                                     examples = @ExampleObject(
                                             value = """
                                                     {
-                                                        "customCode": "STORY-SUCCESS-0001",
-                                                        "customMessage": "스토리 불러오기 성공",
-                                                        "status": true,
-                                                        "data": {
-                                                          "content": [
-                                                            {
-                                                              "title": "testStoryTitle",
-                                                              "city": "city",
-                                                              "id": 3,
-                                                              "createdUsername": "테스트사용자유저네임",
-                                                              "isDeleted": false
-                                                            },
-                                                            {
-                                                              "title": "testStoryTitle",
-                                                              "city": "city",
-                                                              "id": 2,
-                                                              "createdUsername": "테스트사용자유저네임",
-                                                              "isDeleted": false
-                                                            },
-                                                            {
-                                                              "title": "testStoryTitle",
-                                                              "city": "city",
-                                                              "id": 1,
-                                                              "createdUsername": "테스트사용자유저네임",
-                                                              "isDeleted": false
-                                                            }
-                                                          ],
-                                                          "pageable": {
-                                                            "number": 2,
-                                                            "size": 15,
-                                                            "sort": {
-                                                              "empty": true,
-                                                              "unsorted": true,
-                                                              "sorted": false
-                                                            },
-                                                            "first": false,
-                                                            "last": true,
-                                                            "hasNext": false,
-                                                            "totalPages": 2,
-                                                            "totalElements": 18,
-                                                            "numberOfElements": 3,
-                                                            "empty": false
-                                                          }
-                                                        }
-                                                      }
+                                                         "customCode": "STORY-SUCCESS-004",
+                                                         "customMessage": "",
+                                                         "status": true,
+                                                         "data": {
+                                                           "content": [
+                                                             {
+                                                               "title": "testStoryTitle",
+                                                               "city": "city",
+                                                               "id": 3,
+                                                               "createdNickname": "테스트사용자닉네임",
+                                                               "isDeleted": true,
+                                                               "createdDateTime": "2025-05-21T00:34:29.421161",
+                                                               "deletedDateTime": "2025-05-21T00:34:29.773358"
+                                                             },
+                                                             {
+                                                               "title": "testStoryTitle",
+                                                               "city": "city",
+                                                               "id": 2,
+                                                               "createdNickname": "테스트사용자닉네임",
+                                                               "isDeleted": false,
+                                                               "createdDateTime": "2025-05-21T00:34:29.42016"
+                                                             },
+                                                             {
+                                                               "title": "testStoryTitle",
+                                                               "city": "city",
+                                                               "id": 1,
+                                                               "createdNickname": "테스트사용자닉네임",
+                                                               "isDeleted": false,
+                                                               "createdDateTime": "2025-05-21T00:34:29.405612"
+                                                             }
+                                                           ],
+                                                           "pageable": {
+                                                             "number": 2,
+                                                             "size": 15,
+                                                             "sort": {
+                                                               "empty": true,
+                                                               "unsorted": true,
+                                                               "sorted": false
+                                                             },
+                                                             "first": false,
+                                                             "last": true,
+                                                             "hasNext": false,
+                                                             "totalPages": 2,
+                                                             "totalElements": 18,
+                                                             "numberOfElements": 3,
+                                                             "empty": false
+                                                           }
+                                                         }
+                                                       }
                                                     """
                                     )))
             })
@@ -84,27 +88,29 @@ public interface AdminStoryApi {
                                     examples = @ExampleObject(
                                             value = """
                                                     {
-                                                    		"customCode":"STORY-SUCCESS-0001",
-                                                    		"customMessage":"스토리 불러오기 성공",
-                                                    		"status":true,
-                                                    		"data":{
-                                                    				"id":10,
-                                                    				"title":"testStoryTitle",
-                                                    				"content":"testStoryContent",
-                                                    				"thumbnailImg":"thumbURL",
-                                                    				"latitude":1.0,
-                                                    				"longitude":1.0,
-                                                    				"city":"city",
-                                                    				"likeCnt":0,
-                                                    				"createDate":"2025-01-08T23:47:31.364389",
-                                                    				"imgUrls":[
-                                                    						"imgUrl1",
-                                                    						"imgUrl2",
-                                                    						"imgUrl3"
-                                                    				],
-                                                    				"isDeleted":false
-                                                    		}
-                                                    }
+                                                        "customCode": "STORY-SUCCESS-004",
+                                                        "customMessage": "",
+                                                        "status": true,
+                                                        "data": {
+                                                          "id": 10,
+                                                          "title": "testStoryTitle",
+                                                          "content": "testStoryContent",
+                                                          "authorNick": "테스트사용자닉네임",
+                                                          "thumbnailImg": "thumbURL",
+                                                          "latitude": 1,
+                                                          "longitude": 1,
+                                                          "city": "city",
+                                                          "likeCnt": 0,
+                                                          "createdDate": "2025-05-21T00:35:45.580945",
+                                                          "imgUrls": [
+                                                            "imgUrl1",
+                                                            "imgUrl2",
+                                                            "imgUrl3"
+                                                          ],
+                                                          "isDeleted": true,
+                                                          "deletedDate": "2025-05-21T00:35:45.580945"
+                                                        }
+                                                      }
                                                     """
                                     ))),
                     @ApiResponse(responseCode = "400", description = "스토리 찾기 실패",

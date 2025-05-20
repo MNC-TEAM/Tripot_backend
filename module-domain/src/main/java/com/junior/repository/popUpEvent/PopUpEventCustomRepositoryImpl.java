@@ -1,10 +1,8 @@
 package com.junior.repository.popUpEvent;
 
-import com.junior.domain.member.Member;
 import com.junior.dto.popUpEvent.QResponsePopUpEventDto;
 import com.junior.dto.popUpEvent.ResponsePopUpEventDto;
 import com.junior.dto.story.GeoPointDto;
-import com.junior.dto.story.ResponseStoryListDto;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -16,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.junior.domain.popUpEvent.QPopUpEvent.popUpEvent;
-import static com.junior.domain.story.QStory.story;
 
 @Slf4j
 @RequiredArgsConstructor

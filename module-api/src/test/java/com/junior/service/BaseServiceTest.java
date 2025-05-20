@@ -36,6 +36,19 @@ public class BaseServiceTest {
                 .build();
     }
 
+    protected Member createWithdrewMember() {
+        return Member.builder()
+                .id(5L)
+                .nickname("테스트탈퇴닉네임")
+                .username("테스트탈퇴유저네임")
+                .role(MemberRole.USER)
+                .signUpType(SignUpType.KAKAO)
+                .profileImage("s3.com/testProfile")
+                .recommendLocation("서울")
+                .status(MemberStatus.DELETE)
+                .build();
+    }
+
     protected Member createActiveTestMember2() {
         return Member.builder()
                 .id(4L)

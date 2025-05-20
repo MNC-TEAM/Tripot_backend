@@ -121,7 +121,7 @@ public class FestivalScheduler {
 
             }
             //존재하는 축제일 경우 값 업데이트
-            else{
+            else {
                 Festival festival = festivalRepository.findByContentId(Long.valueOf(festivalInfo.getContentid())).get();
                 festival.updateInfo(festivalInfo);
 

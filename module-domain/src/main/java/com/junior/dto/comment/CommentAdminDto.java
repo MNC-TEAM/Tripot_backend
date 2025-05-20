@@ -6,7 +6,7 @@ import lombok.Builder;
 public record CommentAdminDto(
         Long id,
         String content,
-        String createdUsername,
+        String createdNickname,
         Boolean isDeleted
 ) {
 }

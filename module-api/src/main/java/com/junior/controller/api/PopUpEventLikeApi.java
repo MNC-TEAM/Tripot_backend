@@ -1,6 +1,5 @@
 package com.junior.controller.api;
 
-import com.junior.dto.popUpEvent.CreateNewPopUpEventDto;
 import com.junior.dto.popUpEvent.ResponsePopUpEventDto;
 import com.junior.response.CommonResponse;
 import com.junior.security.UserPrincipal;

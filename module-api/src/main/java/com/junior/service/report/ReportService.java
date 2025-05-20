@@ -140,7 +140,7 @@ public class ReportService {
     }
 
     @Transactional
-    public AdminStoryDetailDto findReportTargetStoryDetail(Long reportId){
+    public AdminStoryDetailDto findReportTargetStoryDetail(Long reportId) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow((() -> new ReportException(StatusCode.REPORT_NOT_FOUND)));
 
@@ -165,8 +165,8 @@ public class ReportService {
         if (report.getReportStatus() == ReportStatus.CONFIRMED) {
             throw new ReportException(StatusCode.REPORT_ALREADY_CONFIRMED);
         } else if (report.getReportStatus() == ReportStatus.DELETED ||
-                (report.getReportType()==ReportType.STORY && report.getStory().getIsDeleted()) ||
-                (report.getReportType()==ReportType.COMMENT && report.getComment().getIsDeleted())) {
+                (report.getReportType() == ReportType.STORY && report.getStory().getIsDeleted()) ||
+                (report.getReportType() == ReportType.COMMENT && report.getComment().getIsDeleted())) {
             throw new ReportException(StatusCode.REPORT_TARGET_ALREADY_DELETED);
         }
 
@@ -183,8 +183,8 @@ public class ReportService {
         if (report.getReportStatus() == ReportStatus.CONFIRMED) {
             throw new ReportException(StatusCode.REPORT_ALREADY_CONFIRMED);
         } else if (report.getReportStatus() == ReportStatus.DELETED ||
-                (report.getReportType()==ReportType.STORY && report.getStory().getIsDeleted()) ||
-                (report.getReportType()==ReportType.COMMENT && report.getComment().getIsDeleted())) {
+                (report.getReportType() == ReportType.STORY && report.getStory().getIsDeleted()) ||
+                (report.getReportType() == ReportType.COMMENT && report.getComment().getIsDeleted())) {
             throw new ReportException(StatusCode.REPORT_TARGET_ALREADY_DELETED);
         }
 
