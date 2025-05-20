@@ -1,7 +1,5 @@
 package com.junior.controller.api;
 
-import com.junior.dto.popUpEvent.CreateNewPopUpEventDto;
-import com.junior.dto.popUpEvent.ResponsePopUpEventDto;
 import com.junior.response.CommonResponse;
 import com.junior.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,11 +8,9 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Slice;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+
 //POPUPEVENT_LIKE_CREATE_SUCCESS(200, "POPUPEVENT-LIKE-SUCCESS-001", "팝업이벤트 좋아요 성공"),
 //INVALID_MEMBER(401, "MEMBER-ERR-001", "없는 회원 입니다."),
 //POPUPEVENT_READ_FAIL(400, "POPUPEVENT-ERR-001", "팝업이벤트 조회 실패"),

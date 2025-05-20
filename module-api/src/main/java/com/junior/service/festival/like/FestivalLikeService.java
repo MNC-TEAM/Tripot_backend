@@ -7,8 +7,8 @@ import com.junior.dto.festival.FestivalDto;
 import com.junior.exception.CustomException;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.StatusCode;
-import com.junior.repository.festival.like.FestivalLikeRepository;
 import com.junior.repository.festival.FestivalRepository;
+import com.junior.repository.festival.like.FestivalLikeRepository;
 import com.junior.repository.member.MemberRepository;
 import com.junior.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +62,7 @@ public class FestivalLikeService {
     }
 
     @Transactional
-    public void delete(UserPrincipal principal, Long festivalId){
+    public void delete(UserPrincipal principal, Long festivalId) {
         Member member = memberRepository.findById(principal.getMember().getId()).orElseThrow(
                 () -> new NotValidMemberException(StatusCode.INVALID_MEMBER)
         );

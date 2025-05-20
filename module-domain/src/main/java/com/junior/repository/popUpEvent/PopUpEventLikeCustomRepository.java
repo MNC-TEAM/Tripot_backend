@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 public interface PopUpEventLikeCustomRepository {
-    Slice<ResponsePopUpEventDto>  findPopUpEventByScroll(Pageable pageable, Long cursorId, Member member);
+    Slice<ResponsePopUpEventDto> findPopUpEventByScroll(Pageable pageable, Long cursorId, Member member);
 }

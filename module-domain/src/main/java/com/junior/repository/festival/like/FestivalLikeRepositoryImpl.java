@@ -20,10 +20,15 @@ import static com.junior.domain.festival.like.QFestivalLike.festivalLike;
 
 @RequiredArgsConstructor
 @Slf4j
-public class FestivalLikeRepositoryImpl implements FestivalLikeRepositoryCustom{
+public class FestivalLikeRepositoryImpl implements FestivalLikeRepositoryCustom {
 
     private final Clock clock;
     private final JPAQueryFactory queryFactory;
+
+    private static BooleanExpression idLt(Long cursorId) {
+
+        return cursorId != null ? festival.id.lt(cursorId) : null;
+    }
 
     @Override
     public Slice<FestivalDto> findFestivalLike(Long cursorId, Pageable pageable, Member member) {
@@ -70,10 +75,5 @@ public class FestivalLikeRepositoryImpl implements FestivalLikeRepositoryCustom{
 
     private BooleanExpression memberEq(Member member) {
         return member != null ? festivalLike.member.id.eq(member.getId()) : null;
-    }
-
-    private static BooleanExpression idLt(Long cursorId) {
-
-        return cursorId != null ? festival.id.lt(cursorId) : null;
     }
 }

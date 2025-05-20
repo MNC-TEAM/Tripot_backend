@@ -133,7 +133,6 @@ class AdminStoryServiceTest extends BaseServiceTest {
     }
 
 
-
     @Test
     @DisplayName("관리자 스토리 삭제 기능 - 정상 동작해야 함")
     void deleteStory() {

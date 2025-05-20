@@ -7,7 +7,6 @@ import com.junior.security.UserPrincipal;
 import com.junior.service.popUpEvent.PopUpEventLikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 

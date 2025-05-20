@@ -24,7 +24,7 @@ public class PopUpEventController implements PopUpEventApi {
 
     private final PopUpEventService popUpEventService;
 
-//    @Operation(summary = "팝업 이벤트 생성 (ADMIN만 가능)")
+    //    @Operation(summary = "팝업 이벤트 생성 (ADMIN만 가능)")
     @PostMapping
     public CommonResponse<Object> createEvent(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                               @RequestBody CreateNewPopUpEventDto createNewPopUpEventDto) {
@@ -33,21 +33,21 @@ public class PopUpEventController implements PopUpEventApi {
         return CommonResponse.success(StatusCode.POPUPEVENT_CREATE_SUCCESS, null);
     }
 
-//    @Operation(summary = "팝업 이벤트 수정 (ADMIN만 가능)")
+    //    @Operation(summary = "팝업 이벤트 수정 (ADMIN만 가능)")
     @PatchMapping("/{id}")
     public CommonResponse<Object> editEvent(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                          @PathVariable("id") Long popUpEventId,
-                          @RequestBody UpdatePopUpEventDto updatePopUpEventDto) {
+                                            @PathVariable("id") Long popUpEventId,
+                                            @RequestBody UpdatePopUpEventDto updatePopUpEventDto) {
 
         popUpEventService.editEvent(userPrincipal, updatePopUpEventDto, popUpEventId);
 
         return CommonResponse.success(StatusCode.POPUPEVENT_UPDATE_SUCCESS, null);
     }
 
-//    @Operation(summary = "팝업 이벤트 삭제 (ADMIN만 가능)")
+    //    @Operation(summary = "팝업 이벤트 삭제 (ADMIN만 가능)")
     @DeleteMapping("/{id}")
     public CommonResponse<Object> deleteEvent(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                            @PathVariable("id") Long popUpEventId) {
+                                              @PathVariable("id") Long popUpEventId) {
 
         popUpEventService.deletePopUpEvent(userPrincipal, popUpEventId);
 
@@ -55,7 +55,7 @@ public class PopUpEventController implements PopUpEventApi {
     }
 
 
-//    @Operation(summary = "지도 영역 내 팝업 이벤트 조회")
+    //    @Operation(summary = "지도 영역 내 팝업 이벤트 조회")
     @PostMapping("/map")
     public CommonResponse<List<ResponsePopUpEventDto>> getEventsByPos(
             @RequestBody GeoRect geoRect) {
@@ -65,7 +65,7 @@ public class PopUpEventController implements PopUpEventApi {
         return CommonResponse.success(StatusCode.POPUPEVENT_READ_SUCCESS, popUpEventsByPos);
     }
 
-//    @Operation(summary = "스크롤 기반 팝업 이벤트 조회")
+    //    @Operation(summary = "스크롤 기반 팝업 이벤트 조회")
     @GetMapping("/scroll")
     public CommonResponse<Slice<ResponsePopUpEventDto>> scrollEvents(
             @RequestParam(required = false, name = "cursorId") Long cursorId,

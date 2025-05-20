@@ -26,7 +26,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -146,7 +145,7 @@ public class FestivalService {
 
             }
             //존재하는 축제일 경우 값 업데이트
-            else{
+            else {
                 Festival festival = festivalRepository.findByContentId(Long.valueOf(festivalInfo.getContentid())).get();
                 festival.updateInfo(festivalInfo);
 

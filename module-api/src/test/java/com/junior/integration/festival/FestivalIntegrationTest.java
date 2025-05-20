@@ -77,7 +77,7 @@ public class FestivalIntegrationTest extends BaseIntegrationTest {
 
             festivalRepository.save(festival);
 
-            if(i==1){
+            if (i == 1) {
                 festivalLikeRepository.save(FestivalLike.builder()
                         .member(activeTestMember)
                         .festival(festival)

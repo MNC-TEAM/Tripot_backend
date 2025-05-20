@@ -12,7 +12,10 @@ import com.junior.exception.StatusCode;
 import com.junior.repository.popUpEvent.PopUpEventRepository;
 import com.junior.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +33,7 @@ public class PopUpEventService {
 
         Member findMember = userPrincipal.getMember();
 
-        if(findMember.getRole() != MemberRole.ADMIN) {
+        if (findMember.getRole() != MemberRole.ADMIN) {
             throw new PermissionException(StatusCode.PERMISSION_ERROR);
         }
 
@@ -44,7 +47,7 @@ public class PopUpEventService {
 
         Member findMember = userPrincipal.getMember();
 
-        if(findMember.getRole() != MemberRole.ADMIN) {
+        if (findMember.getRole() != MemberRole.ADMIN) {
             throw new PermissionException(StatusCode.PERMISSION_ERROR);
         }
 
@@ -58,7 +61,7 @@ public class PopUpEventService {
         Member findMember = userPrincipal.getMember();
         PopUpEvent findPopUpEvent = popUpEventRepository.findById(popUpEventId).orElseThrow();
 
-        if(findMember.getRole() != MemberRole.ADMIN) {
+        if (findMember.getRole() != MemberRole.ADMIN) {
             throw new PermissionException(StatusCode.PERMISSION_ERROR);
         }
 
@@ -83,7 +86,7 @@ public class PopUpEventService {
     public Page<ResponsePopUpEventDto> getPopUpEventsByPage(UserPrincipal userPrincipal, int page, int size) {
         Member findMember = userPrincipal.getMember();
 
-        if(findMember.getRole() != MemberRole.ADMIN) {
+        if (findMember.getRole() != MemberRole.ADMIN) {
             throw new PermissionException(StatusCode.PERMISSION_ERROR);
         }
 

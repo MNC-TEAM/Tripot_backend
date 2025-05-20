@@ -1,6 +1,5 @@
 package com.junior.repository.popUpEvent;
 
-import com.junior.domain.member.Member;
 import com.junior.dto.popUpEvent.ResponsePopUpEventDto;
 import com.junior.dto.story.GeoPointDto;
 import org.springframework.data.domain.Page;

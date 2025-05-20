@@ -6,8 +6,8 @@ import com.junior.domain.member.Member;
 import com.junior.exception.CustomException;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.StatusCode;
-import com.junior.repository.festival.like.FestivalLikeRepository;
 import com.junior.repository.festival.FestivalRepository;
+import com.junior.repository.festival.like.FestivalLikeRepository;
 import com.junior.repository.member.MemberRepository;
 import com.junior.security.UserPrincipal;
 import com.junior.service.BaseServiceTest;
@@ -20,9 +20,9 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.util.Optional;
 
-
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -88,7 +88,7 @@ class FestivalLikeServiceTest extends BaseServiceTest {
 
 
         //when, then
-        assertThatThrownBy(()->festivalLikeService.save(principal, festivalId))
+        assertThatThrownBy(() -> festivalLikeService.save(principal, festivalId))
                 .isInstanceOf(NotValidMemberException.class)
                 .hasMessageContaining(StatusCode.INVALID_MEMBER.getCustomMessage());
 
@@ -115,7 +115,7 @@ class FestivalLikeServiceTest extends BaseServiceTest {
         given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(member));
 
         //when, then
-        assertThatThrownBy(()->festivalLikeService.save(principal, festivalId))
+        assertThatThrownBy(() -> festivalLikeService.save(principal, festivalId))
                 .isInstanceOf(CustomException.class)
                 .hasMessageContaining(StatusCode.FESTIVAL_NOT_FOUND.getCustomMessage());
 
@@ -206,11 +206,9 @@ class FestivalLikeServiceTest extends BaseServiceTest {
 
 
         //when, then
-        assertThatThrownBy(()->festivalLikeService.delete(principal, festivalId))
+        assertThatThrownBy(() -> festivalLikeService.delete(principal, festivalId))
                 .isInstanceOf(NotValidMemberException.class)
                 .hasMessageContaining(StatusCode.INVALID_MEMBER.getCustomMessage());
-
-
 
 
     }
@@ -237,7 +235,7 @@ class FestivalLikeServiceTest extends BaseServiceTest {
 
 
         //when
-        assertThatThrownBy(()->festivalLikeService.delete(principal, festivalId))
+        assertThatThrownBy(() -> festivalLikeService.delete(principal, festivalId))
                 .isInstanceOf(CustomException.class)
                 .hasMessageContaining(StatusCode.FESTIVAL_NOT_FOUND.getCustomMessage());
 
@@ -267,7 +265,7 @@ class FestivalLikeServiceTest extends BaseServiceTest {
 
 
         //when, then
-        assertThatThrownBy(()->festivalLikeService.delete(principal, festivalId))
+        assertThatThrownBy(() -> festivalLikeService.delete(principal, festivalId))
                 .isInstanceOf(CustomException.class)
                 .hasMessageContaining(StatusCode.FESTIVAL_LIKE_NOT_FOUND.getCustomMessage());
 
