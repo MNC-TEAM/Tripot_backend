@@ -21,6 +21,7 @@ cloud:
       path:
         profile: user/profile/
         story: story/image
+        question: question
       region:
         static: ap-northeast-2
       stack:

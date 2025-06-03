@@ -146,6 +146,18 @@ public class BaseServiceTest {
 
     }
 
+    protected MockMultipartFile createQuestionImgFile() {
+        MockMultipartFile profileImg = new MockMultipartFile(
+                "문의용 사진",
+                "question_img.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "thumbnail".getBytes()
+        );
+
+        return profileImg;
+
+    }
+
     protected Festival createFestival(String title, String city, double lat, double logt, long contentId, LocalDate startDate, LocalDate endDate) {
         return Festival.builder()
                 .contentId(contentId)

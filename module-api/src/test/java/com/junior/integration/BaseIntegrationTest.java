@@ -128,6 +128,18 @@ public class BaseIntegrationTest {
 
     }
 
+    protected MockMultipartFile createMockQuestionImg() {
+        MockMultipartFile questionImg = new MockMultipartFile(
+                "questionImg",
+                "question.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "thumbnail".getBytes()
+        );
+
+        return questionImg;
+
+    }
+
     protected Story createStory(Member member) {
         List<String> imgUrls = new ArrayList<>();
         imgUrls.add("imgUrl1");

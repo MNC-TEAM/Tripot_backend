@@ -130,6 +130,9 @@ public enum StatusCode {
     QNA_FIND_SUCCESS(200, "Q&A-SUCCESS-004", ""),
     QNA_FIND_DETAIL_SUCCESS(200, "Q&A-SUCCESS-005", ""),
 
+    QUESTION_IMG_UPLOAD_SUCCESS(201, "Q&A-SUCCESS-001", ""),
+
+
     // Q&A 관련 실패 코드
     QNA_NOT_FOUND(400, "Q&A-ERR-001", "서버 에러가 발생했습니다."),
 
