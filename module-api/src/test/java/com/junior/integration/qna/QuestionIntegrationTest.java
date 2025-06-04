@@ -1,14 +1,11 @@
 package com.junior.integration.qna;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.junior.controller.member.MemberController;
 import com.junior.domain.member.Member;
 import com.junior.exception.StatusCode;
 import com.junior.integration.BaseIntegrationTest;
 import com.junior.repository.member.MemberRepository;
-import com.junior.security.UserPrincipal;
 import com.junior.security.WithMockCustomUser;
-import com.junior.service.qna.CreateQuestionImgRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +15,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.net.MalformedURLException;
 import java.net.URL;

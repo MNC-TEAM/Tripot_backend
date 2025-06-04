@@ -3,6 +3,7 @@ package com.junior.service.qna;
 import com.junior.domain.member.Member;
 import com.junior.domain.member.MemberStatus;
 import com.junior.domain.qna.Question;
+import com.junior.dto.qna.CreateQuestionImgRequest;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.StatusCode;
 import com.junior.repository.member.MemberRepository;

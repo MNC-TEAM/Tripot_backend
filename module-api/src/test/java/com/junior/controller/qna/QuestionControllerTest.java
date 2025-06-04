@@ -4,7 +4,7 @@ import com.junior.controller.BaseControllerTest;
 import com.junior.exception.StatusCode;
 import com.junior.security.UserPrincipal;
 import com.junior.security.WithMockCustomUser;
-import com.junior.service.qna.CreateQuestionImgRequest;
+import com.junior.dto.qna.CreateQuestionImgRequest;
 import com.junior.service.qna.QuestionService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

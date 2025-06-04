@@ -1,4 +1,4 @@
-package com.junior.service.qna;
+package com.junior.dto.qna;
 
 public record CreateQuestionImgRequest(
         String oldImgUrl

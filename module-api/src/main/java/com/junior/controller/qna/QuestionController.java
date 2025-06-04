@@ -3,7 +3,7 @@ package com.junior.controller.qna;
 import com.junior.exception.StatusCode;
 import com.junior.response.CommonResponse;
 import com.junior.security.UserPrincipal;
-import com.junior.service.qna.CreateQuestionImgRequest;
+import com.junior.dto.qna.CreateQuestionImgRequest;
 import com.junior.service.qna.QuestionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

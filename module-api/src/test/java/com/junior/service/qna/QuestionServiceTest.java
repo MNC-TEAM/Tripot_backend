@@ -1,13 +1,13 @@
 package com.junior.service.qna;
 
 import com.junior.domain.member.Member;
+import com.junior.dto.qna.CreateQuestionImgRequest;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.StatusCode;
 import com.junior.repository.member.MemberRepository;
 import com.junior.security.UserPrincipal;
 import com.junior.service.BaseServiceTest;
 import com.junior.service.s3.S3Service;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
