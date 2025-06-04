@@ -5,6 +5,7 @@ import com.junior.domain.member.MemberStatus;
 import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateQuestionImgRequest;
 import com.junior.dto.qna.CreateQuestionRequest;
+import com.junior.dto.qna.UpdateQuestionRequest;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.PermissionException;
 import com.junior.exception.QuestionException;
@@ -81,6 +82,26 @@ public class QuestionService {
 
     }
 
+    public void update(UserPrincipal principal, Long questionId, UpdateQuestionRequest updateQuestionRequest) {
+
+        Member member = memberRepository.findById(principal.getMember().getId()).orElseThrow(
+                () -> new NotValidMemberException(StatusCode.INVALID_MEMBER)
+        );
+
+        if (member.getStatus() != MemberStatus.ACTIVE) {
+            throw new NotValidMemberException(StatusCode.INVALID_MEMBER_STATUS);
+        }
+
+        Question question = questionRepository.findByIdAndIsDeletedFalse(questionId)
+                .orElseThrow(() -> new QuestionException(StatusCode.QUESTION_NOT_FOUND));
+
+        if (!question.getMember().equals(member)) {
+            throw new PermissionException(StatusCode.INVALID_MEMBER);
+        }
+
+        question.update(updateQuestionRequest);
+    }
+
     public void delete(UserPrincipal principal, Long questionId) {
         Member member = memberRepository.findById(principal.getMember().getId()).orElseThrow(
                 () -> new NotValidMemberException(StatusCode.INVALID_MEMBER)
@@ -90,16 +111,13 @@ public class QuestionService {
             throw new NotValidMemberException(StatusCode.INVALID_MEMBER_STATUS);
         }
 
-        Question question = questionRepository.findById(questionId)
+        Question question = questionRepository.findByIdAndIsDeletedFalse(questionId)
                 .orElseThrow(() -> new QuestionException(StatusCode.QUESTION_NOT_FOUND));
 
         if (!question.getMember().equals(member)) {
             throw new PermissionException(StatusCode.INVALID_MEMBER);
         }
 
-        if (question.getIsDeleted()) {
-            throw new QuestionException(StatusCode.QUESTION_ALREADY_DELETED);
-        }
 
         question.delete();
 

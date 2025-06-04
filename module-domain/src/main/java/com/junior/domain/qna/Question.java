@@ -4,6 +4,7 @@ package com.junior.domain.qna;
 import com.junior.domain.base.BaseEntity;
 import com.junior.domain.member.Member;
 import com.junior.dto.qna.UpdateQnaDto;
+import com.junior.dto.qna.UpdateQuestionRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,12 +46,13 @@ public class Question extends BaseEntity {
     }
 
 
-    public void update(UpdateQnaDto updateQnaDto) {
-        this.title = updateQnaDto.question();
-        this.content = updateQnaDto.answer();
-    }
-
     public void delete() {
         this.isDeleted = true;
+    }
+
+    public void update(UpdateQuestionRequest updateQuestionRequest) {
+        this.title = updateQuestionRequest.title();
+        this.content = updateQuestionRequest.content();
+        this.imgUrl = updateQuestionRequest.imgUrl();
     }
 }

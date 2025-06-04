@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.junior.domain.member.Member;
 import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateQuestionRequest;
+import com.junior.dto.qna.UpdateQuestionRequest;
 import com.junior.exception.StatusCode;
 import com.junior.integration.BaseIntegrationTest;
 import com.junior.repository.member.MemberRepository;
@@ -143,6 +144,46 @@ public class QuestionIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @DisplayName("문의글 수정 - 문의글이 정상적으로 수정되어야 함")
+    @WithMockCustomUser
+    void updateQuestion() throws Exception {
+
+
+        //given
+        Long questionId = 1L;
+        UpdateQuestionRequest updateQuestionRequest = UpdateQuestionRequest.builder()
+                .title("new title")
+                .content("new question")
+                .imgUrl("s3.com/question-img")
+                .build();
+
+        String content = objectMapper.writeValueAsString(updateQuestionRequest);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                multipart(HttpMethod.PATCH, "/api/v1/questions/{question_id}", questionId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.QUESTION_UPDATE_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_UPDATE_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+
+        //문의글이 정상적으로 수정되어야 함
+        Question question = questionRepository.findById(1L).orElseThrow(RuntimeException::new);
+
+        assertThat(question.getTitle()).isEqualTo("new title");
+        assertThat(question.getContent()).isEqualTo("new question");
+        assertThat(question.getImgUrl()).isEqualTo("s3.com/question-img");
+    }
+
+    @Test
     @DisplayName("문의글 삭제 - 문의글이 정상적으로 삭제되어야 함")
     @WithMockCustomUser
     void deleteQuestion() throws Exception {
@@ -165,7 +206,7 @@ public class QuestionIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data").value(nullValue()));
 
-        //문의글이 정상적으로 저장되어야 함
+        //문의글이 정상적으로 삭제되어야 함
         Question question = questionRepository.findById(1L).orElseThrow(RuntimeException::new);
 
         assertThat(question.getIsDeleted()).isTrue();

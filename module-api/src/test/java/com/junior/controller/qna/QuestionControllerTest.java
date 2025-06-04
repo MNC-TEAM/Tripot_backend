@@ -4,6 +4,7 @@ import com.junior.controller.BaseControllerTest;
 import com.junior.domain.member.Member;
 import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateQuestionRequest;
+import com.junior.dto.qna.UpdateQuestionRequest;
 import com.junior.exception.StatusCode;
 import com.junior.security.UserPrincipal;
 import com.junior.security.WithMockCustomUser;
@@ -106,6 +107,39 @@ class QuestionControllerTest extends BaseControllerTest {
 
         return questionImg;
 
+    }
+
+    @Test
+    @DisplayName("문의글 수정 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomUser
+    void updateQuestion() throws Exception {
+
+
+        //given
+        Long questionId = 1L;
+        UpdateQuestionRequest updateQuestionRequest = UpdateQuestionRequest.builder()
+                .title("new title")
+                .content("new question")
+                .imgUrl("s3.com/question-img")
+                .build();
+
+        String content = objectMapper.writeValueAsString(updateQuestionRequest);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                multipart(HttpMethod.PATCH, "/api/v1/questions/{question_id}", questionId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.QUESTION_UPDATE_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_UPDATE_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data").value(nullValue()));
     }
 
     @Test
