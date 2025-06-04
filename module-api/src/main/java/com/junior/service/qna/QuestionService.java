@@ -4,6 +4,7 @@ import com.junior.domain.member.Member;
 import com.junior.domain.member.MemberStatus;
 import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateQuestionImgRequest;
+import com.junior.dto.qna.CreateQuestionRequest;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.StatusCode;
 import com.junior.repository.member.MemberRepository;
@@ -26,6 +27,27 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final S3Service s3Service;
 
+
+    @Transactional
+    public void save(UserPrincipal principal, CreateQuestionRequest createQuestionRequest){
+
+        Member author = memberRepository.findById(principal.getMember().getId()).orElseThrow(
+                () -> new NotValidMemberException(StatusCode.INVALID_MEMBER)
+        );
+
+        if (author.getStatus() != MemberStatus.ACTIVE) {
+            throw new NotValidMemberException(StatusCode.INVALID_MEMBER_STATUS);
+        }
+
+        Question question = Question.builder()
+                .title(createQuestionRequest.title())
+                .content(createQuestionRequest.content())
+                .imgUrl(createQuestionRequest.imgUrl())
+                .member(author)
+                .build();
+
+        questionRepository.save(question);
+    }
 
 
     public String uploadQuestionImg(UserPrincipal principal, MultipartFile newQuestionImg, CreateQuestionImgRequest createQuestionImgRequest) {

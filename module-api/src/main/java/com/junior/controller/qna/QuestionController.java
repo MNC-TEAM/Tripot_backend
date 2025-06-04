@@ -1,5 +1,6 @@
 package com.junior.controller.qna;
 
+import com.junior.dto.qna.CreateQuestionRequest;
 import com.junior.exception.StatusCode;
 import com.junior.response.CommonResponse;
 import com.junior.security.UserPrincipal;
@@ -19,8 +20,16 @@ public class QuestionController {
     private final QuestionService questionService;
 
 
+    @PostMapping("/api/v1/questions")
+    public CommonResponse<Object> save(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestBody CreateQuestionRequest createQuestionRequest
+    ) {
+        questionService.save(principal, createQuestionRequest);
+        return CommonResponse.success(StatusCode.QUESTION_CREATE_SUCCESS, null);
+    }
 
-    @PostMapping(value = "/api/v1/questions/imgs", consumes = {})
+    @PostMapping(value = "/api/v1/questions/imgs")
     public CommonResponse<String> uploadQuestionImg(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestPart(name = "questionImg") MultipartFile questionImg,

@@ -131,6 +131,7 @@ public enum StatusCode {
     QNA_FIND_DETAIL_SUCCESS(200, "Q&A-SUCCESS-005", ""),
 
     QUESTION_IMG_UPLOAD_SUCCESS(201, "Q&A-SUCCESS-001", ""),
+    QUESTION_CREATE_SUCCESS(201, "Q&A-SUCCESS-002", ""),
 
 
     // Q&A 관련 실패 코드

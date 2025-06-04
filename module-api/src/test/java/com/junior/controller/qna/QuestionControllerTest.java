@@ -1,6 +1,7 @@
 package com.junior.controller.qna;
 
 import com.junior.controller.BaseControllerTest;
+import com.junior.dto.qna.CreateQuestionRequest;
 import com.junior.exception.StatusCode;
 import com.junior.security.UserPrincipal;
 import com.junior.security.WithMockCustomUser;
@@ -16,6 +17,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.multipart.MultipartFile;
 
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -56,6 +58,40 @@ class QuestionControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_IMG_UPLOAD_SUCCESS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data").value(resultUrl));
+    }
+
+    @Test
+    @DisplayName("문의글 등록 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomUser
+    void saveQuestion() throws Exception {
+
+
+        //given
+        CreateQuestionRequest createQuestionRequest = CreateQuestionRequest.builder()
+                .title("title")
+                .content("question")
+                .imgUrl("s3.com/question-img")
+                .build();
+
+        String content = objectMapper.writeValueAsString(createQuestionRequest);
+
+
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                multipart(HttpMethod.POST, "/api/v1/questions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.QUESTION_CREATE_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_CREATE_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data").value(nullValue()));
     }
 
     MockMultipartFile createMockMultipartFile(String name) {
