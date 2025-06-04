@@ -49,4 +49,8 @@ public class Question extends BaseEntity {
         this.title = updateQnaDto.question();
         this.content = updateQnaDto.answer();
     }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
 }

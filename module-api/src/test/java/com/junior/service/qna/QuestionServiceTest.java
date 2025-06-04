@@ -5,6 +5,7 @@ import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateQuestionImgRequest;
 import com.junior.dto.qna.CreateQuestionRequest;
 import com.junior.exception.NotValidMemberException;
+import com.junior.exception.QuestionException;
 import com.junior.exception.StatusCode;
 import com.junior.repository.member.MemberRepository;
 import com.junior.repository.qna.QuestionRepository;
@@ -106,7 +107,7 @@ class QuestionServiceTest extends BaseServiceTest {
     @DisplayName("문의 질문 업로드 - 저장이 정상적으로 이루어져야 함")
     void saveQuestion() throws Exception {
         //given
-        Member testMember = createPreactiveTestMember();
+        Member testMember = createActiveTestMember();
         UserPrincipal principal = new UserPrincipal(testMember);
 
         CreateQuestionRequest createQuestionRequest = CreateQuestionRequest.builder()
@@ -166,6 +167,120 @@ class QuestionServiceTest extends BaseServiceTest {
 
         //when, then
         assertThatThrownBy(() -> questionService.save(principal, createQuestionRequest)).isInstanceOf(NotValidMemberException.class);
+
+
+    }
+
+    @Test
+    @DisplayName("문의 질문 삭제 - soft delete가 정상적으로 이루어져야 함")
+    void deleteQuestion() throws Exception {
+        //given
+        Member testMember = createActiveTestMember();
+        UserPrincipal principal = new UserPrincipal(testMember);
+        Long questionId = 1L;
+
+        Question question = Question.builder()
+                .id(questionId)
+                .title("title")
+                .content("question")
+                .imgUrl("s3.com/img")
+                .member(testMember)
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(testMember));
+        given(questionRepository.findById(anyLong())).willReturn(Optional.ofNullable(question));
+
+        //when
+        questionService.delete(principal, questionId);
+
+        //then
+        assertThat(question.getIsDeleted()).isTrue();
+
+    }
+
+    @Test
+    @DisplayName("문의글 삭제 - 회원을 찾을 수 없을 경우 예외를 처리해야 함")
+    void failToDeleteQuestionIfMemberNotFound() {
+
+
+        //given
+        Member testMember = createPreactiveTestMember();
+        UserPrincipal principal = new UserPrincipal(testMember);
+        Long questionId = 1L;
+
+
+        //when, then
+        assertThatThrownBy(() -> questionService.delete(principal, questionId))
+                .isInstanceOf(NotValidMemberException.class)
+                .hasMessageContaining(StatusCode.INVALID_MEMBER.getCustomMessage());
+
+
+    }
+
+    @Test
+    @DisplayName("문의글 업로드 - ACTIVE 상태가 아닌 회원은 정보 조회를 할 수 없음")
+    void failToDeleteQuestionIfMemberIsNotActivate() {
+
+
+        //given
+        Member testMember = createPreactiveTestMember();
+        UserPrincipal principal = new UserPrincipal(testMember);
+        Long questionId = 1L;
+        given(memberRepository.findById(1L)).willReturn(Optional.ofNullable(testMember));
+
+
+
+        //when, then
+        assertThatThrownBy(() -> questionService.delete(principal, questionId)).isInstanceOf(NotValidMemberException.class);
+
+
+    }
+
+    @Test
+    @DisplayName("문의글 업로드 - 해당 문의글을 찾지 못했을 경우 예외를 발생시켜야 함")
+    void failToDeleteQuestionIfQuestionNotFound() {
+
+
+        //given
+        Member testMember = createActiveTestMember();
+        UserPrincipal principal = new UserPrincipal(testMember);
+        Long questionId = 1L;
+        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(testMember));
+
+
+
+        //when, then
+        assertThatThrownBy(() -> questionService.delete(principal, questionId)).isInstanceOf(QuestionException.class)
+                .hasMessageContaining(StatusCode.QUESTION_NOT_FOUND.getCustomMessage());
+
+
+    }
+
+    @Test
+    @DisplayName("문의글 업로드 - 이미 삭제된 글일 경우 예외를 발생시켜야 함")
+    void failToDeleteQuestionIfQuestionAlreadyDeleted() {
+
+
+        //given
+        Member testMember = createActiveTestMember();
+        UserPrincipal principal = new UserPrincipal(testMember);
+        Long questionId = 1L;
+        Question question = Question.builder()
+                .id(questionId)
+                .title("title")
+                .content("question")
+                .imgUrl("s3.com/img")
+                .member(testMember)
+                .isDeleted(true)
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(testMember));
+        given(questionRepository.findById(anyLong())).willReturn(Optional.ofNullable(question));
+
+
+        //when, then
+        assertThatThrownBy(() -> questionService.delete(principal, questionId)).isInstanceOf(QuestionException.class)
+                .hasMessageContaining(StatusCode.QUESTION_ALREADY_DELETED.getCustomMessage());
 
 
     }

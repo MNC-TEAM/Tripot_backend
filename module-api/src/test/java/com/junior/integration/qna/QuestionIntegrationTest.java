@@ -58,6 +58,17 @@ public class QuestionIntegrationTest extends BaseIntegrationTest {
 
 
         given(amazonS3Client.getUrl(any(), any())).willReturn(new URL("https://aws.com/newQuestionImg"));
+
+        for (int i = 1; i <= 20; i++) {
+            Question question = Question.builder()
+                    .title("title")
+                    .content("question")
+                    .imgUrl("https://aws.com/newQuestionImg")
+                    .member(i % 2 == 1 ? activeTestMember : testAdmin)
+                    .build();
+
+            questionRepository.save(question);
+        }
     }
 
     @Test
@@ -96,9 +107,9 @@ public class QuestionIntegrationTest extends BaseIntegrationTest {
 
         //given
         CreateQuestionRequest createQuestionRequest = CreateQuestionRequest.builder()
-                .title("title")
-                .content("question")
-                .imgUrl("s3.com/question-img")
+                .title("new title")
+                .content("new question")
+                .imgUrl("https://aws.com/newQuestionImg")
                 .build();
 
         String content = objectMapper.writeValueAsString(createQuestionRequest);
@@ -122,12 +133,42 @@ public class QuestionIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.data").value(nullValue()));
 
         //문의글이 정상적으로 저장되어야 함
+        Question question = questionRepository.findById(21L).orElseThrow(RuntimeException::new);
+
+        assertThat(question.getTitle()).isEqualTo("new title");
+        assertThat(question.getContent()).isEqualTo("new question");
+        assertThat(question.getImgUrl()).isEqualTo("https://aws.com/newQuestionImg");
+        assertThat(question.getIsDeleted()).isFalse();
+
+    }
+
+    @Test
+    @DisplayName("문의글 삭제 - 문의글이 정상적으로 삭제되어야 함")
+    @WithMockCustomUser
+    void deleteQuestion() throws Exception {
+
+
+        //given
+        Long questionId = 1L;
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                multipart(HttpMethod.DELETE, "/api/v1/questions/{question_id}", questionId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.QUESTION_DELETE_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_DELETE_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+
+        //문의글이 정상적으로 저장되어야 함
         Question question = questionRepository.findById(1L).orElseThrow(RuntimeException::new);
 
-        assertThat(question.getTitle()).isEqualTo("title");
-        assertThat(question.getContent()).isEqualTo("question");
-        assertThat(question.getImgUrl()).isEqualTo("s3.com/question-img");
-        assertThat(question.getIsDeleted()).isFalse();
+        assertThat(question.getIsDeleted()).isTrue();
 
     }
 

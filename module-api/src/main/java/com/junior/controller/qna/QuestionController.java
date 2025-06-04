@@ -39,6 +39,16 @@ public class QuestionController {
 
         return CommonResponse.success(StatusCode.QUESTION_IMG_UPLOAD_SUCCESS, url);
     }
+
+    @DeleteMapping("/api/v1/questions/{question_id}")
+    public CommonResponse<Object> delete(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable(name = "question_id") Long questionId
+    ) {
+        questionService.delete(principal, questionId);
+
+        return CommonResponse.success(StatusCode.QUESTION_DELETE_SUCCESS, null);
+    }
 }
 
 

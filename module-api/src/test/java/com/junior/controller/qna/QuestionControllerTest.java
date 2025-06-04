@@ -1,6 +1,8 @@
 package com.junior.controller.qna;
 
 import com.junior.controller.BaseControllerTest;
+import com.junior.domain.member.Member;
+import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateQuestionRequest;
 import com.junior.exception.StatusCode;
 import com.junior.security.UserPrincipal;
@@ -105,4 +107,30 @@ class QuestionControllerTest extends BaseControllerTest {
         return questionImg;
 
     }
+
+    @Test
+    @DisplayName("문의글 삭제 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomUser
+    void deleteQuestion() throws Exception {
+
+
+        //given
+        Long questionId = 1L;
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                multipart(HttpMethod.DELETE, "/api/v1/questions/{question_id}", questionId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customCode").value(StatusCode.QUESTION_DELETE_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_DELETE_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+    }
+
+
 }
