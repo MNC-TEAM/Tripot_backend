@@ -9,6 +9,7 @@ import com.junior.dto.qna.CreateQuestionImgRequest;
 import com.junior.service.qna.QuestionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,45 +23,46 @@ public class QuestionController {
 
 
     @PostMapping("/api/v1/questions")
-    public CommonResponse<Object> save(
+    public ResponseEntity<CommonResponse<Object>> save(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestBody CreateQuestionRequest createQuestionRequest
     ) {
         questionService.save(principal, createQuestionRequest);
-        return CommonResponse.success(StatusCode.QUESTION_CREATE_SUCCESS, null);
+        return ResponseEntity.status(StatusCode.QUESTION_CREATE_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.QUESTION_CREATE_SUCCESS, null));
     }
 
     @PostMapping(value = "/api/v1/questions/imgs")
-    public CommonResponse<String> uploadQuestionImg(
+    public ResponseEntity<CommonResponse<String>> uploadQuestionImg(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestPart(name = "questionImg") MultipartFile questionImg,
             @ModelAttribute CreateQuestionImgRequest createQuestionImgRequest) {
 
         String url = questionService.uploadQuestionImg(principal, questionImg, createQuestionImgRequest);
 
-        return CommonResponse.success(StatusCode.QUESTION_IMG_UPLOAD_SUCCESS, url);
+        return ResponseEntity.status(StatusCode.QUESTION_IMG_UPLOAD_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.QUESTION_IMG_UPLOAD_SUCCESS, url));
     }
 
     @PatchMapping("/api/v1/questions/{question_id}")
-    public CommonResponse<Object> update(
+    public ResponseEntity<CommonResponse<Object>> update(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable(name = "question_id") Long questionId,
             @RequestBody UpdateQuestionRequest updateQuestionRequest
             ) {
         questionService.update(principal, questionId, updateQuestionRequest);
 
-        return CommonResponse.success(StatusCode.QUESTION_UPDATE_SUCCESS, null);
+        return ResponseEntity.status(StatusCode.QUESTION_UPDATE_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.QUESTION_UPDATE_SUCCESS, null));
     }
 
     @DeleteMapping("/api/v1/questions/{question_id}")
-    public CommonResponse<Object> delete(
+    public ResponseEntity<CommonResponse<Object>> delete(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable(name = "question_id") Long questionId
     ) {
         questionService.delete(principal, questionId);
 
-        return CommonResponse.success(StatusCode.QUESTION_DELETE_SUCCESS, null);
+        return ResponseEntity.status(StatusCode.QUESTION_DELETE_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.QUESTION_DELETE_SUCCESS, null));
     }
+
 }
 
 

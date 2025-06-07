@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -56,7 +57,8 @@ class QuestionControllerTest extends BaseControllerTest {
 
         //then
         actions
-                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(status().is(StatusCode.QUESTION_IMG_UPLOAD_SUCCESS.getHttpCode()))
                 .andExpect(jsonPath("$.customCode").value(StatusCode.QUESTION_IMG_UPLOAD_SUCCESS.getCustomCode()))
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_IMG_UPLOAD_SUCCESS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
@@ -90,7 +92,8 @@ class QuestionControllerTest extends BaseControllerTest {
 
         //then
         actions
-                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(status().is(StatusCode.QUESTION_CREATE_SUCCESS.getHttpCode()))
                 .andExpect(jsonPath("$.customCode").value(StatusCode.QUESTION_CREATE_SUCCESS.getCustomCode()))
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_CREATE_SUCCESS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
@@ -135,7 +138,8 @@ class QuestionControllerTest extends BaseControllerTest {
 
         //then
         actions
-                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(status().is(StatusCode.QUESTION_UPDATE_SUCCESS.getHttpCode()))
                 .andExpect(jsonPath("$.customCode").value(StatusCode.QUESTION_UPDATE_SUCCESS.getCustomCode()))
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_UPDATE_SUCCESS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
@@ -159,7 +163,8 @@ class QuestionControllerTest extends BaseControllerTest {
 
         //then
         actions
-                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(status().is(StatusCode.QUESTION_DELETE_SUCCESS.getHttpCode()))
                 .andExpect(jsonPath("$.customCode").value(StatusCode.QUESTION_DELETE_SUCCESS.getCustomCode()))
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_DELETE_SUCCESS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
