@@ -37,8 +37,8 @@ public class PopUpEventLikeController implements PopUpEventLikeApi {
     }
 
     @DeleteMapping("/{popUpEventId}/like")
-    public CommonResponse<Slice<Object>> delete(@AuthenticationPrincipal UserPrincipal principal, @PathVariable(name = "festival_id") Long festivalId) {
-        popUpEventLikeService.delete(principal, festivalId);
+    public CommonResponse<Slice<Object>> delete(@AuthenticationPrincipal UserPrincipal principal, @PathVariable(name = "popUpEventId") Long popUpEventId) {
+        popUpEventLikeService.delete(principal, popUpEventId);
 
         return CommonResponse.success(StatusCode.POPUPEVENT_LIKE_DELETE_SUCCESS, null);
     }
