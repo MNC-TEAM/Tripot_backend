@@ -1,9 +1,11 @@
 package com.junior.service.qna;
 
 import com.junior.domain.member.Member;
+import com.junior.domain.member.MemberStatus;
 import com.junior.domain.qna.Answer;
 import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateAnswerRequest;
+import com.junior.dto.qna.UpdateAnswerRequest;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.QuestionException;
 import com.junior.exception.StatusCode;
@@ -32,6 +34,10 @@ public class AnswerService {
         Member member = memberRepository.findById(principal.getMember().getId())
                 .orElseThrow(() -> new NotValidMemberException(StatusCode.INVALID_MEMBER));
 
+        if (member.getStatus() != MemberStatus.ACTIVE) {
+            throw new NotValidMemberException(StatusCode.INVALID_MEMBER_STATUS);
+        }
+
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new QuestionException(StatusCode.QUESTION_NOT_FOUND));
 
@@ -46,4 +52,24 @@ public class AnswerService {
         question.setAnswer(answer);
 
     }
+
+    @Transactional
+    public void update(UserPrincipal principal, Long answerId, UpdateAnswerRequest updateAnswerRequest) {
+
+        Member member = memberRepository.findById(principal.getMember().getId())
+                .orElseThrow(() -> new NotValidMemberException(StatusCode.INVALID_MEMBER));
+
+        if (member.getStatus() != MemberStatus.ACTIVE) {
+            throw new NotValidMemberException(StatusCode.INVALID_MEMBER_STATUS);
+        }
+
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new QuestionException(StatusCode.ANSWER_NOT_FOUND));
+
+        answer.update(updateAnswerRequest);
+
+
+    }
+
+
 }

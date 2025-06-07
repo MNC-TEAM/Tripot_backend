@@ -1,6 +1,7 @@
 package com.junior.controller.qna;
 
 import com.junior.dto.qna.CreateAnswerRequest;
+import com.junior.dto.qna.UpdateAnswerRequest;
 import com.junior.exception.StatusCode;
 import com.junior.response.CommonResponse;
 import com.junior.security.UserPrincipal;
@@ -10,10 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,6 +29,17 @@ public class AnswerController {
         answerService.save(principal, questionId, createAnswerRequest);
 
         return ResponseEntity.status(StatusCode.ANSWER_CREATE_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.ANSWER_CREATE_SUCCESS, null));
+    }
+
+    @Secured("ADMIN")
+    @PatchMapping("/api/v1/questions/answers/{answer_id}")
+    public ResponseEntity<CommonResponse<Object>> update(@AuthenticationPrincipal UserPrincipal principal,
+                                                       @PathVariable(name = "answer_id") Long answerId,
+                                                       @RequestBody UpdateAnswerRequest updateAnswerRequest) {
+
+        answerService.update(principal, answerId, updateAnswerRequest);
+
+        return ResponseEntity.status(StatusCode.ANSWER_UPDATE_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.ANSWER_UPDATE_SUCCESS, null));
     }
 
 }

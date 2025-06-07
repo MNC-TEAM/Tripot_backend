@@ -1,10 +1,7 @@
 package com.junior.controller.qna;
 
 import com.junior.controller.BaseControllerTest;
-import com.junior.dto.qna.CreateAnswerRequest;
-import com.junior.dto.qna.CreateQuestionImgRequest;
-import com.junior.dto.qna.CreateQuestionRequest;
-import com.junior.dto.qna.UpdateQuestionRequest;
+import com.junior.dto.qna.*;
 import com.junior.exception.StatusCode;
 import com.junior.security.UserPrincipal;
 import com.junior.security.WithMockCustomAdmin;
@@ -46,7 +43,7 @@ class AnswerControllerTest extends BaseControllerTest {
         //given
         CreateAnswerRequest createAnswerRequest = CreateAnswerRequest.builder()
                 .title("title")
-                .content("question")
+                .content("answer")
                 .build();
 
         String content = objectMapper.writeValueAsString(createAnswerRequest);
@@ -69,6 +66,42 @@ class AnswerControllerTest extends BaseControllerTest {
                 .andExpect(status().is(StatusCode.ANSWER_CREATE_SUCCESS.getHttpCode()))
                 .andExpect(jsonPath("$.customCode").value(StatusCode.ANSWER_CREATE_SUCCESS.getCustomCode()))
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.ANSWER_CREATE_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+    }
+
+    @Test
+    @DisplayName("문의 답글 수정 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomAdmin
+    void updateAnswer() throws Exception {
+
+
+        //given
+        UpdateAnswerRequest updateAnswerRequest = UpdateAnswerRequest.builder()
+                .title("title")
+                .content("answer")
+                .build();
+
+        String content = objectMapper.writeValueAsString(updateAnswerRequest);
+
+        Long answerId = 1L;
+
+
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                multipart(HttpMethod.PATCH, "/api/v1/questions/answers/{answer_id}", answerId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().is(StatusCode.ANSWER_UPDATE_SUCCESS.getHttpCode()))
+                .andExpect(jsonPath("$.customCode").value(StatusCode.ANSWER_UPDATE_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.ANSWER_UPDATE_SUCCESS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data").value(nullValue()));
     }

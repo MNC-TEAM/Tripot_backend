@@ -136,12 +136,15 @@ public enum StatusCode {
     QUESTION_DELETE_SUCCESS(200, "QUESTION-SUCCESS-004", ""),
 
     ANSWER_CREATE_SUCCESS(201, "ANSWER-SUCCESS-001", ""),
+    ANSWER_UPDATE_SUCCESS(200, "ANSWER-SUCCESS-002", ""),
 
 
     // Q&A 관련 실패 코드
     QNA_NOT_FOUND(400, "Q&A-ERR-001", "서버 에러가 발생했습니다."),
 
     QUESTION_NOT_FOUND(404, "QUESTION-ERR-001", "서버 에러가 발생했습니다."),
+
+    ANSWER_NOT_FOUND(404, "ANSWER-ERR-001", "서버 에러가 발생했습니다."),
 
     // 신고 관련 성공 코드
     REPORT_CREATE_SUCCESS(201, "REPORT-SUCCESS-001", ""),

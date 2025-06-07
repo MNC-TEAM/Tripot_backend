@@ -6,6 +6,7 @@ import com.junior.domain.qna.Answer;
 import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateAnswerRequest;
 import com.junior.dto.qna.CreateQuestionRequest;
+import com.junior.dto.qna.UpdateAnswerRequest;
 import com.junior.dto.qna.UpdateQuestionRequest;
 import com.junior.exception.StatusCode;
 import com.junior.integration.BaseIntegrationTest;
@@ -129,6 +130,47 @@ public class AnswerIntegrationTest extends BaseIntegrationTest {
         Answer answer = answerRepository.findById(21L).orElseThrow(RuntimeException::new);
 
         assertThat(question.getIsAnswered()).isTrue();
+        assertThat(answer.getTitle()).isEqualTo("new title");
+        assertThat(answer.getContent()).isEqualTo("new answer");
+    }
+
+    @Test
+    @DisplayName("문의 답글 수정 - 답글이 정상적으로 수정되어야 함")
+    @WithMockCustomAdmin
+    void updateAnswer() throws Exception {
+
+
+        //given
+        UpdateAnswerRequest updateAnswerRequest = UpdateAnswerRequest.builder()
+                .title("new title")
+                .content("new answer")
+                .build();
+
+        String content = objectMapper.writeValueAsString(updateAnswerRequest);
+
+        Long answerId = 1L;
+
+
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                multipart(HttpMethod.PATCH, "/api/v1/questions/answers/{answer_id}", answerId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().is(StatusCode.ANSWER_UPDATE_SUCCESS.getHttpCode()))
+                .andExpect(jsonPath("$.customCode").value(StatusCode.ANSWER_UPDATE_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.ANSWER_UPDATE_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+
+        Answer answer = answerRepository.findById(answerId).orElseThrow(RuntimeException::new);
+
         assertThat(answer.getTitle()).isEqualTo("new title");
         assertThat(answer.getContent()).isEqualTo("new answer");
     }

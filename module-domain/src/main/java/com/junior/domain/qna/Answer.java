@@ -3,7 +3,7 @@ package com.junior.domain.qna;
 
 import com.junior.domain.base.BaseEntity;
 import com.junior.domain.member.Member;
-import com.junior.dto.qna.UpdateQnaDto;
+import com.junior.dto.qna.UpdateAnswerRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,13 +31,13 @@ public class Answer extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public void softDelete() {
+    public void delete() {
         this.isDeleted = true;
     }
 
 
-    public void update(UpdateQnaDto updateQnaDto) {
-        this.title = updateQnaDto.question();
-        this.content = updateQnaDto.answer();
+    public void update(UpdateAnswerRequest updateAnswerRequest) {
+        this.title = updateAnswerRequest.title();
+        this.content = updateAnswerRequest.content();
     }
 }

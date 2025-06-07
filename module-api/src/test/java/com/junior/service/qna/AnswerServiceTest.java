@@ -4,6 +4,7 @@ import com.junior.domain.member.Member;
 import com.junior.domain.qna.Answer;
 import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateAnswerRequest;
+import com.junior.dto.qna.UpdateAnswerRequest;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.QuestionException;
 import com.junior.exception.StatusCode;
@@ -100,7 +101,7 @@ class AnswerServiceTest extends BaseServiceTest {
     }
 
     @Test
-    @DisplayName("답변 등록 - 회원을 찾을 수 없을 경우 예외를 발생시켜야 함")
+    @DisplayName("답변 등록 - 질문글을 찾을 수 없을 경우 예외를 발생시켜야 함")
     void failToSaveIfQuestionNotExists() throws Exception {
         //given
         CreateAnswerRequest createAnswerRequest = CreateAnswerRequest.builder()
@@ -120,6 +121,89 @@ class AnswerServiceTest extends BaseServiceTest {
         assertThatThrownBy(() -> answerService.save(principal, questionId, createAnswerRequest))
                 .isInstanceOf(QuestionException.class)
                 .hasMessageContaining(StatusCode.QUESTION_NOT_FOUND.getCustomMessage());
+
+
+    }
+
+    @Test
+    @DisplayName("답변 수정 - 답변 수정이 정상적으로 이루어져야 함")
+    void update() throws Exception {
+        //given
+        UpdateAnswerRequest updateAnswerRequest = UpdateAnswerRequest.builder()
+                .title("new title")
+                .content("new answer")
+                .build();
+
+        Member admin = createAdmin();
+        Member customer = createActiveTestMember();
+        Long answerId = 1L;
+
+        UserPrincipal principal = new UserPrincipal(admin);
+
+        Answer answer = Answer.builder()
+                .id(answerId)
+                .title("title")
+                .content("answer")
+                .member(customer)
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(admin));
+        given(answerRepository.findById(anyLong())).willReturn(Optional.ofNullable(answer));
+
+        //when
+        answerService.update(principal, answerId, updateAnswerRequest);
+
+        //then
+
+        assertThat(answer.getTitle()).isEqualTo("new title");
+        assertThat(answer.getContent()).isEqualTo("new answer");
+
+    }
+
+    @Test
+    @DisplayName("답변 수정 - 회원을 찾을 수 없을 경우 예외를 발생시켜야 함")
+    void failToUpdateIfMemberNotValid() throws Exception {
+        //given
+        UpdateAnswerRequest updateAnswerRequest = UpdateAnswerRequest.builder()
+                .title("title")
+                .content("content")
+                .build();
+
+        Member admin = createAdmin();
+        Long questionId = 1L;
+
+        UserPrincipal principal = new UserPrincipal(admin);
+
+
+        //when, then
+        assertThatThrownBy(() -> answerService.update(principal, questionId, updateAnswerRequest))
+                .isInstanceOf(NotValidMemberException.class)
+                .hasMessageContaining(StatusCode.INVALID_MEMBER.getCustomMessage());
+
+
+    }
+
+    @Test
+    @DisplayName("답변 수정 - 답변을 찾을 수 없을 경우 예외를 발생시켜야 함")
+    void failToUpdateIfAnswerNotExists() throws Exception {
+        //given
+        UpdateAnswerRequest updateAnswerRequest = UpdateAnswerRequest.builder()
+                .title("title")
+                .content("content")
+                .build();
+
+        Member admin = createAdmin();
+        Long answerId = 1L;
+
+        UserPrincipal principal = new UserPrincipal(admin);
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(admin));
+
+
+        //when, then
+        assertThatThrownBy(() -> answerService.update(principal, answerId, updateAnswerRequest))
+                .isInstanceOf(QuestionException.class)
+                .hasMessageContaining(StatusCode.ANSWER_NOT_FOUND.getCustomMessage());
 
 
     }
