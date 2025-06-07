@@ -41,10 +41,6 @@ public class Question extends BaseEntity {
     @JoinColumn(name = "answer_id")
     private Answer answer;
 
-    public void softDelete() {
-        this.isDeleted = true;
-    }
-
 
     public void delete() {
         this.isDeleted = true;
@@ -54,5 +50,10 @@ public class Question extends BaseEntity {
         this.title = updateQuestionRequest.title();
         this.content = updateQuestionRequest.content();
         this.imgUrl = updateQuestionRequest.imgUrl();
+    }
+
+    public void setAnswer(Answer answer) {
+        this.answer = answer;
+        isAnswered = true;
     }
 }
