@@ -30,7 +30,7 @@ public class ApiLogAspect {
     }
 
     @Pointcut("execution(* com.junior.strategy..*.*(..))")
-    private void strategy(){
+    private void strategy() {
     }
 
     @Around("controller() || service()")

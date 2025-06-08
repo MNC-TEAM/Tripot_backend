@@ -2,7 +2,9 @@ package com.junior.controller.api;
 
 import com.junior.dto.member.ActivateMemberDto;
 import com.junior.dto.member.MemberInfoDto;
+import com.junior.dto.member.MemberListResponseDto;
 import com.junior.dto.member.UpdateNicknameDto;
+import com.junior.page.PageCustom;
 import com.junior.response.CommonResponse;
 import com.junior.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +17,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -81,8 +85,8 @@ public interface MemberApi {
                                     )))
             })
     public CommonResponse<Boolean> checkNicknameValid(@Size(max = 25, message = "닉네임은 25자까지 가능합니다.")
-                                                          @NotNull(message = "닉네임은 필수 값입니다.")
-                                                          @Pattern(regexp = "^[가-힣a-zA-Z0-9\\s]+$", message = "잘못된 닉네임 형식입니다.") String nickname);
+                                                      @NotNull(message = "닉네임은 필수 값입니다.")
+                                                      @Pattern(regexp = "^[가-힣a-zA-Z0-9\\s]+$", message = "잘못된 닉네임 형식입니다.") String nickname);
 
     @Operation(summary = "회원 조회", description = "회원의 정보를 조회합니다.",
             responses = {
@@ -250,4 +254,68 @@ public interface MemberApi {
                                     }))
             })
     public CommonResponse<String> changeProfileImage(@AuthenticationPrincipal UserPrincipal principal, @RequestPart(value = "profileimg") MultipartFile profileImage);
+
+
+    @Operation(summary = "회원 조회", description = "전체 회원 정보를 조회합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "회원 조회 성공",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommonResponse.class),
+                                    examples = @ExampleObject(
+                                            value = """
+                                                    {
+                                                        "customCode": "MEMBER-SUCCESS-009",
+                                                        "customMessage": "",
+                                                        "status": true,
+                                                        "data": {
+                                                          "content": [
+                                                            {
+                                                              "id": 3,
+                                                              "nickname": "테스트관리자닉네임",
+                                                              "signUpType": "USERNAME",
+                                                              "status": "ACTIVE",
+                                                              "createdDate": "2025-05-21T00:17:16.45044",
+                                                              "role": "ADMIN",
+                                                              "isWithdraw": false
+                                                            },
+                                                            {
+                                                              "id": 2,
+                                                              "nickname": "테스트사용자닉네임",
+                                                              "signUpType": "KAKAO",
+                                                              "status": "ACTIVE",
+                                                              "createdDate": "2025-05-21T00:17:16.447932",
+                                                              "role": "USER",
+                                                              "isWithdraw": false
+                                                            },
+                                                            {
+                                                              "id": 1,
+                                                              "nickname": "테스트비활성화닉네임",
+                                                              "signUpType": "KAKAO",
+                                                              "status": "PREACTIVE",
+                                                              "createdDate": "2025-05-21T00:17:16.389352",
+                                                              "role": "USER",
+                                                              "isWithdraw": false
+                                                            }
+                                                          ],
+                                                          "pageable": {
+                                                            "number": 1,
+                                                            "size": 20,
+                                                            "sort": {
+                                                              "empty": true,
+                                                              "sorted": false,
+                                                              "unsorted": true
+                                                            },
+                                                            "first": true,
+                                                            "last": true,
+                                                            "hasNext": false,
+                                                            "totalPages": 1,
+                                                            "totalElements": 3,
+                                                            "numberOfElements": 3,
+                                                            "empty": false
+                                                          }
+                                                        }
+                                                      }
+                                                    """
+                                    )))
+            })
+    public CommonResponse<PageCustom<MemberListResponseDto>> findMembers(@PageableDefault(size = 20, page = 1) Pageable pageable, @RequestParam(value = "q", defaultValue = "") String q);
 }

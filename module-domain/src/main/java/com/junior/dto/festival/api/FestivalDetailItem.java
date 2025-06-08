@@ -1,7 +1,6 @@
 package com.junior.dto.festival.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.junior.dto.festival.FestivalDetailDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

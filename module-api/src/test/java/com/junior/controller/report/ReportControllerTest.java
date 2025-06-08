@@ -127,7 +127,7 @@ public class ReportControllerTest extends BaseControllerTest {
                 .longitude(10.0)
                 .city("서울")
                 .likeCnt(3L)
-                .createDate(LocalDateTime.of(2025, 1, 1, 0, 0, 0))
+                .createdDate(LocalDateTime.of(2025, 1, 1, 0, 0, 0))
                 .imgUrls(new ArrayList<>())
                 .isDeleted(true)
                 .build();

@@ -2,7 +2,6 @@ package com.junior.service.version;
 
 import com.junior.domain.version.Platform;
 import com.junior.domain.version.Version;
-import com.junior.dto.version.VersionCheckDto;
 import com.junior.dto.version.VersionCheckResponseDto;
 import com.junior.dto.version.VersionDto;
 import com.junior.exception.CustomException;

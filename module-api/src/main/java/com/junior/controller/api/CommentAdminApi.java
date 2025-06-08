@@ -21,120 +21,120 @@ public interface CommentAdminApi {
                                     examples = @ExampleObject(
                                             value = """
                                                     {
-                                                          "customCode": "COMMENT-SUCCESS-0002",
-                                                          "customMessage": "댓글 불러오기 성공",
-                                                          "status": true,
-                                                          "data": {
-                                                            "content": [
-                                                              {
-                                                                "id": 18,
-                                                                "content": "content",
-                                                                "createdUsername": "테스트사용자유저네임",
-                                                                "isDeleted": false
-                                                              },
-                                                              {
-                                                                "id": 17,
-                                                                "content": "content",
-                                                                "createdUsername": "테스트사용자유저네임",
-                                                                "isDeleted": false
-                                                              },
-                                                              {
-                                                                "id": 16,
-                                                                "content": "content",
-                                                                "createdUsername": "테스트사용자유저네임",
-                                                                "isDeleted": false
-                                                              },
-                                                              {
-                                                                "id": 15,
-                                                                "content": "content",
-                                                                "createdUsername": "테스트사용자유저네임",
-                                                                "isDeleted": false
-                                                              },
-                                                              {
-                                                                "id": 14,
-                                                                "content": "content",
-                                                                "createdUsername": "테스트사용자유저네임",
-                                                                "isDeleted": false
-                                                              },
-                                                              {
-                                                                "id": 13,
-                                                                "content": "content",
-                                                                "createdUsername": "테스트사용자유저네임",
-                                                                "isDeleted": false
-                                                              },
-                                                              {
-                                                                "id": 12,
-                                                                "content": "content",
-                                                                "createdUsername": "테스트사용자유저네임",
-                                                                "isDeleted": false
-                                                              },
-                                                              {
-                                                                "id": 11,
-                                                                "content": "content",
-                                                                "createdUsername": "테스트사용자유저네임",
-                                                                "isDeleted": false
-                                                              },
-                                                              {
-                                                                "id": 10,
-                                                                "content": "content",
-                                                                "createdUsername": "테스트사용자유저네임",
-                                                                "isDeleted": false
-                                                              },
-                                                              {
-                                                                "id": 9,
-                                                                "content": "content",
-                                                                "createdUsername": "테스트사용자유저네임",
-                                                                "isDeleted": false
-                                                              },
-                                                              {
-                                                                "id": 8,
-                                                                "content": "content",
-                                                                "createdUsername": "테스트사용자유저네임",
-                                                                "isDeleted": false
-                                                              },
-                                                              {
-                                                                "id": 7,
-                                                                "content": "content",
-                                                                "createdUsername": "테스트사용자유저네임",
-                                                                "isDeleted": false
-                                                              },
-                                                              {
-                                                                "id": 6,
-                                                                "content": "content",
-                                                                "createdUsername": "테스트사용자유저네임",
-                                                                "isDeleted": false
-                                                              },
-                                                              {
-                                                                "id": 5,
-                                                                "content": "content",
-                                                                "createdUsername": "테스트사용자유저네임",
-                                                                "isDeleted": false
-                                                              },
-                                                              {
-                                                                "id": 4,
-                                                                "content": "content",
-                                                                "createdUsername": "테스트사용자유저네임",
-                                                                "isDeleted": false
+                                                            "customCode": "COMMENT-SUCCESS-002",
+                                                            "customMessage": "",
+                                                            "status": true,
+                                                            "data": {
+                                                              "content": [
+                                                                {
+                                                                  "id": 19,
+                                                                  "content": "content",
+                                                                  "createdNickname": "탈퇴회원",
+                                                                  "isDeleted": false
+                                                                },
+                                                                {
+                                                                  "id": 18,
+                                                                  "content": "content",
+                                                                  "createdNickname": "테스트사용자닉네임",
+                                                                  "isDeleted": false
+                                                                },
+                                                                {
+                                                                  "id": 17,
+                                                                  "content": "content",
+                                                                  "createdNickname": "테스트사용자닉네임",
+                                                                  "isDeleted": false
+                                                                },
+                                                                {
+                                                                  "id": 16,
+                                                                  "content": "content",
+                                                                  "createdNickname": "테스트사용자닉네임",
+                                                                  "isDeleted": false
+                                                                },
+                                                                {
+                                                                  "id": 15,
+                                                                  "content": "content",
+                                                                  "createdNickname": "테스트사용자닉네임",
+                                                                  "isDeleted": false
+                                                                },
+                                                                {
+                                                                  "id": 14,
+                                                                  "content": "content",
+                                                                  "createdNickname": "테스트사용자닉네임",
+                                                                  "isDeleted": false
+                                                                },
+                                                                {
+                                                                  "id": 13,
+                                                                  "content": "content",
+                                                                  "createdNickname": "테스트사용자닉네임",
+                                                                  "isDeleted": false
+                                                                },
+                                                                {
+                                                                  "id": 12,
+                                                                  "content": "content",
+                                                                  "createdNickname": "테스트사용자닉네임",
+                                                                  "isDeleted": false
+                                                                },
+                                                                {
+                                                                  "id": 11,
+                                                                  "content": "content",
+                                                                  "createdNickname": "테스트사용자닉네임",
+                                                                  "isDeleted": false
+                                                                },
+                                                                {
+                                                                  "id": 10,
+                                                                  "content": "content",
+                                                                  "createdNickname": "테스트사용자닉네임",
+                                                                  "isDeleted": false
+                                                                },
+                                                                {
+                                                                  "id": 9,
+                                                                  "content": "content",
+                                                                  "createdNickname": "테스트사용자닉네임",
+                                                                  "isDeleted": false
+                                                                },
+                                                                {
+                                                                  "id": 8,
+                                                                  "content": "content",
+                                                                  "createdNickname": "테스트사용자닉네임",
+                                                                  "isDeleted": false
+                                                                },
+                                                                {
+                                                                  "id": 7,
+                                                                  "content": "content",
+                                                                  "createdNickname": "테스트사용자닉네임",
+                                                                  "isDeleted": false
+                                                                },
+                                                                {
+                                                                  "id": 6,
+                                                                  "content": "content",
+                                                                  "createdNickname": "테스트사용자닉네임",
+                                                                  "isDeleted": false
+                                                                },
+                                                                {
+                                                                  "id": 5,
+                                                                  "content": "content",
+                                                                  "createdNickname": "테스트사용자닉네임",
+                                                                  "isDeleted": false
+                                                                }
+                                                              ],
+                                                              "pageable": {
+                                                                "number": 1,
+                                                                "size": 15,
+                                                                "sort": {
+                                                                  "empty": true,
+                                                                  "unsorted": true,
+                                                                  "sorted": false
+                                                                },
+                                                                "first": true,
+                                                                "last": false,
+                                                                "hasNext": true,
+                                                                "totalPages": 2,
+                                                                "totalElements": 19,
+                                                                "numberOfElements": 15,
+                                                                "empty": false
                                                               }
-                                                            ],
-                                                            "pageable": {
-                                                              "number": 1,
-                                                              "size": 15,
-                                                              "sort": {
-                                                                "empty": true,
-                                                                "unsorted": true,
-                                                                "sorted": false
-                                                              },
-                                                              "first": true,
-                                                              "last": false,
-                                                              "hasNext": true,
-                                                              "totalPages": 2,
-                                                              "totalElements": 18,
-                                                              "numberOfElements": 15,
-                                                              "empty": false
                                                             }
                                                           }
-                                                        }
                                                     """
                                     )))
             })

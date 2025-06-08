@@ -23,7 +23,7 @@ public class FcmNotificationTokenService {
         Member member = userPrincipal.getMember();
         String token = fcmTokenDto.fcmToken();
 
-        if(fcmNotificationTokenRepository.existsByToken(token)) {
+        if (fcmNotificationTokenRepository.existsByToken(token)) {
             FcmNotificationToken findFcm = fcmNotificationTokenRepository.findByToken(token).orElseThrow();
 
             LocalDateTime lastUsedDateTime = LocalDateTime.now();

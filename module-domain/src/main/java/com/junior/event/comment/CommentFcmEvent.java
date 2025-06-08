@@ -2,7 +2,6 @@ package com.junior.event.comment;
 
 import com.junior.domain.member.Member;
 import com.junior.domain.story.Comment;
-import com.junior.domain.story.Story;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

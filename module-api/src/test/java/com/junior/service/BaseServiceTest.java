@@ -1,6 +1,7 @@
 package com.junior.service;
 
 import com.junior.domain.admin.Notice;
+import com.junior.domain.festival.Festival;
 import com.junior.domain.member.Member;
 import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
@@ -16,6 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
+import java.time.LocalDate;
+
 @ExtendWith(MockitoExtension.class)
 public class BaseServiceTest {
 
@@ -30,6 +33,19 @@ public class BaseServiceTest {
                 .profileImage("s3.com/testProfile")
                 .recommendLocation("서울")
                 .status(MemberStatus.ACTIVE)
+                .build();
+    }
+
+    protected Member createWithdrewMember() {
+        return Member.builder()
+                .id(5L)
+                .nickname("테스트탈퇴닉네임")
+                .username("테스트탈퇴유저네임")
+                .role(MemberRole.USER)
+                .signUpType(SignUpType.KAKAO)
+                .profileImage("s3.com/testProfile")
+                .recommendLocation("서울")
+                .status(MemberStatus.DELETE)
                 .build();
     }
 
@@ -128,5 +144,19 @@ public class BaseServiceTest {
 
         return profileImg;
 
+    }
+
+    protected Festival createFestival(String title, String city, double lat, double logt, long contentId, LocalDate startDate, LocalDate endDate) {
+        return Festival.builder()
+                .contentId(contentId)
+                .title(title)
+                .city(city)
+                .location("location")
+                .imgUrl("url.com")
+                .startDate(startDate)
+                .endDate(endDate)
+                .lat(lat)
+                .logt(logt)
+                .build();
     }
 }

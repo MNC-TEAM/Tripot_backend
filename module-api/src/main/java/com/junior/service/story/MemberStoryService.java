@@ -5,7 +5,6 @@ import com.junior.domain.member.Member;
 import com.junior.domain.notification.NotificationType;
 import com.junior.domain.story.Story;
 import com.junior.dto.story.*;
-import com.junior.event.comment.CommentFcmEvent;
 import com.junior.event.like.LikeFcmEvent;
 import com.junior.exception.DeletedStoryException;
 import com.junior.exception.PermissionException;

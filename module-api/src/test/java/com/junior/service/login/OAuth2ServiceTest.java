@@ -20,7 +20,6 @@ import com.junior.strategy.oauth2.OAuth2MemberStrategy;
 import com.junior.util.RedisUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,7 +59,7 @@ class OAuth2ServiceTest {
     private AppleOAuth2LoginStrategy appleOAuth2LoginStrategy;
 
     @BeforeEach
-    public void init(){
+    public void init() {
         strategyList.add(kakaoOAuth2LoginStrategy);
         strategyList.add(appleOAuth2LoginStrategy);
     }

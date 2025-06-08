@@ -1,10 +1,8 @@
 package com.junior.repository.popUpEvent;
 
-import com.junior.domain.member.Member;
 import com.junior.dto.popUpEvent.QResponsePopUpEventDto;
 import com.junior.dto.popUpEvent.ResponsePopUpEventDto;
 import com.junior.dto.story.GeoPointDto;
-import com.junior.dto.story.ResponseStoryListDto;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -12,11 +10,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static com.junior.domain.popUpEvent.QPopUpEvent.popUpEvent;
-import static com.junior.domain.story.QStory.story;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -56,7 +54,7 @@ public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepositor
     }
 
     @Override
-    public List<ResponsePopUpEventDto> findEventByPos(GeoPointDto geoPointLt, GeoPointDto geoPointRb) {
+    public List<ResponsePopUpEventDto> findEventByPos(GeoPointDto geoPointLt, GeoPointDto geoPointRb, LocalDateTime now) {
 
         return query.select(new QResponsePopUpEventDto(
                         popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.location, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
@@ -70,14 +68,15 @@ public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepositor
                                 Math.min(geoPointLt.longitude(), geoPointRb.longitude()),
                                 Math.max(geoPointLt.longitude(), geoPointRb.longitude())
                         ),
-                        popUpEvent.isDeleted.eq(false)
+                        popUpEvent.isDeleted.eq(false),
+                        popUpEvent.endDate.goe(now)
                 )
                 .orderBy(getOrderByClause("desc"))
                 .fetch();
     }
 
     @Override
-    public Slice<ResponsePopUpEventDto> loadPopUpEventOnScroll(Pageable pageable, Long cursorId) {
+    public Slice<ResponsePopUpEventDto> loadPopUpEventOnScroll(Pageable pageable, Long cursorId, LocalDateTime now) {
 //        return null;
         List<ResponsePopUpEventDto> popUpEvents = query.select(
                         new QResponsePopUpEventDto(
@@ -87,7 +86,8 @@ public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepositor
                 .from(popUpEvent)
                 .where(
                         eqCursorId(cursorId),
-                        popUpEvent.isDeleted.eq(false)
+                        popUpEvent.isDeleted.eq(false),
+                        popUpEvent.endDate.goe(now)
                 )
                 .limit(pageable.getPageSize() + 1)
                 .orderBy(getOrderByClause("desc"))
@@ -99,7 +99,7 @@ public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepositor
     }
 
     @Override
-    public Page<ResponsePopUpEventDto> loadPopUpEventByPage(Pageable pageable) {
+    public Page<ResponsePopUpEventDto> loadPopUpEventByPage(Pageable pageable, LocalDateTime now) {
         List<ResponsePopUpEventDto> popUpEvents = query.select(
                         new QResponsePopUpEventDto(
                                 popUpEvent.id, popUpEvent.eventName, popUpEvent.eventUrl, popUpEvent.city, popUpEvent.location, popUpEvent.latitude, popUpEvent.longitude, popUpEvent.startDate, popUpEvent.endDate
@@ -107,7 +107,8 @@ public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepositor
                 )
                 .from(popUpEvent)
                 .where(
-                        popUpEvent.isDeleted.eq(false)
+                        popUpEvent.isDeleted.eq(false),
+                        popUpEvent.endDate.goe(now)
                 )
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())

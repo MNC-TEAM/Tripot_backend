@@ -7,16 +7,23 @@ import com.junior.dto.popUpEvent.CreateNewPopUpEventDto;
 import com.junior.dto.popUpEvent.ResponsePopUpEventDto;
 import com.junior.dto.popUpEvent.UpdatePopUpEventDto;
 import com.junior.dto.story.GeoPointDto;
+import com.junior.exception.CustomException;
 import com.junior.exception.PermissionException;
 import com.junior.exception.StatusCode;
+import com.junior.repository.popUpEvent.PopUpEventLikeRepository;
 import com.junior.repository.popUpEvent.PopUpEventRepository;
 import com.junior.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,13 +31,14 @@ import java.util.List;
 public class PopUpEventService {
 
     private final PopUpEventRepository popUpEventRepository;
+    private final PopUpEventLikeRepository popUpEventLikeRepository;
 
     @Transactional
     public void createEvent(UserPrincipal userPrincipal, CreateNewPopUpEventDto createNewPopUpEventDto) {
 
         Member findMember = userPrincipal.getMember();
 
-        if(findMember.getRole() != MemberRole.ADMIN) {
+        if (findMember.getRole() != MemberRole.ADMIN) {
             throw new PermissionException(StatusCode.PERMISSION_ERROR);
         }
 
@@ -44,7 +52,7 @@ public class PopUpEventService {
 
         Member findMember = userPrincipal.getMember();
 
-        if(findMember.getRole() != MemberRole.ADMIN) {
+        if (findMember.getRole() != MemberRole.ADMIN) {
             throw new PermissionException(StatusCode.PERMISSION_ERROR);
         }
 
@@ -58,7 +66,7 @@ public class PopUpEventService {
         Member findMember = userPrincipal.getMember();
         PopUpEvent findPopUpEvent = popUpEventRepository.findById(popUpEventId).orElseThrow();
 
-        if(findMember.getRole() != MemberRole.ADMIN) {
+        if (findMember.getRole() != MemberRole.ADMIN) {
             throw new PermissionException(StatusCode.PERMISSION_ERROR);
         }
 
@@ -70,30 +78,45 @@ public class PopUpEventService {
 //    }
 
     public List<ResponsePopUpEventDto> getPopUpEventsByPos(GeoPointDto geoPointLt, GeoPointDto geoPointRb) {
-        return popUpEventRepository.findEventByPos(geoPointLt, geoPointRb);
+        LocalDateTime now = LocalDateTime.now();
+
+        return popUpEventRepository.findEventByPos(geoPointLt, geoPointRb, now);
     }
 
     public Slice<ResponsePopUpEventDto> loadPopUpEventsOnScroll(Long cursorId, int size) {
 
         Pageable pageable = PageRequest.of(0, size);
 
-        return popUpEventRepository.loadPopUpEventOnScroll(pageable, cursorId);
+        LocalDateTime now = LocalDateTime.now();
+
+        return popUpEventRepository.loadPopUpEventOnScroll(pageable, cursorId, now);
     }
 
     public Page<ResponsePopUpEventDto> getPopUpEventsByPage(UserPrincipal userPrincipal, int page, int size) {
         Member findMember = userPrincipal.getMember();
 
-        if(findMember.getRole() != MemberRole.ADMIN) {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (findMember.getRole() != MemberRole.ADMIN) {
             throw new PermissionException(StatusCode.PERMISSION_ERROR);
         }
 
         Pageable pageable = PageRequest.of(page, size);
 
-        return popUpEventRepository.loadPopUpEventByPage(pageable);
+        return popUpEventRepository.loadPopUpEventByPage(pageable, now);
     }
 
-    public ResponsePopUpEventDto getPopUpEventsById(Long popUpEventId) {
+    public ResponsePopUpEventDto getPopUpEventsById(UserPrincipal userPrincipal, Long popUpEventId) {
 
-        return popUpEventRepository.getPopUpEventById(popUpEventId);
+        Member findMember = Optional.ofNullable(userPrincipal)
+                .map(UserPrincipal::getMember)
+                .orElse(null);
+
+        PopUpEvent popUpEvent = popUpEventRepository.findById(popUpEventId)
+                .orElseThrow(() -> new CustomException(StatusCode.POPUPEVENT_READ_FAIL));
+
+        boolean isLiked = popUpEventLikeRepository.existsByMemberAndPopUpEvent(findMember, popUpEvent);
+
+        return ResponsePopUpEventDto.from(popUpEvent, isLiked);
     }
 }

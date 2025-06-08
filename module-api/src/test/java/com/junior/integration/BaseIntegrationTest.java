@@ -3,6 +3,7 @@ package com.junior.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.junior.config.SecurityConfig;
 import com.junior.domain.festival.Festival;
+import com.junior.domain.festival.like.FestivalLike;
 import com.junior.domain.member.Member;
 import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
@@ -102,6 +103,19 @@ public class BaseIntegrationTest {
                 .build();
     }
 
+    protected Member createWithdrewMember() {
+        return Member.builder()
+                .id(5L)
+                .nickname("테스트탈퇴닉네임")
+                .username("테스트탈퇴유저네임")
+                .role(MemberRole.USER)
+                .signUpType(SignUpType.KAKAO)
+                .profileImage("s3.com/testProfile")
+                .recommendLocation("서울")
+                .status(MemberStatus.DELETE)
+                .build();
+    }
+
     protected MockMultipartFile createMockMultipartFile() {
         MockMultipartFile profileImg = new MockMultipartFile(
                 "profileimg",
@@ -143,17 +157,24 @@ public class BaseIntegrationTest {
                 .build();
     }
 
-    protected Festival createFestival(String title, String city, double lat, double logt, long contentId){
+    protected Festival createFestival(String title, String city, double lat, double logt, long contentId, LocalDate startDate, LocalDate endDate) {
         return Festival.builder()
                 .contentId(contentId)
                 .title(title)
                 .city(city)
                 .location("location")
                 .imgUrl("url.com")
-                .startDate(LocalDate.of(2025, 1, 1))
-                .endDate(LocalDate.of(2025, 1, 2))
+                .startDate(startDate)
+                .endDate(endDate)
                 .lat(lat)
                 .logt(logt)
+                .build();
+    }
+
+    protected FestivalLike createFestivalLike(Member member, Festival festival) {
+        return FestivalLike.builder()
+                .member(member)
+                .festival(festival)
                 .build();
     }
 }

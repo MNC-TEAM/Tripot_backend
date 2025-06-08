@@ -298,7 +298,9 @@ public class MemberIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.pageable.number").value(1))
                 .andExpect(jsonPath("$.data.content[1].nickname").value("테스트사용자닉네임"))
-                .andExpect(jsonPath("$.data.content[1].role").value("USER"));
+                .andExpect(jsonPath("$.data.content[1].role").value("USER"))
+                .andExpect(jsonPath("$.data.content[1].isWithdraw").value(false))
+                .andExpect(jsonPath("$.data.content[1].withdrawDate").doesNotExist());
 
 
     }
