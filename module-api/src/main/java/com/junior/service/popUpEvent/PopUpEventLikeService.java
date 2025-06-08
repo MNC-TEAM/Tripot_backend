@@ -69,6 +69,7 @@ public class PopUpEventLikeService {
         return popUpEventLikeRepository.findPopUpEventByScroll(pageable, cursorId, member);
     }
 
+    @Transactional
     public void delete(UserPrincipal principal, Long popUpEventId) {
         Member member = memberRepository.findById(principal.getMember().getId()).orElseThrow(
                 () -> new NotValidMemberException(StatusCode.INVALID_MEMBER));
