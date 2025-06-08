@@ -21,6 +21,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,18 +78,24 @@ public class PopUpEventService {
 //    }
 
     public List<ResponsePopUpEventDto> getPopUpEventsByPos(GeoPointDto geoPointLt, GeoPointDto geoPointRb) {
-        return popUpEventRepository.findEventByPos(geoPointLt, geoPointRb);
+        LocalDateTime now = LocalDateTime.now();
+
+        return popUpEventRepository.findEventByPos(geoPointLt, geoPointRb, now);
     }
 
     public Slice<ResponsePopUpEventDto> loadPopUpEventsOnScroll(Long cursorId, int size) {
 
         Pageable pageable = PageRequest.of(0, size);
 
-        return popUpEventRepository.loadPopUpEventOnScroll(pageable, cursorId);
+        LocalDateTime now = LocalDateTime.now();
+
+        return popUpEventRepository.loadPopUpEventOnScroll(pageable, cursorId, now);
     }
 
     public Page<ResponsePopUpEventDto> getPopUpEventsByPage(UserPrincipal userPrincipal, int page, int size) {
         Member findMember = userPrincipal.getMember();
+
+        LocalDateTime now = LocalDateTime.now();
 
         if (findMember.getRole() != MemberRole.ADMIN) {
             throw new PermissionException(StatusCode.PERMISSION_ERROR);
@@ -96,7 +103,7 @@ public class PopUpEventService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        return popUpEventRepository.loadPopUpEventByPage(pageable);
+        return popUpEventRepository.loadPopUpEventByPage(pageable, now);
     }
 
     public ResponsePopUpEventDto getPopUpEventsById(UserPrincipal userPrincipal, Long popUpEventId) {
