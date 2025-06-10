@@ -32,8 +32,9 @@ public class AnswerController {
     }
 
     @Secured("ADMIN")
-    @PatchMapping("/api/v1/questions/answers/{answer_id}")
+    @PatchMapping("/api/v1/questions/{question_id}/answers/{answer_id}")
     public ResponseEntity<CommonResponse<Object>> update(@AuthenticationPrincipal UserPrincipal principal,
+                                                       @PathVariable(name = "question_id") Long questionId,
                                                        @PathVariable(name = "answer_id") Long answerId,
                                                        @RequestBody UpdateAnswerRequest updateAnswerRequest) {
 

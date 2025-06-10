@@ -84,13 +84,14 @@ class AnswerControllerTest extends BaseControllerTest {
 
         String content = objectMapper.writeValueAsString(updateAnswerRequest);
 
+        Long questionId = 1L;
         Long answerId = 1L;
 
 
 
         //when
         ResultActions actions = mockMvc.perform(
-                multipart(HttpMethod.PATCH, "/api/v1/questions/answers/{answer_id}", answerId)
+                multipart(HttpMethod.PATCH, "/api/v1/questions/{question_id}/answers/{answer_id}", questionId, answerId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
                         .accept(MediaType.APPLICATION_JSON)
