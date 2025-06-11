@@ -5,6 +5,7 @@ import com.junior.domain.qna.Answer;
 import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateAnswerRequest;
 import com.junior.dto.qna.UpdateAnswerRequest;
+import com.junior.exception.AnswerException;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.QuestionException;
 import com.junior.exception.StatusCode;
@@ -203,6 +204,79 @@ class AnswerServiceTest extends BaseServiceTest {
         //when, then
         assertThatThrownBy(() -> answerService.update(principal, answerId, updateAnswerRequest))
                 .isInstanceOf(QuestionException.class)
+                .hasMessageContaining(StatusCode.ANSWER_NOT_FOUND.getCustomMessage());
+
+
+    }
+
+    @Test
+    @DisplayName("답변 삭제 - 답변 삭제가 정상적으로 이루어져야 함")
+    void delete() throws Exception {
+        //given
+
+        Member admin = createAdmin();
+        Member customer = createActiveTestMember();
+        Long answerId = 1L;
+
+        UserPrincipal principal = new UserPrincipal(admin);
+
+        Answer answer = Answer.builder()
+                .id(answerId)
+                .title("title")
+                .content("answer")
+                .member(customer)
+                .build();
+
+
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(admin));
+        given(answerRepository.findById(anyLong())).willReturn(Optional.ofNullable(answer));
+
+        //when
+        answerService.delete(principal, answerId);
+
+        //then
+
+        assertThat(answer.getIsDeleted()).isTrue();
+
+
+    }
+
+    @Test
+    @DisplayName("답변 삭제 - 회원을 찾을 수 없을 경우 예외를 발생시켜야 함")
+    void failToDeleteIfMemberNotValid() throws Exception {
+        //given
+
+        Member admin = createAdmin();
+        Long questionId = 1L;
+
+        UserPrincipal principal = new UserPrincipal(admin);
+
+
+        //when, then
+        assertThatThrownBy(() -> answerService.delete(principal, questionId))
+                .isInstanceOf(NotValidMemberException.class)
+                .hasMessageContaining(StatusCode.INVALID_MEMBER.getCustomMessage());
+
+
+    }
+
+    @Test
+    @DisplayName("답변 삭제 - 질문을 찾을 수 없을 경우 예외를 발생시켜야 함")
+    void failToDeleteIfQuestionNotExists() throws Exception {
+        //given
+
+        Member admin = createAdmin();
+        Long questionId = 1L;
+
+        UserPrincipal principal = new UserPrincipal(admin);
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(admin));
+
+
+        //when, then
+        assertThatThrownBy(() -> answerService.delete(principal, questionId))
+                .isInstanceOf(AnswerException.class)
                 .hasMessageContaining(StatusCode.ANSWER_NOT_FOUND.getCustomMessage());
 
 

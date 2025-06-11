@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -54,7 +54,7 @@ class AnswerControllerTest extends BaseControllerTest {
 
         //when
         ResultActions actions = mockMvc.perform(
-                multipart(HttpMethod.POST, "/api/v1/questions/{question_id}/answers", questionId)
+                post("/api/v1/questions/{question_id}/answers", questionId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
                         .accept(MediaType.APPLICATION_JSON)
@@ -90,7 +90,7 @@ class AnswerControllerTest extends BaseControllerTest {
 
         //when
         ResultActions actions = mockMvc.perform(
-                multipart(HttpMethod.PATCH, "/api/v1/answers/{answer_id}", answerId)
+                patch("/api/v1/answers/{answer_id}", answerId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
                         .accept(MediaType.APPLICATION_JSON)
@@ -102,6 +102,32 @@ class AnswerControllerTest extends BaseControllerTest {
                 .andExpect(status().is(StatusCode.ANSWER_UPDATE_SUCCESS.getHttpCode()))
                 .andExpect(jsonPath("$.customCode").value(StatusCode.ANSWER_UPDATE_SUCCESS.getCustomCode()))
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.ANSWER_UPDATE_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+    }
+
+    @Test
+    @DisplayName("문의 답글 삭제 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomAdmin
+    void deleteAnswer() throws Exception {
+
+
+        //given
+
+        Long answerId = 1L;
+
+        //when
+        ResultActions actions = mockMvc.perform(
+               delete("/api/v1/answers/{answer_id}", answerId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().is(StatusCode.ANSWER_DELETE_SUCCESS.getHttpCode()))
+                .andExpect(jsonPath("$.customCode").value(StatusCode.ANSWER_DELETE_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.ANSWER_DELETE_SUCCESS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data").value(nullValue()));
     }

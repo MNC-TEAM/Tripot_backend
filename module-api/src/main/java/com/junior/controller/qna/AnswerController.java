@@ -32,7 +32,7 @@ public class AnswerController {
     }
 
     @Secured("ADMIN")
-    @PatchMapping("/api/v1/questions/answers/{answer_id}")
+    @PatchMapping("/api/v1/answers/{answer_id}")
     public ResponseEntity<CommonResponse<Object>> update(@AuthenticationPrincipal UserPrincipal principal,
                                                        @PathVariable(name = "answer_id") Long answerId,
                                                        @RequestBody UpdateAnswerRequest updateAnswerRequest) {
@@ -40,6 +40,16 @@ public class AnswerController {
         answerService.update(principal, answerId, updateAnswerRequest);
 
         return ResponseEntity.status(StatusCode.ANSWER_UPDATE_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.ANSWER_UPDATE_SUCCESS, null));
+    }
+
+    @Secured("ADMIN")
+    @DeleteMapping("/api/v1/answers/{answer_id}")
+    public ResponseEntity<CommonResponse<Void>> delete(@AuthenticationPrincipal UserPrincipal principal,
+                                                       @PathVariable(name = "answer_id") Long answerId) {
+
+        answerService.delete(principal, answerId);
+
+        return ResponseEntity.status(StatusCode.ANSWER_DELETE_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.ANSWER_DELETE_SUCCESS, null));
     }
 
 }

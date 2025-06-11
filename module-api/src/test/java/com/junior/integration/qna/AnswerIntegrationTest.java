@@ -5,16 +5,13 @@ import com.junior.domain.member.Member;
 import com.junior.domain.qna.Answer;
 import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateAnswerRequest;
-import com.junior.dto.qna.CreateQuestionRequest;
 import com.junior.dto.qna.UpdateAnswerRequest;
-import com.junior.dto.qna.UpdateQuestionRequest;
 import com.junior.exception.StatusCode;
 import com.junior.integration.BaseIntegrationTest;
 import com.junior.repository.member.MemberRepository;
 import com.junior.repository.qna.AnswerRepository;
 import com.junior.repository.qna.QuestionRepository;
 import com.junior.security.WithMockCustomAdmin;
-import com.junior.security.WithMockCustomUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.net.MalformedURLException;
@@ -32,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -91,7 +87,6 @@ public class AnswerIntegrationTest extends BaseIntegrationTest {
     }
 
 
-
     @Test
     @DisplayName("답글 등록 - 답글이 정상적으로 저장되어야 함")
     @WithMockCustomAdmin
@@ -110,7 +105,7 @@ public class AnswerIntegrationTest extends BaseIntegrationTest {
 
         //when
         ResultActions actions = mockMvc.perform(
-                multipart(HttpMethod.POST, "/api/v1/questions/{question_id}/answers", questionId)
+                post("/api/v1/questions/{question_id}/answers", questionId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
                         .accept(MediaType.APPLICATION_JSON)
@@ -151,10 +146,9 @@ public class AnswerIntegrationTest extends BaseIntegrationTest {
         Long answerId = 1L;
 
 
-
         //when
         ResultActions actions = mockMvc.perform(
-                multipart(HttpMethod.PATCH, "/api/v1/answers/{answer_id}", answerId)
+                patch("/api/v1/answers/{answer_id}", answerId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
                         .accept(MediaType.APPLICATION_JSON)
@@ -175,7 +169,37 @@ public class AnswerIntegrationTest extends BaseIntegrationTest {
         assertThat(answer.getContent()).isEqualTo("new answer");
     }
 
+    @Test
+    @DisplayName("문의 답글 삭제 - 답글이 정상적으로 삭제되어야 함")
+    @WithMockCustomAdmin
+    void deleteAnswer() throws Exception {
 
+
+        //given
+
+        Long answerId = 1L;
+
+
+        //when
+        ResultActions actions = mockMvc.perform(
+               delete("/api/v1/answers/{answer_id}", answerId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().is(StatusCode.ANSWER_DELETE_SUCCESS.getHttpCode()))
+                .andExpect(jsonPath("$.customCode").value(StatusCode.ANSWER_DELETE_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.ANSWER_DELETE_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data").value(nullValue()));
+
+        Answer answer = answerRepository.findById(answerId).orElseThrow(RuntimeException::new);
+
+        assertThat(answer.getIsDeleted()).isTrue();
+    }
 
 
 }
