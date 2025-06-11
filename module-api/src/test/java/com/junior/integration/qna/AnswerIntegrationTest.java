@@ -154,7 +154,7 @@ public class AnswerIntegrationTest extends BaseIntegrationTest {
 
         //when
         ResultActions actions = mockMvc.perform(
-                multipart(HttpMethod.PATCH, "/api/v1/questions/answers/{answer_id}", answerId)
+                multipart(HttpMethod.PATCH, "/api/v1/answers/{answer_id}", answerId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
                         .accept(MediaType.APPLICATION_JSON)
