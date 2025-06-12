@@ -38,7 +38,7 @@ class QuestionControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("문의용 이미지 업로드 - 응답이 정상적으로 반환되어야 함")
     @WithMockCustomUser
-    void uploadQuestionImg() throws Exception {
+    void uploadOrUpdateQuestionImg() throws Exception {
 
 
         //given

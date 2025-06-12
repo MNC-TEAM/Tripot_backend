@@ -23,7 +23,7 @@ public class QuestionController {
 
 
     @PostMapping("/api/v1/questions")
-    public ResponseEntity<CommonResponse<Object>> save(
+    public ResponseEntity<CommonResponse<Void>> save(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestBody CreateQuestionRequest createQuestionRequest
     ) {
@@ -32,7 +32,7 @@ public class QuestionController {
     }
 
     @PostMapping(value = "/api/v1/questions/imgs")
-    public ResponseEntity<CommonResponse<String>> uploadQuestionImg(
+    public ResponseEntity<CommonResponse<String>> uploadOrUpdateQuestionImg(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestPart(name = "questionImg") MultipartFile questionImg,
             @ModelAttribute CreateQuestionImgRequest createQuestionImgRequest) {
@@ -43,7 +43,7 @@ public class QuestionController {
     }
 
     @PatchMapping("/api/v1/questions/{question_id}")
-    public ResponseEntity<CommonResponse<Object>> update(
+    public ResponseEntity<CommonResponse<Void>> update(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable(name = "question_id") Long questionId,
             @RequestBody UpdateQuestionRequest updateQuestionRequest
@@ -54,7 +54,7 @@ public class QuestionController {
     }
 
     @DeleteMapping("/api/v1/questions/{question_id}")
-    public ResponseEntity<CommonResponse<Object>> delete(
+    public ResponseEntity<CommonResponse<Void>> delete(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable(name = "question_id") Long questionId
     ) {

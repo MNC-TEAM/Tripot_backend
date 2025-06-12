@@ -22,7 +22,7 @@ public class AnswerController {
 
     @Secured("ADMIN")
     @PostMapping("/api/v1/questions/{question_id}/answers")
-    public ResponseEntity<CommonResponse<Object>> save(@AuthenticationPrincipal UserPrincipal principal,
+    public ResponseEntity<CommonResponse<Void>> save(@AuthenticationPrincipal UserPrincipal principal,
                                                        @PathVariable(name = "question_id") Long questionId,
                                                        @RequestBody CreateAnswerRequest createAnswerRequest) {
 
@@ -33,7 +33,7 @@ public class AnswerController {
 
     @Secured("ADMIN")
     @PatchMapping("/api/v1/answers/{answer_id}")
-    public ResponseEntity<CommonResponse<Object>> update(@AuthenticationPrincipal UserPrincipal principal,
+    public ResponseEntity<CommonResponse<Void>> update(@AuthenticationPrincipal UserPrincipal principal,
                                                        @PathVariable(name = "answer_id") Long answerId,
                                                        @RequestBody UpdateAnswerRequest updateAnswerRequest) {
 
