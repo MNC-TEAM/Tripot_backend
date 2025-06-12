@@ -10,6 +10,7 @@ import com.junior.service.qna.AnswerService;
 import com.junior.service.qna.QuestionService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -69,6 +71,42 @@ class AnswerControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data").value(nullValue()));
     }
+
+
+    @Test
+    @DisplayName("문의 답글 조회 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomAdmin
+    void findAnswer() throws Exception {
+
+
+        //given
+        AnswerResponse answerResponse = AnswerResponse.builder()
+                .title("title")
+                .content("answer")
+                .build();
+
+
+        Long questionId = 1L;
+
+        given(answerService.find(any(UserPrincipal.class), anyLong())).willReturn(answerResponse);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/questions/{question_id}/answers", questionId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().is(StatusCode.ANSWER_FIND_SUCCESS.getHttpCode()))
+                .andExpect(jsonPath("$.customCode").value(StatusCode.ANSWER_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.ANSWER_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.title").value("title"))
+                .andExpect(jsonPath("$.data.content").value("answer"));
+    }
+
 
     @Test
     @DisplayName("문의 답글 수정 - 응답이 정상적으로 반환되어야 함")

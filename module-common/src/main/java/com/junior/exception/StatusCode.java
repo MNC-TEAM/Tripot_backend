@@ -138,6 +138,7 @@ public enum StatusCode {
     ANSWER_CREATE_SUCCESS(201, "ANSWER-SUCCESS-001", ""),
     ANSWER_UPDATE_SUCCESS(200, "ANSWER-SUCCESS-002", ""),
     ANSWER_DELETE_SUCCESS(200, "ANSWER-SUCCESS-003", ""),
+    ANSWER_FIND_SUCCESS(200, "ANSWER-SUCCESS-004", ""),
 
 
     // Q&A 관련 실패 코드
@@ -146,6 +147,7 @@ public enum StatusCode {
     QUESTION_NOT_FOUND(404, "QUESTION-ERR-001", "서버 에러가 발생했습니다."),
 
     ANSWER_NOT_FOUND(404, "ANSWER-ERR-001", "서버 에러가 발생했습니다."),
+    ANSWER_FORBIDDEN(403, "ANSWER-ERR-002", "답변 접근 권한이 없습니다."),
 
     // 신고 관련 성공 코드
     REPORT_CREATE_SUCCESS(201, "REPORT-SUCCESS-001", ""),

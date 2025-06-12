@@ -5,6 +5,7 @@ import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
 import com.junior.domain.qna.Answer;
 import com.junior.domain.qna.Question;
+import com.junior.dto.qna.AnswerResponse;
 import com.junior.dto.qna.CreateAnswerRequest;
 import com.junior.dto.qna.UpdateAnswerRequest;
 import com.junior.exception.AnswerException;
@@ -56,6 +57,28 @@ public class AnswerService {
     }
 
 
+    public AnswerResponse find(UserPrincipal principal, Long questionId) {
+        Member member = memberRepository.findById(principal.getMember().getId())
+                .orElseThrow(() -> new NotValidMemberException(StatusCode.INVALID_MEMBER));
+
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new QuestionException(StatusCode.QUESTION_NOT_FOUND));
+
+        //질문자와 관리자만 답변을 열람할 수 있음
+        if (!member.equals(question.getMember()) && !member.getRole().equals(MemberRole.ADMIN)) {
+            throw new AnswerException(StatusCode.ANSWER_FORBIDDEN);
+        }
+
+        Answer answer = question.getAnswer();
+
+        //답변이 없는 경우 리턴하지 않음
+        if (answer == null) {
+            return null;
+        }
+
+        return AnswerResponse.from(answer);
+
+    }
 
     @Transactional
     public void update(UserPrincipal principal, Long answerId, UpdateAnswerRequest updateAnswerRequest) {

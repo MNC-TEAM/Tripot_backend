@@ -1,5 +1,6 @@
 package com.junior.controller.qna;
 
+import com.junior.dto.qna.AnswerResponse;
 import com.junior.dto.qna.CreateAnswerRequest;
 import com.junior.dto.qna.UpdateAnswerRequest;
 import com.junior.exception.StatusCode;
@@ -29,6 +30,13 @@ public class AnswerController {
         answerService.save(principal, questionId, createAnswerRequest);
 
         return ResponseEntity.status(StatusCode.ANSWER_CREATE_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.ANSWER_CREATE_SUCCESS, null));
+    }
+
+    @GetMapping("/api/v1/questions/{question_id}/answers")
+    public ResponseEntity<CommonResponse<AnswerResponse>> find(@AuthenticationPrincipal UserPrincipal principal,
+                                                               @PathVariable(name = "question_id") Long questionId) {
+
+        return ResponseEntity.status(StatusCode.ANSWER_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.ANSWER_FIND_SUCCESS, answerService.find(principal, questionId)));
     }
 
     @Secured("ADMIN")
