@@ -85,10 +85,21 @@ public class AnswerService {
             throw new NotValidMemberException(StatusCode.INVALID_MEMBER_STATUS);
         }
 
-        Answer answer = answerRepository.findById(questionId)
-                .orElseThrow(() -> new AnswerException(StatusCode.ANSWER_NOT_FOUND));
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new QuestionException(StatusCode.QUESTION_NOT_FOUND));
+
+        Answer answer = question.getAnswer();
+
+        if (answer == null) {
+            throw new AnswerException(StatusCode.ANSWER_NOT_FOUND);
+        }
+
+
 
         answer.delete();
+
+        //연관관계 해제
+        question.deleteAnswer();
 
 
     }

@@ -74,8 +74,6 @@ class AnswerServiceTest extends BaseServiceTest {
         //then
         verify(answerRepository).save(ArgumentMatchers.any(Answer.class));
 
-        assertThat(question.getIsAnswered()).isTrue();
-
     }
 
     @Test
@@ -216,6 +214,7 @@ class AnswerServiceTest extends BaseServiceTest {
 
         Member admin = createAdmin();
         Member customer = createActiveTestMember();
+        Long questionId = 1L;
         Long answerId = 1L;
 
         UserPrincipal principal = new UserPrincipal(admin);
@@ -227,17 +226,26 @@ class AnswerServiceTest extends BaseServiceTest {
                 .member(customer)
                 .build();
 
+        Question question = Question.builder()
+                .id(questionId)
+                .title("title")
+                .content("content")
+                .member(customer)
+                .imgUrl("imgurl.com")
+                .answer(answer)
+                .build();
 
 
         given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(admin));
-        given(answerRepository.findById(anyLong())).willReturn(Optional.ofNullable(answer));
+        given(questionRepository.findById(anyLong())).willReturn(Optional.ofNullable(question));
 
         //when
-        answerService.delete(principal, answerId);
+        answerService.delete(principal, questionId);
 
         //then
 
         assertThat(answer.getIsDeleted()).isTrue();
+        assertThat(question.getAnswer()).isNull();
 
 
     }
@@ -276,8 +284,8 @@ class AnswerServiceTest extends BaseServiceTest {
 
         //when, then
         assertThatThrownBy(() -> answerService.delete(principal, questionId))
-                .isInstanceOf(AnswerException.class)
-                .hasMessageContaining(StatusCode.ANSWER_NOT_FOUND.getCustomMessage());
+                .isInstanceOf(QuestionException.class)
+                .hasMessageContaining(StatusCode.QUESTION_NOT_FOUND.getCustomMessage());
 
 
     }

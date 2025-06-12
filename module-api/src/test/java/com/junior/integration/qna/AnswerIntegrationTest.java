@@ -65,25 +65,34 @@ public class AnswerIntegrationTest extends BaseIntegrationTest {
 
         given(amazonS3Client.getUrl(any(), any())).willReturn(new URL("https://aws.com/newQuestionImg"));
 
-        for (int i = 1; i <= 20; i++) {
+        /**
+         * 21번 질문은 답변이 달려있지 않은 상태
+         */
+        for (int i = 1; i <= 21; i++) {
             Answer answer = Answer.builder()
                     .title("title")
                     .content("answer")
                     .member(testAdmin)
                     .build();
 
-            answerRepository.save(answer);
-        }
-        for (int i = 1; i <= 21; i++) {
+            if (i != 21) {
+                answerRepository.save(answer);
+            }
+
+
+
             Question question = Question.builder()
                     .title("title")
                     .content("question")
                     .imgUrl("https://aws.com/newQuestionImg")
                     .member(i % 2 == 1 ? activeTestMember : activeTestMember2)
+                    .answer(i != 21 ? answer : null)
                     .build();
 
             questionRepository.save(question);
+
         }
+
     }
 
 
@@ -124,7 +133,6 @@ public class AnswerIntegrationTest extends BaseIntegrationTest {
         Question question = questionRepository.findById(21L).orElseThrow(RuntimeException::new);
         Answer answer = answerRepository.findById(21L).orElseThrow(RuntimeException::new);
 
-        assertThat(question.getIsAnswered()).isTrue();
         assertThat(answer.getTitle()).isEqualTo("new title");
         assertThat(answer.getContent()).isEqualTo("new answer");
     }
@@ -177,12 +185,12 @@ public class AnswerIntegrationTest extends BaseIntegrationTest {
 
         //given
 
-        Long answerId = 1L;
+        Long questionId = 1L;
 
 
         //when
         ResultActions actions = mockMvc.perform(
-               delete("/api/v1/answers/{answer_id}", answerId)
+               delete("/api/v1/questions/{question_id}/answers", questionId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
         );
@@ -196,9 +204,11 @@ public class AnswerIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data").value(nullValue()));
 
-        Answer answer = answerRepository.findById(answerId).orElseThrow(RuntimeException::new);
+        Question question = questionRepository.findById(questionId).orElseThrow(RuntimeException::new);
+        Answer answer = answerRepository.findById(questionId).orElseThrow(RuntimeException::new);
 
         assertThat(answer.getIsDeleted()).isTrue();
+        assertThat(question.getAnswer()).isNull();
     }
 
 

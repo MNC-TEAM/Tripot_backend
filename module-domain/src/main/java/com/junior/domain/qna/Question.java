@@ -34,9 +34,8 @@ public class Question extends BaseEntity {
 
     private String imgUrl;
 
-    @Builder.Default
-    private Boolean isAnswered = false;
 
+    @Setter
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "answer_id")
     private Answer answer;
@@ -52,8 +51,7 @@ public class Question extends BaseEntity {
         this.imgUrl = updateQuestionRequest.imgUrl();
     }
 
-    public void setAnswer(Answer answer) {
-        this.answer = answer;
-        isAnswered = true;
+    public void deleteAnswer() {
+        this.answer = null;
     }
 }

@@ -113,12 +113,11 @@ class AnswerControllerTest extends BaseControllerTest {
 
 
         //given
-
-        Long answerId = 1L;
+        Long questionId = 1L;
 
         //when
         ResultActions actions = mockMvc.perform(
-               delete("/api/v1/answers/{answer_id}", answerId)
+               delete("/api/v1/questions/{question_id}/answers", questionId)
                         .accept(MediaType.APPLICATION_JSON)
         );
 

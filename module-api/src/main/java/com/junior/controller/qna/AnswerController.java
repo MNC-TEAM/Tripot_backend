@@ -43,11 +43,11 @@ public class AnswerController {
     }
 
     @Secured("ADMIN")
-    @DeleteMapping("/api/v1/answers/{answer_id}")
+    @DeleteMapping("/api/v1/questions/{question_id}/answers")
     public ResponseEntity<CommonResponse<Void>> delete(@AuthenticationPrincipal UserPrincipal principal,
-                                                       @PathVariable(name = "answer_id") Long answerId) {
+                                                       @PathVariable(name = "question_id") Long questionId) {
 
-        answerService.delete(principal, answerId);
+        answerService.delete(principal, questionId);
 
         return ResponseEntity.status(StatusCode.ANSWER_DELETE_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.ANSWER_DELETE_SUCCESS, null));
     }
