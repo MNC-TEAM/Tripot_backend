@@ -82,6 +82,7 @@ public class QuestionService {
 
     }
 
+    @Transactional
     public void update(UserPrincipal principal, Long questionId, UpdateQuestionRequest updateQuestionRequest) {
 
         Member member = memberRepository.findById(principal.getMember().getId()).orElseThrow(
@@ -102,6 +103,7 @@ public class QuestionService {
         question.update(updateQuestionRequest);
     }
 
+    @Transactional
     public void delete(UserPrincipal principal, Long questionId) {
         Member member = memberRepository.findById(principal.getMember().getId()).orElseThrow(
                 () -> new NotValidMemberException(StatusCode.INVALID_MEMBER)
