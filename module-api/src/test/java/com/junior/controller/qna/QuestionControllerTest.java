@@ -4,9 +4,11 @@ import com.junior.controller.BaseControllerTest;
 import com.junior.domain.member.Member;
 import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateQuestionRequest;
+import com.junior.dto.qna.QuestionDetailResponse;
 import com.junior.dto.qna.UpdateQuestionRequest;
 import com.junior.exception.StatusCode;
 import com.junior.security.UserPrincipal;
+import com.junior.security.WithMockCustomAdmin;
 import com.junior.security.WithMockCustomUser;
 import com.junior.dto.qna.CreateQuestionImgRequest;
 import com.junior.service.qna.QuestionService;
@@ -22,7 +24,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -100,15 +104,38 @@ class QuestionControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.data").value(nullValue()));
     }
 
-    MockMultipartFile createMockMultipartFile(String name) {
-        MockMultipartFile questionImg = new MockMultipartFile(
-                name,
-                "question_img.png",
-                MediaType.IMAGE_PNG_VALUE,
-                "thumbnail".getBytes()
+    @Test
+    @DisplayName("문의글 상세조회 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomAdmin
+    void findQuestionDetail() throws Exception {
+        //given
+        Long questionId = 1L;
+
+        QuestionDetailResponse response = QuestionDetailResponse.builder()
+                .id(questionId)
+                .title("title")
+                .content("question")
+                .imgUrl("imgurl.com")
+                .build();
+
+        given(questionService.findDetail(any(UserPrincipal.class), anyLong())).willReturn(response);
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/questions/{question_id}", questionId)
+                        .accept(MediaType.APPLICATION_JSON)
         );
 
-        return questionImg;
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().is(StatusCode.QUESTION_DETAIL_FIND_SUCCESS.getHttpCode()))
+                .andExpect(jsonPath("$.customCode").value(StatusCode.QUESTION_DETAIL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_DETAIL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.title").value("title"))
+                .andExpect(jsonPath("$.data.content").value("question"))
+                .andExpect(jsonPath("$.data.imgUrl").value("imgurl.com"));
 
     }
 
@@ -169,6 +196,18 @@ class QuestionControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_DELETE_SUCCESS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data").value(nullValue()));
+    }
+
+    MockMultipartFile createMockMultipartFile(String name) {
+        MockMultipartFile questionImg = new MockMultipartFile(
+                name,
+                "question_img.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "thumbnail".getBytes()
+        );
+
+        return questionImg;
+
     }
 
 

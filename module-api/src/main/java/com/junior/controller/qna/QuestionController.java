@@ -1,6 +1,7 @@
 package com.junior.controller.qna;
 
 import com.junior.dto.qna.CreateQuestionRequest;
+import com.junior.dto.qna.QuestionDetailResponse;
 import com.junior.dto.qna.UpdateQuestionRequest;
 import com.junior.exception.StatusCode;
 import com.junior.response.CommonResponse;
@@ -40,6 +41,15 @@ public class QuestionController {
         String url = questionService.uploadQuestionImg(principal, questionImg, createQuestionImgRequest);
 
         return ResponseEntity.status(StatusCode.QUESTION_IMG_UPLOAD_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.QUESTION_IMG_UPLOAD_SUCCESS, url));
+    }
+
+    @GetMapping("/api/v1/questions/{question_id}")
+    public ResponseEntity<CommonResponse<QuestionDetailResponse>> findDetail(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable(name = "question_id") Long questionId
+    ) {
+
+        return ResponseEntity.status(StatusCode.QUESTION_DETAIL_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.QUESTION_DETAIL_FIND_SUCCESS, questionService.findDetail(principal, questionId)));
     }
 
     @PatchMapping("/api/v1/questions/{question_id}")

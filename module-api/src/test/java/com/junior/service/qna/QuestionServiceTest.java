@@ -4,8 +4,10 @@ import com.junior.domain.member.Member;
 import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateQuestionImgRequest;
 import com.junior.dto.qna.CreateQuestionRequest;
+import com.junior.dto.qna.QuestionDetailResponse;
 import com.junior.dto.qna.UpdateQuestionRequest;
 import com.junior.exception.NotValidMemberException;
+import com.junior.exception.PermissionException;
 import com.junior.exception.QuestionException;
 import com.junior.exception.StatusCode;
 import com.junior.repository.member.MemberRepository;
@@ -170,6 +172,83 @@ class QuestionServiceTest extends BaseServiceTest {
         assertThatThrownBy(() -> questionService.save(principal, createQuestionRequest)).isInstanceOf(NotValidMemberException.class);
 
 
+    }
+
+    @Test
+    @DisplayName("문의글 상세정보 조회 - 정상적으로 조회할 수 있어야 함")
+    void findDetail() throws Exception {
+        //given
+        Member testMember = createActiveTestMember();
+        UserPrincipal principal = new UserPrincipal(testMember);
+        Long questionId = 1L;
+
+
+        Question question = Question.builder()
+                .id(questionId)
+                .title("title")
+                .content("question")
+                .imgUrl("s3.com/img")
+                .member(testMember)
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(testMember));
+        given(questionRepository.findByIdAndIsDeletedFalse(anyLong())).willReturn(Optional.ofNullable(question));
+
+        //when
+        QuestionDetailResponse result = questionService.findDetail(principal, questionId);
+
+        //then
+        assertThat(result.title()).isEqualTo("title");
+        assertThat(result.content()).isEqualTo("question");
+        assertThat(result.imgUrl()).isEqualTo("s3.com/img");
+
+    }
+
+    @Test
+    @DisplayName("문의글 상세정보 조회 - 문의글을 못 찾을 경우 예외를 발생시켜야 함")
+    void failToFindDetailIfQuestionNotFound() throws Exception {
+        //given
+        Member testMember = createActiveTestMember();
+        UserPrincipal principal = new UserPrincipal(testMember);
+        Long questionId = 1L;
+
+
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(testMember));
+
+        //when, then
+        assertThatThrownBy(() -> questionService.findDetail(principal, questionId))
+                .isInstanceOf(QuestionException.class)
+                .hasMessageContaining(StatusCode.QUESTION_NOT_FOUND.getCustomMessage());
+
+    }
+
+
+    @Test
+    @DisplayName("문의글 상세정보 조회 - 본인 질문글이 아닐 경우 예외를 발생시켜야 함")
+    void failToFindDetailIfQuestionIsNotYours() throws Exception {
+        //given
+        Member testMember = createActiveTestMember();
+        Member testMember2 = createActiveTestMember2();
+        UserPrincipal principal = new UserPrincipal(testMember2);
+        Long questionId = 1L;
+
+
+        Question question = Question.builder()
+                .id(questionId)
+                .title("title")
+                .content("question")
+                .imgUrl("s3.com/img")
+                .member(testMember)
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(testMember2));
+        given(questionRepository.findByIdAndIsDeletedFalse(anyLong())).willReturn(Optional.ofNullable(question));
+
+        //when, then
+        assertThatThrownBy(() -> questionService.findDetail(principal, questionId))
+                .isInstanceOf(QuestionException.class)
+                .hasMessageContaining(StatusCode.QUESTION_FORBIDDEN.getCustomMessage());
     }
 
     @Test

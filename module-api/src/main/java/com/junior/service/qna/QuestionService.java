@@ -1,10 +1,12 @@
 package com.junior.service.qna;
 
 import com.junior.domain.member.Member;
+import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
 import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateQuestionImgRequest;
 import com.junior.dto.qna.CreateQuestionRequest;
+import com.junior.dto.qna.QuestionDetailResponse;
 import com.junior.dto.qna.UpdateQuestionRequest;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.PermissionException;
@@ -80,6 +82,25 @@ public class QuestionService {
 
         return questionImgUrl;
 
+    }
+
+    public QuestionDetailResponse findDetail(UserPrincipal principal, Long questionId) {
+        Member member = memberRepository.findById(principal.getMember().getId()).orElseThrow(
+                () -> new NotValidMemberException(StatusCode.INVALID_MEMBER)
+        );
+
+        if (member.getStatus() != MemberStatus.ACTIVE) {
+            throw new NotValidMemberException(StatusCode.INVALID_MEMBER_STATUS);
+        }
+
+        Question question = questionRepository.findByIdAndIsDeletedFalse(questionId)
+                .orElseThrow(() -> new QuestionException(StatusCode.QUESTION_NOT_FOUND));
+
+        if (!question.getMember().equals(member) && !member.getRole().equals(MemberRole.ADMIN)) {
+            throw new QuestionException(StatusCode.QUESTION_FORBIDDEN);
+        }
+
+        return QuestionDetailResponse.from(question);
     }
 
     @Transactional

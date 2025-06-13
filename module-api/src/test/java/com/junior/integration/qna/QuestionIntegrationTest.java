@@ -4,12 +4,16 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.junior.domain.member.Member;
 import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateQuestionRequest;
+import com.junior.dto.qna.QuestionDetailResponse;
 import com.junior.dto.qna.UpdateQuestionRequest;
 import com.junior.exception.StatusCode;
 import com.junior.integration.BaseIntegrationTest;
 import com.junior.repository.member.MemberRepository;
 import com.junior.repository.qna.QuestionRepository;
+import com.junior.security.UserPrincipal;
+import com.junior.security.WithMockCustomAdmin;
 import com.junior.security.WithMockCustomUser;
+import com.junior.security.WithMockCustomUser2;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,7 +31,9 @@ import java.net.URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -53,10 +59,12 @@ public class QuestionIntegrationTest extends BaseIntegrationTest {
         Member preactiveTestMember = createPreactiveTestMember();
         Member activeTestMember = createActiveTestMember();
         Member testAdmin = createAdmin();
+        Member activeTestMember2 = createActiveTestMember2();
 
         memberRepository.save(preactiveTestMember);
         memberRepository.save(activeTestMember);
         memberRepository.save(testAdmin);
+        memberRepository.save(activeTestMember2);
 
 
         given(amazonS3Client.getUrl(any(), any())).willReturn(new URL("https://aws.com/newQuestionImg"));
@@ -143,6 +151,58 @@ public class QuestionIntegrationTest extends BaseIntegrationTest {
         assertThat(question.getContent()).isEqualTo("new question");
         assertThat(question.getImgUrl()).isEqualTo("https://aws.com/newQuestionImg");
         assertThat(question.getIsDeleted()).isFalse();
+
+    }
+
+    @Test
+    @DisplayName("문의글 상세조회 - 문의글을 정상적으로 조회할 수 있어야 함")
+    @WithMockCustomAdmin
+    void findQuestionDetail() throws Exception {
+        //given
+        Long questionId = 1L;
+
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/questions/{question_id}", questionId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().is(StatusCode.QUESTION_DETAIL_FIND_SUCCESS.getHttpCode()))
+                .andExpect(jsonPath("$.customCode").value(StatusCode.QUESTION_DETAIL_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_DETAIL_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.title").value("title"))
+                .andExpect(jsonPath("$.data.content").value("question"))
+                .andExpect(jsonPath("$.data.imgUrl").value("https://aws.com/newQuestionImg"));
+
+    }
+
+    @Test
+    @DisplayName("문의글 상세조회 - 본인 문의글이 아닐 경우 예외를 발생시켜야 함")
+    @WithMockCustomUser2
+    void failToFindQuestionDetailIfQuestionIsNotYours() throws Exception {
+        //given
+        Long questionId = 1L;
+
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/questions/{question_id}", questionId)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().is(StatusCode.QUESTION_FORBIDDEN.getHttpCode()))
+                .andExpect(jsonPath("$.customCode").value(StatusCode.QUESTION_FORBIDDEN.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_FORBIDDEN.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(false))
+                .andExpect(jsonPath("$.data").value(nullValue()));
 
     }
 
