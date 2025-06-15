@@ -2,10 +2,7 @@ package com.junior.service.qna;
 
 import com.junior.domain.member.Member;
 import com.junior.domain.qna.Question;
-import com.junior.dto.qna.CreateQuestionImgRequest;
-import com.junior.dto.qna.CreateQuestionRequest;
-import com.junior.dto.qna.QuestionDetailResponse;
-import com.junior.dto.qna.UpdateQuestionRequest;
+import com.junior.dto.qna.*;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.PermissionException;
 import com.junior.exception.QuestionException;
@@ -19,14 +16,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -171,6 +173,57 @@ class QuestionServiceTest extends BaseServiceTest {
         //when, then
         assertThatThrownBy(() -> questionService.save(principal, createQuestionRequest)).isInstanceOf(NotValidMemberException.class);
 
+
+    }
+
+    @Test
+    @DisplayName("문의글 조회 - 정상적으로 조회할 수 있어야 함")
+    void find() throws Exception {
+        //given
+        Member testMember = createActiveTestMember();
+        UserPrincipal principal = new UserPrincipal(testMember);
+        Long questionId = 1L;
+        int size = 5;
+
+        PageRequest pageRequest = PageRequest.of(0, size);
+
+        List<QuestionResponse> responses = new ArrayList<>();
+
+        QuestionResponse response = QuestionResponse.builder()
+                .id(1L)
+                .title("title")
+                .content("question")
+                .isAnswered(false)
+                .build();
+
+        responses.add(response);
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(testMember));
+        given(questionRepository.findQuestion(any(Member.class), anyLong(), any(Pageable.class))).willReturn(new SliceImpl<>(responses, pageRequest, false));
+
+        //when
+        Slice<QuestionResponse> result = questionService.find(principal, questionId, size);
+
+        //then
+        assertThat(result.hasNext()).isFalse();
+        assertThat(result.getNumberOfElements()).isEqualTo(1);
+
+    }
+
+    @Test
+    @DisplayName("문의글 조회 - 회원을 찾을 수 없을 경우 예외를 처리해야 함")
+    void failToFindIfMemberNotExists() throws Exception {
+        //given
+        Member testMember = createActiveTestMember();
+        UserPrincipal principal = new UserPrincipal(testMember);
+        Long questionId = 1L;
+        int size = 5;
+
+
+        //when
+        assertThatThrownBy(() -> questionService.find(principal, questionId, size))
+                .isInstanceOf(NotValidMemberException.class)
+                .hasMessageContaining(StatusCode.INVALID_MEMBER.getCustomMessage());
 
     }
 

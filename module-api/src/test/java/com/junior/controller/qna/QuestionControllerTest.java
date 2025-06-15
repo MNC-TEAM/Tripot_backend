@@ -3,28 +3,29 @@ package com.junior.controller.qna;
 import com.junior.controller.BaseControllerTest;
 import com.junior.domain.member.Member;
 import com.junior.domain.qna.Question;
-import com.junior.dto.qna.CreateQuestionRequest;
-import com.junior.dto.qna.QuestionDetailResponse;
-import com.junior.dto.qna.UpdateQuestionRequest;
+import com.junior.dto.qna.*;
 import com.junior.exception.StatusCode;
 import com.junior.security.UserPrincipal;
 import com.junior.security.WithMockCustomAdmin;
 import com.junior.security.WithMockCustomUser;
-import com.junior.dto.qna.CreateQuestionImgRequest;
 import com.junior.service.qna.QuestionService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -102,6 +103,48 @@ class QuestionControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_CREATE_SUCCESS.getCustomMessage()))
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data").value(nullValue()));
+    }
+
+    @Test
+    @DisplayName("문의글 조회 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomAdmin
+    void find() throws Exception {
+        //given
+        int size = 5;
+
+        PageRequest pageRequest = PageRequest.of(0, size);
+
+        List<QuestionResponse> responses = new ArrayList<>();
+
+        QuestionResponse response = QuestionResponse.builder()
+                .id(1L)
+                .title("title")
+                .content("question")
+                .isAnswered(false)
+                .build();
+
+        responses.add(response);
+
+        given(questionService.find(any(UserPrincipal.class), anyLong(), anyInt())).willReturn(new SliceImpl<>(responses, pageRequest, false));
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/questions")
+                        .queryParam("size", "5")
+                        .queryParam("cursorId", "5")
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().is(StatusCode.QUESTION_FIND_SUCCESS.getHttpCode()))
+                .andExpect(jsonPath("$.customCode").value(StatusCode.QUESTION_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.content[0].title").value("title"))
+                .andExpect(jsonPath("$.data.content[0].content").value("question"));
+
     }
 
     @Test

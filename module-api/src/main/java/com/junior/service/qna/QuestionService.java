@@ -4,10 +4,7 @@ import com.junior.domain.member.Member;
 import com.junior.domain.member.MemberRole;
 import com.junior.domain.member.MemberStatus;
 import com.junior.domain.qna.Question;
-import com.junior.dto.qna.CreateQuestionImgRequest;
-import com.junior.dto.qna.CreateQuestionRequest;
-import com.junior.dto.qna.QuestionDetailResponse;
-import com.junior.dto.qna.UpdateQuestionRequest;
+import com.junior.dto.qna.*;
 import com.junior.exception.NotValidMemberException;
 import com.junior.exception.PermissionException;
 import com.junior.exception.QuestionException;
@@ -18,6 +15,9 @@ import com.junior.security.UserPrincipal;
 import com.junior.service.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -81,6 +81,22 @@ public class QuestionService {
         }
 
         return questionImgUrl;
+
+    }
+
+
+    public Slice<QuestionResponse> find(UserPrincipal principal, Long cursorId, int size) {
+        Member member = memberRepository.findById(principal.getMember().getId()).orElseThrow(
+                () -> new NotValidMemberException(StatusCode.INVALID_MEMBER)
+        );
+
+        if (member.getStatus() != MemberStatus.ACTIVE) {
+            throw new NotValidMemberException(StatusCode.INVALID_MEMBER_STATUS);
+        }
+
+        Pageable pageable = PageRequest.of(0, size);
+
+        return questionRepository.findQuestion(member, cursorId, pageable);
 
     }
 

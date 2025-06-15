@@ -1,15 +1,15 @@
 package com.junior.controller.qna;
 
-import com.junior.dto.qna.CreateQuestionRequest;
-import com.junior.dto.qna.QuestionDetailResponse;
-import com.junior.dto.qna.UpdateQuestionRequest;
+import com.junior.dto.qna.*;
 import com.junior.exception.StatusCode;
 import com.junior.response.CommonResponse;
 import com.junior.security.UserPrincipal;
-import com.junior.dto.qna.CreateQuestionImgRequest;
 import com.junior.service.qna.QuestionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +41,16 @@ public class QuestionController {
         String url = questionService.uploadQuestionImg(principal, questionImg, createQuestionImgRequest);
 
         return ResponseEntity.status(StatusCode.QUESTION_IMG_UPLOAD_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.QUESTION_IMG_UPLOAD_SUCCESS, url));
+    }
+
+    @GetMapping("/api/v1/questions")
+    public ResponseEntity<CommonResponse<Slice<QuestionResponse>>> find(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestParam(name = "cursorId", required = false) Long cursorId,
+            @RequestParam("size") int size
+            ) {
+
+        return ResponseEntity.status(StatusCode.QUESTION_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.QUESTION_FIND_SUCCESS, questionService.find(principal, cursorId, size)));
     }
 
     @GetMapping("/api/v1/questions/{question_id}")
