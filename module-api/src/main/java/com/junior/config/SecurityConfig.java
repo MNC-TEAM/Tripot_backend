@@ -101,6 +101,9 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/actuator/prometheus").permitAll()
 
+                        //공지사항 조회 기능
+                        .requestMatchers("/api/v1/notices").permitAll()
+
                         //축제 저장 기능
                         .requestMatchers(HttpMethod.POST, "/api/v1/festivals").hasRole(MemberRole.ADMIN.name())
                         //축제 조회 기능
