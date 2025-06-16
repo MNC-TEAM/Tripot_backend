@@ -2,6 +2,7 @@ package com.junior.controller.qna;
 
 import com.junior.dto.qna.*;
 import com.junior.exception.StatusCode;
+import com.junior.page.PageCustom;
 import com.junior.response.CommonResponse;
 import com.junior.security.UserPrincipal;
 import com.junior.service.qna.QuestionService;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,9 +50,16 @@ public class QuestionController {
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam(name = "cursorId", required = false) Long cursorId,
             @RequestParam("size") int size
-            ) {
+    ) {
 
         return ResponseEntity.status(StatusCode.QUESTION_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.QUESTION_FIND_SUCCESS, questionService.find(principal, cursorId, size)));
+    }
+
+    @Secured("ADMIN")
+    @GetMapping("/api/v1/admin/questions")
+    public ResponseEntity<CommonResponse<PageCustom<QuestionAdminResponse>>> findQuestionAdmin(@PageableDefault(page = 1, size = 10) Pageable pageable) {
+
+        return ResponseEntity.status(StatusCode.QUESTION_FIND_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.QUESTION_FIND_SUCCESS, questionService.findQuestionAdmin(pageable)));
     }
 
     @GetMapping("/api/v1/questions/{question_id}")
@@ -67,7 +76,7 @@ public class QuestionController {
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable(name = "question_id") Long questionId,
             @RequestBody UpdateQuestionRequest updateQuestionRequest
-            ) {
+    ) {
         questionService.update(principal, questionId, updateQuestionRequest);
 
         return ResponseEntity.status(StatusCode.QUESTION_UPDATE_SUCCESS.getHttpCode()).body(CommonResponse.success(StatusCode.QUESTION_UPDATE_SUCCESS, null));

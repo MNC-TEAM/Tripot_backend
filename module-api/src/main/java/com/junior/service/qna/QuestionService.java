@@ -9,12 +9,14 @@ import com.junior.exception.NotValidMemberException;
 import com.junior.exception.PermissionException;
 import com.junior.exception.QuestionException;
 import com.junior.exception.StatusCode;
+import com.junior.page.PageCustom;
 import com.junior.repository.member.MemberRepository;
 import com.junior.repository.qna.QuestionRepository;
 import com.junior.security.UserPrincipal;
 import com.junior.service.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -34,7 +36,7 @@ public class QuestionService {
 
 
     @Transactional
-    public void save(UserPrincipal principal, CreateQuestionRequest createQuestionRequest){
+    public void save(UserPrincipal principal, CreateQuestionRequest createQuestionRequest) {
 
         Member author = memberRepository.findById(principal.getMember().getId()).orElseThrow(
                 () -> new NotValidMemberException(StatusCode.INVALID_MEMBER)
@@ -98,6 +100,14 @@ public class QuestionService {
 
         return questionRepository.findQuestion(member, cursorId, pageable);
 
+    }
+
+    public PageCustom<QuestionAdminResponse> findQuestionAdmin(Pageable pageable) {
+
+
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
+        Page<QuestionAdminResponse> result = questionRepository.findQuestion(pageRequest);
+        return new PageCustom<>(result.getContent(), result.getPageable(), result.getTotalElements());
     }
 
     public QuestionDetailResponse findDetail(UserPrincipal principal, Long questionId) {

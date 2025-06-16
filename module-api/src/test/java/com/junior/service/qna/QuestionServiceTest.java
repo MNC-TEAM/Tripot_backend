@@ -4,9 +4,9 @@ import com.junior.domain.member.Member;
 import com.junior.domain.qna.Question;
 import com.junior.dto.qna.*;
 import com.junior.exception.NotValidMemberException;
-import com.junior.exception.PermissionException;
 import com.junior.exception.QuestionException;
 import com.junior.exception.StatusCode;
+import com.junior.page.PageCustom;
 import com.junior.repository.member.MemberRepository;
 import com.junior.repository.qna.QuestionRepository;
 import com.junior.security.UserPrincipal;
@@ -16,10 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -45,7 +42,6 @@ class QuestionServiceTest extends BaseServiceTest {
 
     @InjectMocks
     QuestionService questionService;
-
 
 
     @Test
@@ -169,7 +165,6 @@ class QuestionServiceTest extends BaseServiceTest {
         given(memberRepository.findById(1L)).willReturn(Optional.ofNullable(testMember));
 
 
-
         //when, then
         assertThatThrownBy(() -> questionService.save(principal, createQuestionRequest)).isInstanceOf(NotValidMemberException.class);
 
@@ -228,6 +223,39 @@ class QuestionServiceTest extends BaseServiceTest {
     }
 
     @Test
+    @DisplayName("문의글 관리자 조회 - 정상적으로 조회할 수 있어야 함")
+    void findQuestionAdmin() throws Exception {
+        //given
+
+        PageRequest pageRequest = PageRequest.of(1, 10);
+        PageRequest afterPageRequest = PageRequest.of(0, 10);
+
+        List<QuestionAdminResponse> responses = new ArrayList<>();
+
+        QuestionAdminResponse response = QuestionAdminResponse.builder()
+                .id(1L)
+                .title("title")
+                .content("question")
+                .isAnswered(false)
+                .isDeleted(false)
+                .build();
+
+        responses.add(response);
+
+
+        given(questionRepository.findQuestion(afterPageRequest)).willReturn(new PageImpl<>(responses, afterPageRequest, 1));
+
+        //when
+        PageCustom<QuestionAdminResponse> result = questionService.findQuestionAdmin(pageRequest);
+
+        //then
+        assertThat(result.getPageable().getTotalElements()).isEqualTo(1);
+        assertThat(result.getPageable().getNumber()).isEqualTo(1);
+        assertThat(result.getContent().get(0)).isEqualTo(response);
+
+    }
+
+    @Test
     @DisplayName("문의글 상세정보 조회 - 정상적으로 조회할 수 있어야 함")
     void findDetail() throws Exception {
         //given
@@ -264,7 +292,6 @@ class QuestionServiceTest extends BaseServiceTest {
         Member testMember = createActiveTestMember();
         UserPrincipal principal = new UserPrincipal(testMember);
         Long questionId = 1L;
-
 
 
         given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(testMember));
@@ -379,7 +406,6 @@ class QuestionServiceTest extends BaseServiceTest {
         given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(testMember));
 
 
-
         //when, then
         assertThatThrownBy(() -> questionService.update(principal, questionId, updateQuestionRequest)).isInstanceOf(NotValidMemberException.class);
 
@@ -401,7 +427,6 @@ class QuestionServiceTest extends BaseServiceTest {
                 .imgUrl("s3.com/question-img")
                 .build();
         given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(testMember));
-
 
 
         //when, then
@@ -470,7 +495,6 @@ class QuestionServiceTest extends BaseServiceTest {
         given(memberRepository.findById(1L)).willReturn(Optional.ofNullable(testMember));
 
 
-
         //when, then
         assertThatThrownBy(() -> questionService.delete(principal, questionId)).isInstanceOf(NotValidMemberException.class);
 
@@ -487,7 +511,6 @@ class QuestionServiceTest extends BaseServiceTest {
         UserPrincipal principal = new UserPrincipal(testMember);
         Long questionId = 1L;
         given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(testMember));
-
 
 
         //when, then

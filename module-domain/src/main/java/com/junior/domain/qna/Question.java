@@ -3,7 +3,6 @@ package com.junior.domain.qna;
 
 import com.junior.domain.base.BaseEntity;
 import com.junior.domain.member.Member;
-import com.junior.dto.qna.UpdateQnaDto;
 import com.junior.dto.qna.UpdateQuestionRequest;
 import jakarta.persistence.*;
 import lombok.*;

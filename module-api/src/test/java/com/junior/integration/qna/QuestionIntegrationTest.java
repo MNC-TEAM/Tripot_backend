@@ -4,25 +4,23 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.junior.domain.member.Member;
 import com.junior.domain.qna.Question;
 import com.junior.dto.qna.CreateQuestionRequest;
-import com.junior.dto.qna.QuestionDetailResponse;
-import com.junior.dto.qna.QuestionResponse;
+import com.junior.dto.qna.QuestionAdminResponse;
 import com.junior.dto.qna.UpdateQuestionRequest;
 import com.junior.exception.StatusCode;
 import com.junior.integration.BaseIntegrationTest;
+import com.junior.page.PageCustom;
 import com.junior.repository.member.MemberRepository;
 import com.junior.repository.qna.QuestionRepository;
-import com.junior.security.UserPrincipal;
 import com.junior.security.WithMockCustomAdmin;
 import com.junior.security.WithMockCustomUser;
 import com.junior.security.WithMockCustomUser2;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -35,7 +33,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -130,7 +128,6 @@ public class QuestionIntegrationTest extends BaseIntegrationTest {
         String content = objectMapper.writeValueAsString(createQuestionRequest);
 
 
-
         //when
         ResultActions actions = mockMvc.perform(
                 multipart(HttpMethod.POST, "/api/v1/questions")
@@ -180,6 +177,31 @@ public class QuestionIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.status").value(true))
                 .andExpect(jsonPath("$.data.content[0].title").value("title"))
                 .andExpect(jsonPath("$.data.content[0].content").value("question"));
+
+    }
+
+    @Test
+    @DisplayName("문의글 관리자 조회 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomAdmin
+    void findQuestionAdmin() throws Exception {
+        //given
+
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/questions")
+                        .queryParam("page", "1")
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().is(StatusCode.QUESTION_FIND_SUCCESS.getHttpCode()))
+                .andExpect(jsonPath("$.customCode").value(StatusCode.QUESTION_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.content[0].id").value(20));
 
     }
 

@@ -1,10 +1,9 @@
 package com.junior.controller.qna;
 
 import com.junior.controller.BaseControllerTest;
-import com.junior.domain.member.Member;
-import com.junior.domain.qna.Question;
 import com.junior.dto.qna.*;
 import com.junior.exception.StatusCode;
+import com.junior.page.PageCustom;
 import com.junior.security.UserPrincipal;
 import com.junior.security.WithMockCustomAdmin;
 import com.junior.security.WithMockCustomUser;
@@ -14,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -86,7 +86,6 @@ class QuestionControllerTest extends BaseControllerTest {
         String content = objectMapper.writeValueAsString(createQuestionRequest);
 
 
-
         //when
         ResultActions actions = mockMvc.perform(
                 multipart(HttpMethod.POST, "/api/v1/questions")
@@ -132,6 +131,50 @@ class QuestionControllerTest extends BaseControllerTest {
                 get("/api/v1/questions")
                         .queryParam("size", "5")
                         .queryParam("cursorId", "5")
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        actions
+                .andDo(print())
+                .andExpect(status().is(StatusCode.QUESTION_FIND_SUCCESS.getHttpCode()))
+                .andExpect(jsonPath("$.customCode").value(StatusCode.QUESTION_FIND_SUCCESS.getCustomCode()))
+                .andExpect(jsonPath("$.customMessage").value(StatusCode.QUESTION_FIND_SUCCESS.getCustomMessage()))
+                .andExpect(jsonPath("$.status").value(true))
+                .andExpect(jsonPath("$.data.content[0].title").value("title"))
+                .andExpect(jsonPath("$.data.content[0].content").value("question"));
+
+    }
+
+    @Test
+    @DisplayName("문의글 관리자 조회 - 응답이 정상적으로 반환되어야 함")
+    @WithMockCustomAdmin
+    void findQuestionAdmin() throws Exception {
+        //given
+
+        int pageNumber = 1;
+        int size = 10;
+
+        PageRequest pageRequest = PageRequest.of(pageNumber, size);
+
+        List<QuestionAdminResponse> responses = new ArrayList<>();
+
+        QuestionAdminResponse response = QuestionAdminResponse.builder()
+                .id(1L)
+                .title("title")
+                .content("question")
+                .isAnswered(false)
+                .isDeleted(false)
+                .build();
+
+        responses.add(response);
+
+        given(questionService.findQuestionAdmin(any(Pageable.class))).willReturn(new PageCustom<>(responses, pageRequest, 1));
+
+        //when
+        ResultActions actions = mockMvc.perform(
+                get("/api/v1/admin/questions")
+                        .queryParam("page", "1")
                         .accept(MediaType.APPLICATION_JSON)
         );
 

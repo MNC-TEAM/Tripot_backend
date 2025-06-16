@@ -1,10 +1,8 @@
 package com.junior.repository.qna;
 
-import com.junior.domain.admin.Qna;
 import com.junior.domain.member.Member;
 import com.junior.domain.qna.Question;
-import com.junior.dto.qna.QnaAdminDto;
-import com.junior.dto.qna.QnaUserDto;
+import com.junior.dto.qna.QuestionAdminResponse;
 import com.junior.dto.qna.QuestionResponse;
 import com.junior.repository.BaseRepositoryTest;
 import com.junior.repository.member.MemberRepository;
@@ -56,7 +54,6 @@ class QuestionRepositoryTest extends BaseRepositoryTest {
     }
 
 
-
     @Test
     @DisplayName("질문글 조회 - 무한스크롤 및 회원 필터링이 구현이 정상적으로 동작해야 함")
     public void findQuestionSlice() throws Exception {
@@ -82,9 +79,6 @@ class QuestionRepositoryTest extends BaseRepositoryTest {
         for (int i = 0; i < 5; i++) {
             assertThat(content.get(i).title()).isEqualTo("title " + (89 - i * 2));
         }
-
-
-
 
 
     }
@@ -117,7 +111,6 @@ class QuestionRepositoryTest extends BaseRepositoryTest {
         }
 
 
-
     }
 
     @Test
@@ -146,6 +139,31 @@ class QuestionRepositoryTest extends BaseRepositoryTest {
             assertThat(content.get(i).title()).isEqualTo("title " + (5 - i * 2));
         }
 
+
+    }
+
+    @Test
+    @DisplayName("질문글 관리자 조회 - 페이징이 정상적으로 동작해야 함")
+    void findQuestionAdmin() throws Exception {
+        //given
+
+        //0-indexed 변경 이후
+        PageRequest pageRequest = PageRequest.of(1, 10);
+
+        //when
+        Page<QuestionAdminResponse> result = questionRepository.findQuestion(pageRequest);
+
+        //then
+        List<QuestionAdminResponse> contents = result.getContent();
+
+        assertThat(contents.size()).isEqualTo(10);
+
+        /**
+         * expected id: 90-81
+         */
+        for (int i = 0; i < 10; i++) {
+            assertThat(contents.get(i).id()).isEqualTo(90 - i);
+        }
 
 
     }
