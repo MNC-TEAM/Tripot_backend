@@ -26,6 +26,8 @@ public class S3Service {
     private String bucket;
     @Value("${cloud.aws.s3.path.profile}")
     private String profilePath;
+    @Value("${cloud.aws.s3.path.question}")
+    private String questionImgPath;
     private Set<String> uploadedFileNames = new HashSet<>();
     private Set<Long> uploadedFileSizes = new HashSet<>();
 
@@ -62,7 +64,35 @@ public class S3Service {
     public String saveProfileImage(MultipartFile file) {
         String randomFilename = profilePath + generateRandomFilename(file);
 
-        log.info("File upload started: {}", randomFilename);
+        log.info("[{}] 프로필 사진 업로드: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), randomFilename);
+
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(file.getSize());
+        metadata.setContentType(file.getContentType());
+
+        try {
+            amazonS3Client.putObject(bucket, randomFilename, file.getInputStream(), metadata);
+        } catch (AmazonS3Exception e) {
+            log.error("Amazon S3 error while uploading file: " + e.getMessage());
+            throw new CustomException(StatusCode.S3_UPLOAD_FAIL);
+        } catch (SdkClientException e) {
+            log.error("AWS SDK client error while uploading file: " + e.getMessage());
+            throw new CustomException(StatusCode.S3_UPLOAD_FAIL);
+        } catch (IOException e) {
+            log.error("IO error while uploading file: " + e.getMessage());
+            throw new CustomException(StatusCode.S3_UPLOAD_FAIL);
+        }
+
+        log.info("File upload completed: " + randomFilename);
+
+        return amazonS3Client.getUrl(bucket, randomFilename).toString();
+    }
+
+    //고객센터 문의용 사진 업로드
+    public String saveQuestionImage(MultipartFile file) {
+        String randomFilename = questionImgPath + generateRandomFilename(file);
+
+        log.info("[{}] 문의 용 사진 업로드: {}", Thread.currentThread().getStackTrace()[1].getMethodName(), randomFilename);
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
@@ -143,6 +173,14 @@ public class S3Service {
         String splitStr = ".com/";
         //https://"bucket-name"."region".amazonaws.com/"파일 이름.확장자"에서 파일 이름.확장자만 자르기
         String fileName = profileImageUrl.substring(profileImageUrl.lastIndexOf(splitStr) + splitStr.length());
+
+        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
+    }
+
+    public void deleteQuestionImg(String questionImgUrl) {
+        String splitStr = ".com/";
+        //https://"bucket-name"."region".amazonaws.com/"파일 이름.확장자"에서 파일 이름.확장자만 자르기
+        String fileName = questionImgUrl.substring(questionImgUrl.lastIndexOf(splitStr) + splitStr.length());
 
         amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
     }

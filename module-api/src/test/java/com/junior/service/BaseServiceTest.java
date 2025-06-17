@@ -36,16 +36,16 @@ public class BaseServiceTest {
                 .build();
     }
 
-    protected Member createWithdrewMember() {
+    protected Member createAdmin() {
         return Member.builder()
-                .id(5L)
-                .nickname("테스트탈퇴닉네임")
-                .username("테스트탈퇴유저네임")
-                .role(MemberRole.USER)
-                .signUpType(SignUpType.KAKAO)
+                .id(3L)
+                .nickname("테스트관리자닉네임")
+                .username("테스트관리자유저네임")
+                .role(MemberRole.ADMIN)
+                .signUpType(SignUpType.USERNAME)
                 .profileImage("s3.com/testProfile")
                 .recommendLocation("서울")
-                .status(MemberStatus.DELETE)
+                .status(MemberStatus.ACTIVE)
                 .build();
     }
 
@@ -59,6 +59,19 @@ public class BaseServiceTest {
                 .profileImage("s3.com/testProfile")
                 .recommendLocation("서울")
                 .status(MemberStatus.ACTIVE)
+                .build();
+    }
+
+    protected Member createWithdrewMember() {
+        return Member.builder()
+                .id(5L)
+                .nickname("테스트탈퇴닉네임")
+                .username("테스트탈퇴유저네임")
+                .role(MemberRole.USER)
+                .signUpType(SignUpType.KAKAO)
+                .profileImage("s3.com/testProfile")
+                .recommendLocation("서울")
+                .status(MemberStatus.DELETE)
                 .build();
     }
 
@@ -138,6 +151,18 @@ public class BaseServiceTest {
         MockMultipartFile profileImg = new MockMultipartFile(
                 "프로필 사진",
                 "profiles.png",
+                MediaType.IMAGE_PNG_VALUE,
+                "thumbnail".getBytes()
+        );
+
+        return profileImg;
+
+    }
+
+    protected MockMultipartFile createQuestionImgFile() {
+        MockMultipartFile profileImg = new MockMultipartFile(
+                "문의용 사진",
+                "question_img.png",
                 MediaType.IMAGE_PNG_VALUE,
                 "thumbnail".getBytes()
         );

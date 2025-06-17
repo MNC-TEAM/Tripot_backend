@@ -36,6 +36,18 @@ public class BaseRepositoryTest {
                 .build();
     }
 
+    protected Member createActiveTestMember2() {
+        return Member.builder()
+                .nickname("테스트사용자닉네임2")
+                .username("테스트사용자유저네임2")
+                .role(MemberRole.USER)
+                .signUpType(SignUpType.KAKAO)
+                .profileImage("s3.com/testProfile")
+                .recommendLocation("서울")
+                .status(MemberStatus.ACTIVE)
+                .build();
+    }
+
     public Story createStory(Member member) {
         List<String> imgUrls = new ArrayList<>();
         imgUrls.add("imgUrl1");
