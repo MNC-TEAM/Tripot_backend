@@ -9,11 +9,17 @@ import com.junior.exception.CustomException;
 import com.junior.exception.StatusCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 @Service
@@ -34,16 +40,61 @@ public class S3Service {
 
     //단일 파일 업로드
     public String saveFile(MultipartFile file) {
+        long sizeLimit = 1_048_576;
         String randomFilename = generateRandomFilename(file);
-
         log.info("File upload started: " + randomFilename);
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(file.getSize());
-        metadata.setContentType(file.getContentType());
+        try{
+            InputStream uploadStream;
+            long contentLength;
+            String contentType = file.getContentType();
 
-        try {
-            amazonS3Client.putObject(bucket, randomFilename, file.getInputStream(), metadata);
+            if (file.getSize() > sizeLimit && contentType != null && contentType.startsWith("image/")) {
+                BufferedImage originalImage = ImageIO.read(file.getInputStream());
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                Thumbnails.of(originalImage)
+                        .scale(1.0)
+                        .outputQuality(0.7f)
+                        .outputFormat("jpg")
+                        .toOutputStream(baos);
+                byte[] compressed = baos.toByteArray();
+
+                if (compressed.length > sizeLimit) {
+                    baos.reset();
+                    Thumbnails.of(originalImage)
+                            .scale(0.7)
+                            .outputQuality(0.6f)
+                            .outputFormat("jpg")
+                            .toOutputStream(baos);
+                    compressed = baos.toByteArray();
+                }
+
+                if (compressed.length > sizeLimit) {
+                    baos.reset();
+                    Thumbnails.of(originalImage)
+                            .scale(0.5)
+                            .outputQuality(0.5f)
+                            .outputFormat("jpg")
+                            .toOutputStream(baos);
+                    compressed = baos.toByteArray();
+                }
+
+                uploadStream = new ByteArrayInputStream(compressed);
+                contentLength = compressed.length;
+                contentType = "image/jpeg";
+            }
+            else {
+                uploadStream = file.getInputStream();
+                contentLength = file.getSize();
+            }
+
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(contentLength);
+            metadata.setContentType(contentType);
+
+            amazonS3Client.putObject(bucket, randomFilename, uploadStream, metadata);
+
         } catch (AmazonS3Exception e) {
             log.error("Amazon S3 error while uploading file: " + e.getMessage());
             throw new CustomException(StatusCode.S3_UPLOAD_FAIL);

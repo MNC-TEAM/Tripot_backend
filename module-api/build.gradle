@@ -1,6 +1,9 @@
 jar { enabled = false }
 
 dependencies {
+    //이미지 크기 조정
+    implementation 'net.coobird:thumbnailator:0.4.14'
+
     //웹->api
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
