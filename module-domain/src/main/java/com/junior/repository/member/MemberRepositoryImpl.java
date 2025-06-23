@@ -47,7 +47,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
         JPAQuery<Long> count = queryFactory.select(member.count())
                 .from(member)
-                .where(queryContains(q), member.role.eq(MemberRole.USER));
+                .where(queryContains(q));
 
 
         return PageableExecutionUtils.getPage(fetch, pageable, count::fetchOne);
