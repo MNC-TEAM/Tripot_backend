@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -32,6 +33,15 @@ public class PopUpEventController implements PopUpEventApi {
 
         return CommonResponse.success(StatusCode.POPUPEVENT_CREATE_SUCCESS, null);
     }
+
+    @PostMapping("/upload-csv")
+    public CommonResponse<Object> uploadPopUpEventsFromCsv(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                         @RequestParam("file") MultipartFile file) {
+        popUpEventService.createEventsFromCsv(userPrincipal, file);
+
+        return CommonResponse.success(StatusCode.POPUPEVENT_CREATE_SUCCESS, null);
+    }
+
 
     //    @Operation(summary = "팝업 이벤트 수정 (ADMIN만 가능)")
     @PatchMapping("/{id}")
