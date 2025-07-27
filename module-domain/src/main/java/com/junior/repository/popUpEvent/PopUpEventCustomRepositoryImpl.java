@@ -107,8 +107,8 @@ public class PopUpEventCustomRepositoryImpl implements PopUpEventCustomRepositor
                 )
                 .from(popUpEvent)
                 .where(
-                        popUpEvent.isDeleted.eq(false),
-                        popUpEvent.endDate.goe(now)
+                        popUpEvent.isDeleted.eq(false)
+//                        popUpEvent.endDate.goe(now)
                 )
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
